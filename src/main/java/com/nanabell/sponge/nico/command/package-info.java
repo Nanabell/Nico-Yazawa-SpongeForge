@@ -1,4 +1,4 @@
 @NonnullByDefault
-package com.nanabell.nico.nicoscoffee.economy;
+package com.nanabell.sponge.nico.command;
 
 import org.spongepowered.api.util.annotation.NonnullByDefault;

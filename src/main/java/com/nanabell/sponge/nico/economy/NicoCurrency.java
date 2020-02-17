@@ -1,9 +1,8 @@
-package com.nanabell.nico.nicoscoffee.economy;
+package com.nanabell.sponge.nico.economy;
 
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.text.format.TextStyles;
 
 import java.math.BigDecimal;

@@ -1,4 +1,4 @@
-package com.nanabell.nico.nicoscoffee.storage;
+package com.nanabell.sponge.nico.storage;
 
 import com.j256.ormlite.misc.BaseDaoEnabled;
 

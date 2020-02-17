@@ -1,6 +1,6 @@
-package com.nanabell.nico.nicoscoffee.command;
+package com.nanabell.sponge.nico.command;
 
-import com.nanabell.nico.nicoscoffee.economy.NicoCurrency;
+import com.nanabell.sponge.nico.economy.NicoCurrency;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;

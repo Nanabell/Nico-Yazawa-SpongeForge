@@ -1,4 +1,4 @@
-package com.nanabell.nico.nicoscoffee.config;
+package com.nanabell.sponge.nico.config;
 
 import com.google.inject.internal.cglib.core.$ClassNameReader;
 import ninja.leaping.configurate.objectmapping.Setting;

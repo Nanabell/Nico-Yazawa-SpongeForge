@@ -1,15 +1,15 @@
-package com.nanabell.nico.nicoscoffee;
+package com.nanabell.sponge.nico;
 
 import com.google.inject.Inject;
-import com.nanabell.nico.nicoscoffee.activity.ActivityTracker;
-import com.nanabell.nico.nicoscoffee.command.NicoGetCommand;
-import com.nanabell.nico.nicoscoffee.command.NicoSetCommand;
-import com.nanabell.nico.nicoscoffee.config.Config;
-import com.nanabell.nico.nicoscoffee.config.MainConfig;
-import com.nanabell.nico.nicoscoffee.economy.NicoAccount;
-import com.nanabell.nico.nicoscoffee.economy.NicoEconomyService;
-import com.nanabell.nico.nicoscoffee.storage.Persistable;
-import com.nanabell.nico.nicoscoffee.storage.PersistenceManager;
+import com.nanabell.sponge.nico.activity.ActivityTracker;
+import com.nanabell.sponge.nico.command.NicoGetCommand;
+import com.nanabell.sponge.nico.command.NicoSetCommand;
+import com.nanabell.sponge.nico.config.Config;
+import com.nanabell.sponge.nico.config.MainConfig;
+import com.nanabell.sponge.nico.economy.NicoAccount;
+import com.nanabell.sponge.nico.economy.NicoEconomyService;
+import com.nanabell.sponge.nico.storage.Persistable;
+import com.nanabell.sponge.nico.storage.PersistenceManager;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;

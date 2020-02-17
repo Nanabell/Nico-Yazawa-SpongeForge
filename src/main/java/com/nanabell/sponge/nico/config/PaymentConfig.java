@@ -1,4 +1,4 @@
-package com.nanabell.nico.nicoscoffee.config;
+package com.nanabell.sponge.nico.config;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;

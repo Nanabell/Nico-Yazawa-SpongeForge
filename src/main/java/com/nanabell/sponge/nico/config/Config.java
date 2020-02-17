@@ -1,4 +1,4 @@
-package com.nanabell.nico.nicoscoffee.config;
+package com.nanabell.sponge.nico.config;
 
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationOptions;

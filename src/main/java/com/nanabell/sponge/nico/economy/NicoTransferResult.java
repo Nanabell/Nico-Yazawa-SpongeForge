@@ -1,4 +1,4 @@
-package com.nanabell.nico.nicoscoffee.economy;
+package com.nanabell.sponge.nico.economy;
 
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.economy.Currency;

@@ -1,8 +1,8 @@
-package com.nanabell.nico.nicoscoffee.discordlink.discord;
+package com.nanabell.sponge.nico.discordlink.discord;
 
-import com.nanabell.nico.nicoscoffee.NicoYazawa;
-import com.nanabell.nico.nicoscoffee.config.Config;
-import com.nanabell.nico.nicoscoffee.config.MainConfig;
+import com.nanabell.sponge.nico.NicoYazawa;
+import com.nanabell.sponge.nico.config.Config;
+import com.nanabell.sponge.nico.config.MainConfig;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import org.slf4j.Logger;

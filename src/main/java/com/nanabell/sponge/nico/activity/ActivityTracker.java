@@ -1,10 +1,10 @@
-package com.nanabell.nico.nicoscoffee.activity;
+package com.nanabell.sponge.nico.activity;
 
-import com.nanabell.nico.nicoscoffee.NicoYazawa;
-import com.nanabell.nico.nicoscoffee.config.ActivityConfig;
-import com.nanabell.nico.nicoscoffee.config.Config;
-import com.nanabell.nico.nicoscoffee.config.MainConfig;
-import com.nanabell.nico.nicoscoffee.config.PaymentConfig;
+import com.nanabell.sponge.nico.NicoYazawa;
+import com.nanabell.sponge.nico.config.ActivityConfig;
+import com.nanabell.sponge.nico.config.Config;
+import com.nanabell.sponge.nico.config.MainConfig;
+import com.nanabell.sponge.nico.config.PaymentConfig;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;

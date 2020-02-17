@@ -1,4 +1,4 @@
-package com.nanabell.nico.nicoscoffee.command;
+package com.nanabell.sponge.nico.command;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;

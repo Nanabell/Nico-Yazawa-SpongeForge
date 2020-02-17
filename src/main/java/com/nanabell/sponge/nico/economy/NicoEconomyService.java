@@ -1,7 +1,7 @@
-package com.nanabell.nico.nicoscoffee.economy;
+package com.nanabell.sponge.nico.economy;
 
-import com.nanabell.nico.nicoscoffee.NicoYazawa;
-import com.nanabell.nico.nicoscoffee.storage.Persistable;
+import com.nanabell.sponge.nico.NicoYazawa;
+import com.nanabell.sponge.nico.storage.Persistable;
 import org.spongepowered.api.service.context.ContextCalculator;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.EconomyService;

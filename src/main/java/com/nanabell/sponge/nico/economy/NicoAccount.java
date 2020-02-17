@@ -1,8 +1,8 @@
-package com.nanabell.nico.nicoscoffee.economy;
+package com.nanabell.sponge.nico.economy;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.nanabell.nico.nicoscoffee.storage.IdentifiableDaoEnabled;
+import com.nanabell.sponge.nico.storage.IdentifiableDaoEnabled;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
