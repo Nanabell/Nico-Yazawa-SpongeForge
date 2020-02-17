@@ -27,14 +27,14 @@ import org.spongepowered.api.text.Text;
 import java.nio.file.Path;
 
 @Plugin(
-        id = "nicos-coffee",
-        name = "Nicos Coffee",
+        id = "nico-Yazawa",
+        name = "Nico Yazawa",
         description = "Linking Minecraft & Discord Nico Style!",
         authors = {
                 "Nanabell"
         }
 )
-public class NicosCoffee {
+public class NicoYazawa {
 
     @Inject
     private Logger logger;
@@ -47,7 +47,7 @@ public class NicosCoffee {
 
     @Listener
     public void onInit(GameInitializationEvent event) {
-        configManager = new Config<>(MainConfig.class, "nicos-coffe.conf", configDir);
+        configManager = new Config<>(MainConfig.class, "nicos-yazawa.conf", configDir);
 
         PersistenceManager persistenceManager = new PersistenceManager();
         persistenceManager.register(new Persistable<>(configManager.get().getDatabaseUrl(), NicoAccount.class));

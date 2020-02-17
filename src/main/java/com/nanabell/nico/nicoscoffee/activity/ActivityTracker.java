@@ -1,6 +1,6 @@
 package com.nanabell.nico.nicoscoffee.activity;
 
-import com.nanabell.nico.nicoscoffee.NicosCoffee;
+import com.nanabell.nico.nicoscoffee.NicoYazawa;
 import com.nanabell.nico.nicoscoffee.config.ActivityConfig;
 import com.nanabell.nico.nicoscoffee.config.Config;
 import com.nanabell.nico.nicoscoffee.config.MainConfig;
@@ -25,7 +25,7 @@ public class ActivityTracker implements Runnable {
 
     private static final Random RANDOM = new Random();
 
-    private final NicosCoffee plugin;
+    private final NicoYazawa plugin;
     private final Config<MainConfig> configManager;
     private final ServiceManager serviceManager;
     private final Logger logger;
@@ -37,7 +37,7 @@ public class ActivityTracker implements Runnable {
     private Map<UUID, Integer> paymentMap = new HashMap<>();
 
 
-    public ActivityTracker(NicosCoffee plugin) {
+    public ActivityTracker(NicoYazawa plugin) {
         this.plugin = plugin;
         this.configManager = plugin.getConfigManager();
         this.serviceManager = Sponge.getServiceManager();

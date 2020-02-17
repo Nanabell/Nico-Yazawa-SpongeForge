@@ -1,6 +1,6 @@
 package com.nanabell.nico.nicoscoffee.discordlink.discord;
 
-import com.nanabell.nico.nicoscoffee.NicosCoffee;
+import com.nanabell.nico.nicoscoffee.NicoYazawa;
 import com.nanabell.nico.nicoscoffee.config.Config;
 import com.nanabell.nico.nicoscoffee.config.MainConfig;
 import net.dv8tion.jda.api.JDA;
@@ -11,13 +11,13 @@ import javax.security.auth.login.LoginException;
 
 public class DiscordManager {
 
-    private final NicosCoffee plugin;
+    private final NicoYazawa plugin;
     private final Config<MainConfig> configManager;
     private final Logger logger;
 
     private JDA jda;
 
-    public DiscordManager(NicosCoffee plugin) {
+    public DiscordManager(NicoYazawa plugin) {
         this.plugin = plugin;
         this.configManager = plugin.getConfigManager();
         this.logger = plugin.getLogger();

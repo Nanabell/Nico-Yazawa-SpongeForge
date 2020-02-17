@@ -1,8 +1,5 @@
 package com.nanabell.nico.nicoscoffee.command;
 
-import com.google.inject.Inject;
-import com.nanabell.nico.nicoscoffee.NicosCoffee;
-import com.nanabell.nico.nicoscoffee.economy.NicoEconomyService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;

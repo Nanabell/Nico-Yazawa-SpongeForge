@@ -1,6 +1,6 @@
 package com.nanabell.nico.nicoscoffee.economy;
 
-import com.nanabell.nico.nicoscoffee.NicosCoffee;
+import com.nanabell.nico.nicoscoffee.NicoYazawa;
 import com.nanabell.nico.nicoscoffee.storage.Persistable;
 import org.spongepowered.api.service.context.ContextCalculator;
 import org.spongepowered.api.service.economy.Currency;
@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class NicoEconomyService implements EconomyService {
 
-    private final Persistable<NicoAccount> accounts = NicosCoffee.getPersistenceManager().getUnchecked(NicoAccount.class);
+    private final Persistable<NicoAccount> accounts = NicoYazawa.getPersistenceManager().getUnchecked(NicoAccount.class);
 
     @Override
     public Currency getDefaultCurrency() {
