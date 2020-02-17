@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="nicos-coffee">
+    <output-path>$PROJECT_DIR$/../../sponge-forge_server/mods</output-path>
+    <root id="archive" name="nicos-coffee.jar">
+      <element id="module-output" name="nicos-coffee.main" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.j256.ormlite/ormlite-core/4.48/e579bd2905d0399af5029aaaf9817d5fa0ca88a5/ormlite-core-4.48.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.j256.ormlite/ormlite-jdbc/4.48/b915ebd2c4b901eec32e4df44e5503752e92ce38/ormlite-jdbc-4.48.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

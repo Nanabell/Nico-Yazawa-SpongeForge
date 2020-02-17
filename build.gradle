@@ -1,0 +1,43 @@
+plugins {
+    id 'org.spongepowered.plugin' version '0.9.0'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
+}
+
+group = pluginGroup
+version = pluginVersion
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile ('net.dv8tion:JDA:4.ALPHA.0_76') {
+        exclude module: 'opus-java'
+    }
+
+
+    shadow('com.j256.ormlite:ormlite-core:4.48') { transitive = false }
+    shadow('com.j256.ormlite:ormlite-jdbc:4.48') { transitive = false }
+
+    compileOnly 'org.jetbrains:annotations:16.0.2'
+    compileOnly 'org.spongepowered:spongeapi:7.1.0'
+    annotationProcessor 'org.spongepowered:spongeapi:7.1.0'
+}
+
+configurations {
+    compile.extendsFrom shadow
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+
+    classifier = null // Remove '-all' suffix from output file name
+    from sourceSets.main.output
+}
+build.dependsOn shadowJar
+
+sponge.plugin.id = pluginId
