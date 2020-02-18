@@ -1,6 +1,6 @@
-package com.nanabell.sponge.nico.discordlink.event;
+package com.nanabell.sponge.nico.link.event;
 
-import com.nanabell.sponge.nico.discordlink.LinkResult;
+import com.nanabell.sponge.nico.link.LinkResult;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.spongepowered.api.event.cause.EventContextKey;

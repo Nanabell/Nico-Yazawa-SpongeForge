@@ -1,12 +1,12 @@
-package com.nanabell.sponge.nico.discordlink.discord;
+package com.nanabell.sponge.nico.link.discord;
 
 import com.nanabell.sponge.nico.NicoYazawa;
 import com.nanabell.sponge.nico.config.Config;
 import com.nanabell.sponge.nico.config.DiscordLinkConfig;
 import com.nanabell.sponge.nico.config.MainConfig;
-import com.nanabell.sponge.nico.discordlink.LinkService;
-import com.nanabell.sponge.nico.discordlink.event.LinkEventContextKeys;
-import com.nanabell.sponge.nico.discordlink.event.LinkRequestEvent;
+import com.nanabell.sponge.nico.link.LinkService;
+import com.nanabell.sponge.nico.link.event.LinkEventContextKeys;
+import com.nanabell.sponge.nico.link.event.LinkRequestEvent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.User;

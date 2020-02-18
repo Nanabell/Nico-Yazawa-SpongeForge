@@ -1,10 +1,9 @@
-package com.nanabell.sponge.nico.discordlink;
+package com.nanabell.sponge.nico.link;
 
 import com.nanabell.sponge.nico.NicoYazawa;
-import com.nanabell.sponge.nico.discordlink.event.LinkEvent;
-import com.nanabell.sponge.nico.discordlink.event.LinkEventContextKeys;
-import com.nanabell.sponge.nico.discordlink.event.LinkFailedEvent;
-import com.nanabell.sponge.nico.discordlink.event.LinkRequestEvent;
+import com.nanabell.sponge.nico.link.event.LinkEventContextKeys;
+import com.nanabell.sponge.nico.link.event.LinkFailedEvent;
+import com.nanabell.sponge.nico.link.event.LinkRequestEvent;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;

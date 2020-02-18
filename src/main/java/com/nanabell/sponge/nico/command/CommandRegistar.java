@@ -1,7 +1,7 @@
 package com.nanabell.sponge.nico.command;
 
 import com.nanabell.sponge.nico.NicoYazawa;
-import com.nanabell.sponge.nico.command.discordlink.LinkCommand;
+import com.nanabell.sponge.nico.command.link.LinkCommand;
 import com.nanabell.sponge.nico.command.economy.NicoGetCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandManager;

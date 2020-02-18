@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.discordlink;
+package com.nanabell.sponge.nico.link;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.command.discordlink;
+package com.nanabell.sponge.nico.command.link;
 
 import com.nanabell.sponge.nico.command.SelfSpecCommand;
 import org.spongepowered.api.command.CommandException;

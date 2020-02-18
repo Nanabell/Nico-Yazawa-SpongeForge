@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.command.discordlink;
+package com.nanabell.sponge.nico.command.link;
 
 import com.nanabell.sponge.nico.command.SelfSpecCommand;
 import org.spongepowered.api.command.CommandException;
@@ -9,18 +9,23 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 
-public class LinkAcceptCommand implements CommandExecutor, SelfSpecCommand {
+public class LinkCommand implements CommandExecutor, SelfSpecCommand {
 
     @Override
     public String[] aliases() {
-        return new String[]{"accept", "a"};
+        return new String[] {"link"};
     }
 
     @Override
     public CommandSpec spec() {
+        LinkAcceptCommand acceptCommand = new LinkAcceptCommand();
+        LinkDenyCommand denyCommand = new LinkDenyCommand();
+
         return CommandSpec.builder()
-                .description(Text.of("Accept a pending Discord-Link Request"))
+                .description(Text.of("Commands to View / Accept / Deny pending & existing Discord-Links"))
                 .executor(this)
+                .child(acceptCommand.spec(), acceptCommand.aliases())
+                .child(denyCommand.spec(), denyCommand.aliases())
                 .build();
     }
 
