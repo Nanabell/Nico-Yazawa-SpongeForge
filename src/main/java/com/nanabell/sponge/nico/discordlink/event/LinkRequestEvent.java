@@ -1,16 +1,19 @@
 package com.nanabell.sponge.nico.discordlink.event;
 
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.impl.AbstractEvent;
 
-public class LinkRequestEvent extends AbstractEvent implements Event {
+public class LinkRequestEvent extends LinkEvent implements Event {
 
-    public LinkRequestEvent()
+    private String targetUser;
 
-    @Override
-    public Cause getCause() {
-        return null;
+    public LinkRequestEvent(String targetUser, Cause cause) {
+        super(cause);
+
+        this.targetUser = targetUser;
+    }
+
+    public String getTargetUserName() {
+        return targetUser;
     }
 }
