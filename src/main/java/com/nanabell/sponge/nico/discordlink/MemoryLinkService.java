@@ -108,7 +108,7 @@ public class MemoryLinkService implements LinkService {
         Player player = oPlayer.get();
         Text msg = Text.builder("Incoming Discord link request: ").color(TextColors.BLUE)
                 .append(Text.of(user.getAsTag() + " "))
-                .append(Text.of(TextColors.GREEN, "[Confirm]", TextActions.runCommand("/nico link confirm")))
+                .append(Text.of(TextColors.GREEN, "[Confirm]", TextActions.runCommand("/nico link accept")))
                 .append(Text.of(" "))
                 .append(Text.of(TextColors.RED, "[Deny]", TextActions.runCommand("/nico link deny")))
                 .build();
