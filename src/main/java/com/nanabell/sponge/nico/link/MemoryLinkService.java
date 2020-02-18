@@ -2,8 +2,8 @@ package com.nanabell.sponge.nico.link;
 
 import com.nanabell.sponge.nico.NicoYazawa;
 import com.nanabell.sponge.nico.link.event.LinkEventContextKeys;
-import com.nanabell.sponge.nico.link.event.LinkFailedEvent;
 import com.nanabell.sponge.nico.link.event.LinkRequestEvent;
+import com.nanabell.sponge.nico.link.event.LinkStateChangeEvent;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -98,7 +98,7 @@ public class MemoryLinkService implements LinkService {
             EventContext linkContext = EventContext.builder().add(LinkEventContextKeys.LINK_RESULT, LinkResult.USER_NOT_FOUND).build();
             Cause linkCause = Cause.builder().from(event.getCause()).append(this).build(linkContext);
 
-            Sponge.getEventManager().post(new LinkFailedEvent(Cause.of(linkContext, linkCause)));
+            Sponge.getEventManager().post(new LinkStateChangeEvent(LinkState.BROKEN, Cause.of(linkContext, linkCause)));
             return;
         }
 
