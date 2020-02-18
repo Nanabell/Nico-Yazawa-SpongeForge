@@ -7,6 +7,8 @@ import com.nanabell.sponge.nico.config.Config;
 import com.nanabell.sponge.nico.config.MainConfig;
 import com.nanabell.sponge.nico.economy.NicoAccount;
 import com.nanabell.sponge.nico.economy.NicoEconomyService;
+import com.nanabell.sponge.nico.link.LinkService;
+import com.nanabell.sponge.nico.link.MemoryLinkService;
 import com.nanabell.sponge.nico.storage.Persistable;
 import com.nanabell.sponge.nico.storage.PersistenceManager;
 import org.slf4j.Logger;
@@ -51,6 +53,7 @@ public class NicoYazawa {
 
         serviceManager.setProvider(this, PersistenceManager.class, persistenceManager);
         serviceManager.setProvider(this, EconomyService.class, new NicoEconomyService());
+        serviceManager.setProvider(this, LinkService.class, new MemoryLinkService(this));
         serviceManager.setProvider(this, CommandRegistar.class, new CommandRegistar(this));
 
     }
