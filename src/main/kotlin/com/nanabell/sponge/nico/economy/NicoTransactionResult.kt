@@ -1,64 +1,42 @@
-package com.nanabell.sponge.nico.economy;
+package com.nanabell.sponge.nico.economy
 
-import org.spongepowered.api.service.context.Context;
-import org.spongepowered.api.service.economy.Currency;
-import org.spongepowered.api.service.economy.account.Account;
-import org.spongepowered.api.service.economy.transaction.ResultType;
-import org.spongepowered.api.service.economy.transaction.TransactionResult;
-import org.spongepowered.api.service.economy.transaction.TransactionType;
+import org.spongepowered.api.service.context.Context
+import org.spongepowered.api.service.economy.Currency
+import org.spongepowered.api.service.economy.account.Account
+import org.spongepowered.api.service.economy.transaction.ResultType
+import org.spongepowered.api.service.economy.transaction.TransactionResult
+import org.spongepowered.api.service.economy.transaction.TransactionType
+import java.math.BigDecimal
+import java.util.*
 
-import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
+data class NicoTransactionResult(
+        private val account: Account,
+        private val amount: BigDecimal,
+        private val transactionType: TransactionType,
+        private val resultType: ResultType
+) : TransactionResult {
 
-public class NicoTransactionResult implements TransactionResult {
-
-    private final Account account;
-    private final BigDecimal amount;
-    private final TransactionType transactionType;
-    private final ResultType resultType;
-
-    public NicoTransactionResult(Account account, BigDecimal amount, TransactionType transactionType) {
-        this.account = account;
-        this.amount = amount;
-        this.transactionType = transactionType;
-        this.resultType = ResultType.SUCCESS;
+    override fun getAccount(): Account {
+        return account
     }
 
-    public NicoTransactionResult(Account account, BigDecimal amount, TransactionType transactionType, ResultType resultType) {
-        this.account = account;
-        this.amount = amount;
-        this.transactionType = transactionType;
-        this.resultType = resultType;
+    override fun getCurrency(): Currency {
+        return NicoCurrency.currency
     }
 
-    @Override
-    public Account getAccount() {
-        return account;
+    override fun getAmount(): BigDecimal {
+        return amount
     }
 
-    @Override
-    public Currency getCurrency() {
-        return NicoCurrency.getCurrency();
+    override fun getContexts(): Set<Context> {
+        return HashSet()
     }
 
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
+    override fun getResult(): ResultType {
+        return resultType
     }
 
-    @Override
-    public Set<Context> getContexts() {
-        return new HashSet<>();
-    }
-
-    @Override
-    public ResultType getResult() {
-        return resultType;
-    }
-
-    @Override
-    public TransactionType getType() {
-        return transactionType;
+    override fun getType(): TransactionType {
+        return transactionType
     }
 }

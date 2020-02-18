@@ -1,89 +1,78 @@
-package com.nanabell.sponge.nico;
+package com.nanabell.sponge.nico
 
-import com.google.inject.Inject;
-import com.nanabell.sponge.nico.activity.ActivityTracker;
-import com.nanabell.sponge.nico.command.CommandRegistar;
-import com.nanabell.sponge.nico.config.Config;
-import com.nanabell.sponge.nico.config.MainConfig;
-import com.nanabell.sponge.nico.economy.NicoAccount;
-import com.nanabell.sponge.nico.economy.NicoEconomyService;
-import com.nanabell.sponge.nico.link.LinkService;
-import com.nanabell.sponge.nico.link.MemoryLinkService;
-import com.nanabell.sponge.nico.storage.Persistable;
-import com.nanabell.sponge.nico.storage.PersistenceManager;
-import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.GameReloadEvent;
-import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.service.ServiceManager;
-import org.spongepowered.api.service.economy.EconomyService;
+import com.google.inject.Inject
+import com.nanabell.sponge.nico.activity.ActivityTracker
+import com.nanabell.sponge.nico.command.CommandRegistar
+import com.nanabell.sponge.nico.config.Config
+import com.nanabell.sponge.nico.config.MainConfig
+import com.nanabell.sponge.nico.discord.DiscordService
+import com.nanabell.sponge.nico.economy.NicoAccount
+import com.nanabell.sponge.nico.economy.NicoEconomyService
+import com.nanabell.sponge.nico.extensions.orNull
+import com.nanabell.sponge.nico.link.LinkService
+import com.nanabell.sponge.nico.link.MemoryLinkService
+import com.nanabell.sponge.nico.storage.Persistable
+import com.nanabell.sponge.nico.storage.PersistenceManager
+import org.slf4j.Logger
+import org.spongepowered.api.Sponge
+import org.spongepowered.api.config.ConfigDir
+import org.spongepowered.api.event.Listener
+import org.spongepowered.api.event.game.GameReloadEvent
+import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent
+import org.spongepowered.api.event.game.state.GameInitializationEvent
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent
+import org.spongepowered.api.plugin.Plugin
+import org.spongepowered.api.service.economy.EconomyService
+import java.nio.file.Path
 
-import java.nio.file.Path;
-
-@Plugin(
-        id = "nico-yazawa",
-        name = "Nico Yazawa",
-        description = "Linking Minecraft & Discord Nico Style!",
-        authors = {
-                "Nanabell"
-        }
-)
-public class NicoYazawa {
+@Plugin(id = "nico-yazawa", name = "Nico Yazawa", description = "Linking Minecraft & Discord Nico Style!", authors = ["Nanabell"], version = "0.1.1")
+class NicoYazawa {
 
     @Inject
-    private Logger logger;
+    private lateinit var logger: Logger
 
     @Inject
     @ConfigDir(sharedRoot = false)
-    private Path configDir;
+    private lateinit var configDir: Path
 
-    private Config<MainConfig> configManager;
+    lateinit var configManager: Config<MainConfig>
 
     @Listener
-    public void onInit(GameInitializationEvent event) {
-        configManager = new Config<>(MainConfig.class, "nicos-yazawa.conf", configDir);
-        ServiceManager serviceManager = Sponge.getServiceManager();
-
-        PersistenceManager persistenceManager = new PersistenceManager();
-        persistenceManager.register(new Persistable<>(configManager.get().getDatabaseUrl(), NicoAccount.class));
-
-        serviceManager.setProvider(this, PersistenceManager.class, persistenceManager);
-        serviceManager.setProvider(this, EconomyService.class, new NicoEconomyService());
-        serviceManager.setProvider(this, LinkService.class, new MemoryLinkService(this));
-        serviceManager.setProvider(this, CommandRegistar.class, new CommandRegistar(this));
-
+    fun onPreInit(event: GamePreInitializationEvent?) {
+        instance = this
     }
 
     @Listener
-    public void onGameAboutToStartServer(GameAboutToStartServerEvent event) {
-        ActivityTracker activityTracker = new ActivityTracker(this);
-        activityTracker.init();
+    fun onInit(event: GameInitializationEvent) {
+        configManager = Config(MainConfig::class.java, "nicos-yazawa.conf", configDir)
 
-        Sponge.getServiceManager().setProvider(this, ActivityTracker.class, activityTracker);
+        val serviceManager = Sponge.getServiceManager()
+        serviceManager.setProvider(this, PersistenceManager::class.java, PersistenceManager())
+        serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService())
+        serviceManager.setProvider(this, LinkService::class.java, MemoryLinkService(this))
+        serviceManager.setProvider(this, DiscordService::class.java, DiscordService(this))
+        serviceManager.setProvider(this, CommandRegistar::class.java, CommandRegistar(this))
+        serviceManager.setProvider(this, ActivityTracker::class.java, ActivityTracker(this))
     }
 
     @Listener
-    public void onGameReload(GameReloadEvent event) {
-        configManager.reload();
+    fun onGameAboutToStartServer(event: GameAboutToStartServerEvent) {
+        Sponge.getServiceManager().provide(PersistenceManager::class.java).orNull()!!.register(Persistable(configManager.get().databaseUrl, NicoAccount::class.java))
+        Sponge.getServiceManager().provide(ActivityTracker::class.java).orNull()!!.init()
     }
 
-    public Logger getLogger() {
-        return logger;
+    @Listener
+    fun onGameReload(event: GameReloadEvent?) {
+        configManager.reload()
     }
 
-    public Config<MainConfig> getConfigManager() {
-        return configManager;
-    }
+    companion object {
+        lateinit var instance: NicoYazawa
+            private set
 
-    public ServiceManager getServiceManager() {
-        return Sponge.getServiceManager();
-    }
-
-    public static PersistenceManager getPersistenceManager() {
-        return Sponge.getServiceManager().provideUnchecked(PersistenceManager.class);
+        @JvmStatic
+        fun getLogger(): Logger {
+            return instance.logger
+        }
     }
 }

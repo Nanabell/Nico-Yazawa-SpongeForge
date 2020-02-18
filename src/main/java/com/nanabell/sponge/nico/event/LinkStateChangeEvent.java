@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.link.event;
+package com.nanabell.sponge.nico.event;
 
 import com.nanabell.sponge.nico.link.LinkState;
 import org.spongepowered.api.event.Event;

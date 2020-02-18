@@ -1,52 +1,44 @@
-package com.nanabell.sponge.nico.config;
+package com.nanabell.sponge.nico.config
 
-import com.google.inject.internal.cglib.core.$ClassNameReader;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import ninja.leaping.configurate.objectmapping.Setting
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
 @ConfigSerializable
-public class DiscordLinkConfig {
+class DiscordLinkConfig(
+        token: String = "DISCORD_TOKEN_HERE",
+        guildId: Long = -1L,
+        channelId: Long = -1L,
+        messageId: Long = -1L,
+        reactionEmote: String = "U+1f517",
+        linkRole: Long = -1L,
+        linkGroup: String? = null
+) {
 
     @Setting(comment = "Discord Bot Token")
-    private String token = "DISCORD_TOKEN_HERE";
+    var token = token
+        private set
 
     @Setting(value = "link_guild_id", comment = "Snowflake Id of the Discord Guild")
-    private Long guildId = -1L;
+    var guildId = guildId
+        private set
+
+    @Setting(value = "link_channel_id", comment = "Snowflake Id of the Discord Channel")
+    var channelId = channelId
+        private set
 
     @Setting(value = "link_message_id", comment = "Snowflake ID of the Discord Message")
-    private Long messageId = -1L;
+    var messageId = messageId
+        private set
 
     @Setting(value = "reaction_emote", comment = "Reaction Emote which will be used to link Accounts")
-    private String reactionEmote = "U+1f517";
+    var reactionEmote = reactionEmote
+        private set
 
     @Setting(value = "link_role", comment = "The Discord Role that should be given if an account was linked successfully (-1 to disable)")
-    private Long linkRole = -1L;
+    var linkRole = linkRole
+        private set
 
     @Setting(value = "link_group", comment = "The Minecraft Permission Group that should be awarded upon successful linking (empty to disable)")
-    private String linkGroup;
-
-
-    public String getToken() {
-        return token;
-    }
-
-    public Long getGuildId() {
-        return guildId;
-    }
-
-    public Long getMessageId() {
-        return messageId;
-    }
-
-    public String getReactionEmote() {
-        return reactionEmote;
-    }
-
-    public Long getLinkRole() {
-        return linkRole;
-    }
-
-    public String getLinkGroup() {
-        return linkGroup;
-    }
+    var linkGroup: String? = linkGroup
+        private set
 }

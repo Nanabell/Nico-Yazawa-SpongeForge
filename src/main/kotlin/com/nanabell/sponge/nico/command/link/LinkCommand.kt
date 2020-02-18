@@ -1,36 +1,43 @@
-package com.nanabell.sponge.nico.command.link;
+package com.nanabell.sponge.nico.command.link
 
-import com.nanabell.sponge.nico.command.SelfSpecCommand;
-import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.text.Text;
+import com.nanabell.sponge.nico.command.SelfSpecCommand
+import org.spongepowered.api.command.CommandException
+import org.spongepowered.api.command.CommandResult
+import org.spongepowered.api.command.CommandSource
+import org.spongepowered.api.command.args.CommandContext
+import org.spongepowered.api.command.args.GenericArguments
+import org.spongepowered.api.command.spec.CommandExecutor
+import org.spongepowered.api.command.spec.CommandSpec
+import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.text.Text
 
-public class LinkCommand implements CommandExecutor, SelfSpecCommand {
+class LinkCommand : CommandExecutor, SelfSpecCommand {
 
-    @Override
-    public String[] aliases() {
-        return new String[] {"link"};
+    override fun aliases(): Array<String> {
+        return arrayOf("link")
     }
 
-    @Override
-    public CommandSpec spec() {
-        LinkAcceptCommand acceptCommand = new LinkAcceptCommand();
-        LinkDenyCommand denyCommand = new LinkDenyCommand();
-
+    override fun spec(): CommandSpec {
+        val acceptCommand = LinkAcceptCommand()
+        val denyCommand = LinkDenyCommand()
         return CommandSpec.builder()
                 .description(Text.of("Commands to View / Accept / Deny pending & existing Discord-Links"))
                 .executor(this)
-                .child(acceptCommand.spec(), acceptCommand.aliases())
-                .child(denyCommand.spec(), denyCommand.aliases())
-                .build();
+                .arguments(GenericArguments.optional(
+                        GenericArguments.requiringPermission(
+                                GenericArguments.longNum(Text.of("target")), "nico.link.others"
+                        )))
+                .child(acceptCommand.spec(), *acceptCommand.aliases())
+                .child(denyCommand.spec(), *denyCommand.aliases())
+                .build()
     }
 
-    @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        return CommandResult.success();
+    @Throws(CommandException::class)
+    override fun execute(src: CommandSource, args: CommandContext): CommandResult {
+        if (src !is Player) throw CommandException(Text.of("Command can only be run by a Player"))
+        val oDiscordId = args.getOne<Long>("target")
+        if (oDiscordId.isPresent) {
+        }
+        return CommandResult.success()
     }
 }

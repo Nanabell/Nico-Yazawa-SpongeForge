@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.link.event;
+package com.nanabell.sponge.nico.event;
 
 import com.nanabell.sponge.nico.link.LinkResult;
 import net.dv8tion.jda.api.entities.MessageChannel;

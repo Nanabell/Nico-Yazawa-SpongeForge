@@ -1,139 +1,120 @@
-package com.nanabell.sponge.nico.link;
+package com.nanabell.sponge.nico.link
 
-import com.google.common.collect.HashBiMap;
-import com.nanabell.sponge.nico.NicoYazawa;
-import com.nanabell.sponge.nico.link.event.LinkEventContextKeys;
-import com.nanabell.sponge.nico.link.event.LinkRequestEvent;
-import com.nanabell.sponge.nico.link.event.LinkStateChangeEvent;
-import net.dv8tion.jda.api.entities.User;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.EventContext;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.format.TextColors;
+import com.google.common.collect.HashBiMap
+import com.nanabell.sponge.nico.*
+import com.nanabell.sponge.nico.event.LinkEventContextKeys
+import com.nanabell.sponge.nico.event.LinkRequestEvent
+import com.nanabell.sponge.nico.event.LinkStateChangeEvent
+import com.nanabell.sponge.nico.extensions.orNull
+import net.dv8tion.jda.api.entities.MessageChannel
+import org.spongepowered.api.Sponge
+import org.spongepowered.api.event.Listener
+import org.spongepowered.api.event.cause.Cause
+import org.spongepowered.api.event.cause.EventContext
+import org.spongepowered.api.text.Text
+import org.spongepowered.api.text.action.TextActions
+import org.spongepowered.api.text.format.TextColors
+import java.util.*
 
-import java.util.*;
+class MemoryLinkService(plugin: NicoYazawa) : LinkService {
 
-public class MemoryLinkService implements LinkService {
+    private val logger = NicoYazawa.getLogger()
+    private val eventManager = Sponge.getEventManager()
 
-    private final Logger logger = LoggerFactory.getLogger(MemoryLinkService.class);
+    private val pendingLinks = HashBiMap.create<Long, UUID>()
+    private val links = HashBiMap.create<Long, UUID>()
 
-    private final HashBiMap<Long, UUID> pendingLinks = HashBiMap.create();
-    private final HashBiMap<Long, UUID> links = HashBiMap.create();
 
-    public MemoryLinkService(NicoYazawa plugin) {
-        Sponge.getEventManager().registerListeners(plugin, this);
+
+    override fun pendingLink(user: DiscordUser): Boolean {
+        return pendingLinks.containsKey(user.idLong)
     }
 
-    @Override
-    public boolean pendingLink(@NotNull Long discordId) {
-        return pendingLinks.containsKey(discordId);
+    override fun pendingLink(user: MinecraftUser): Boolean {
+        return pendingLinks.containsValue(user.uniqueId)
     }
 
-    @Override
-    public boolean pendingLink(@NotNull UUID minecraftId) {
-        return pendingLinks.containsValue(minecraftId);
+    override fun isLinked(user: DiscordUser): Boolean {
+        return links.containsKey(user.idLong)
     }
 
-    @Override
-    public boolean isLinked(@NotNull Long discordId) {
-        return links.containsKey(discordId);
+    override fun isLinked(user: MinecraftUser): Boolean {
+        return links.containsValue(user.uniqueId)
     }
 
-    @Override
-    public boolean isLinked(@NotNull UUID minecraftId) {
-        return links.containsValue(minecraftId);
+    override fun confirmLink(user: DiscordUser): LinkResult {
+        if (isLinked(user)) return LinkResult.ALREADY_LINKED
+        if (!pendingLink(user)) return LinkResult.NO_LINK_REQUEST
+
+        links[user.idLong] = pendingLinks.remove(user.idLong)
+
+        eventManager.post(LinkStateChangeEvent(LinkState.LINKED, Cause.of(EventContext.empty(), this)))
+        return LinkResult.SUCCESS
     }
 
-    @Override
-    public LinkResult confirmLink(@NotNull Long discordId) {
-        if (links.containsKey(discordId)) {
-            return LinkResult.ALREADY_LINKED;
-        }
+    override fun confirmLink(user: MinecraftUser): LinkResult {
+        if (isLinked(user)) return LinkResult.ALREADY_LINKED
+        if (!pendingLink(user)) return LinkResult.NO_LINK_REQUEST
 
-        if (!pendingLinks.containsKey(discordId)) {
-            return LinkResult.NO_LINK_REQUEST;
-        }
+        links.inverse()[user.uniqueId] = pendingLinks.inverse().remove(user.uniqueId)
+        eventManager.post(LinkStateChangeEvent(LinkState.LINKED, Cause.of(EventContext.empty(), this)))
 
-        links.put(discordId, pendingLinks.get(discordId));
-        pendingLinks.remove(discordId);
-        return LinkResult.SUCCESS;
+        return LinkResult.SUCCESS
     }
 
-    @Override
-    public LinkResult confirmLink(@NotNull UUID minecraftId) {
-        if (links.containsValue(minecraftId)) {
-            return LinkResult.ALREADY_LINKED;
-        } else if (!pendingLinks.containsValue(minecraftId)) {
-            return LinkResult.NO_LINK_REQUEST;
-        }
+    override fun unlink(user: DiscordUser): LinkResult {
+        if (!isLinked(user)) return LinkResult.NOT_LINKED
 
-        links.put(pendingLinks.inverse().get(minecraftId), minecraftId);
-        pendingLinks.inverse().remove(minecraftId);
-        return LinkResult.SUCCESS;
+        links.remove(user.idLong)
+        eventManager.post(LinkStateChangeEvent(LinkState.UNLINKED, Cause.of(EventContext.empty(), this)))
+
+        return LinkResult.SUCCESS
     }
 
-    @Override
-    public LinkResult unlink(@NotNull Long discordId) {
-        if (!links.containsKey(discordId)) {
-            return LinkResult.NOT_LINKED;
-        }
+    override fun unlink(user: MinecraftUser): LinkResult {
+        if (!isLinked(user)) return LinkResult.NOT_LINKED
 
-        links.remove(discordId);
-        return LinkResult.SUCCESS;
-    }
+        links.inverse().remove(user.uniqueId)
+        eventManager.post(LinkStateChangeEvent(LinkState.UNLINKED, Cause.of(EventContext.empty(), this)))
 
-    @Override
-    public LinkResult unlink(@NotNull UUID minecraftId) {
-        if (!links.containsValue(minecraftId)) {
-            return LinkResult.NOT_LINKED;
-        }
-
-        links.inverse().remove(minecraftId);
-        return LinkResult.SUCCESS;
+        return LinkResult.SUCCESS
     }
 
     @Listener
-    public void onLinkRequest(LinkRequestEvent event) {
-        EventContext context = event.getCause().getContext();
-
-        Optional<User> oUser = context.get(LinkEventContextKeys.USER);
-        if (!oUser.isPresent()) {
-            logger.warn("OnLinkRequest did not include a context User." + event);
-            return;
+    fun onLinkRequest(event: LinkRequestEvent) {
+        val context = event.cause.context
+        val user = context.get(LinkEventContextKeys.USER).orNull()
+        if (user == null) {
+            logger.warn("OnLinkRequest did not include a context User.$event")
+            return
         }
 
-        User user = oUser.get();
-        if (pendingLink(user.getIdLong())) {
-            logger.warn("Received LinkRequestEvent for user who already has a pending Request" + event);
-            return; // Already Pending Link
+        if (pendingLink(user)) {
+            logger.warn("Received LinkRequestEvent for user who already has a pending Request$event")
+            return  // Already Pending Link
         }
 
-        Optional<Player> oPlayer = Sponge.getServer().getPlayer(event.getTargetUserName());
-        if (!oPlayer.isPresent()) {
-            EventContext linkContext = EventContext.builder().add(LinkEventContextKeys.LINK_RESULT, LinkResult.USER_NOT_FOUND).build();
-            Cause linkCause = Cause.builder().from(event.getCause()).append(this).build(linkContext);
+        val player = Sponge.getServer().getPlayer(event.targetUserName).orNull()
+        if (player == null) {
+            val linkContext = EventContext.builder().add(LinkEventContextKeys.LINK_RESULT, LinkResult.USER_NOT_FOUND).build()
+            val linkCause = Cause.builder().from(event.cause).append(this).build(linkContext)
+            eventManager.post(LinkStateChangeEvent(LinkState.BROKEN, Cause.of(linkContext, linkCause)))
 
-            Sponge.getEventManager().post(new LinkStateChangeEvent(LinkState.BROKEN, Cause.of(linkContext, linkCause)));
-            return;
+            context.get(LinkEventContextKeys.MESSAGE_CHANNEL).ifPresent { messageChannel: MessageChannel -> messageChannel.sendMessage(event.targetUserName + " is not online.\nProvide the name of an online player.").queue() }
+            return
         }
 
-        Player player = oPlayer.get();
-        pendingLinks.put(user.getIdLong(), player.getUniqueId());
-
-        Text msg = Text.builder("Incoming Discord link request: ").color(TextColors.BLUE)
-                .append(Text.of(user.getAsTag() + " "))
-                .append(Text.of(TextColors.GREEN, "[Confirm]", TextActions.runCommand("/nico link accept")))
+        pendingLinks[user.idLong] = player.uniqueId
+        val msg: Text = Text.builder("Incoming Discord link request: ").color(TextColors.BLUE)
+                .append(Text.of(user.asTag + " "))
+                .append(Text.of(TextColors.GREEN, TextActions.runCommand("/nico link accept"), "[Confirm]"))
                 .append(Text.of(" "))
-                .append(Text.of(TextColors.RED, "[Deny]", TextActions.runCommand("/nico link deny")))
-                .build();
+                .append(Text.of(TextColors.RED, TextActions.runCommand("/nico link deny"), "[Deny]"))
+                .build()
+        player.sendMessage(msg)
+    }
 
-        player.sendMessage(msg);
+    init {
+        Sponge.getEventManager().registerListeners(plugin, this)
     }
 }

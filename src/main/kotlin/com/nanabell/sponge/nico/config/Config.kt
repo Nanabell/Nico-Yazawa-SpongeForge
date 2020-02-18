@@ -1,75 +1,58 @@
-package com.nanabell.sponge.nico.config;
+package com.nanabell.sponge.nico.config
 
-import com.google.common.reflect.TypeToken;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import com.google.common.reflect.TypeToken
+import ninja.leaping.configurate.ConfigurationOptions
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader
+import java.nio.file.Files
+import java.nio.file.Path
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+@Suppress("UnstableApiUsage")
+class Config<T>(clazz: Class<T>, name: String, configDir: Path) {
 
-@SuppressWarnings("UnstableApiUsage")
-public class Config<T> {
+    private var loader: HoconConfigurationLoader
+    private val clazz: Class<T>
+    private var token: TypeToken<T>
+    private var config: T
 
-    private HoconConfigurationLoader loader;
-    private Class<T> clazz;
-    private TypeToken<T> token;
-    private T config;
+    init {
+        if (Files.notExists(configDir)) {
+            Files.createDirectories(configDir)
+        }
 
-    public Config(Class<T> clazz, String name, Path configDir) {
-        try {
-            if (Files.notExists(configDir)) {
-                Files.createDirectories(configDir);
-            }
+        val file = configDir.resolve(name)
+        if (Files.notExists(file)) {
+            Files.createFile(file)
+        }
 
-            Path file = configDir.resolve(name);
-            if (Files.notExists(file)) {
-                Files.createFile(file);
-            }
+        this.clazz = clazz
+        this.token = TypeToken.of(clazz)
+        this.loader = HoconConfigurationLoader.builder().setPath(file).build()
+        this.config = load()
 
-            this.clazz = clazz;
-            this.token = TypeToken.of(clazz);
-            this.loader = HoconConfigurationLoader.builder().setPath(file).build();
-            this.config = load();
-
-            if (Files.size(file) == 0) {
-                save();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (Files.size(file) == 0L) {
+            save()
         }
     }
 
-    public T load() {
-        try {
-            CommentedConfigurationNode node = this.loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
-            return node.getNode("config").getValue(token, clazz.newInstance());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
+    private fun load(): T {
+        val node = loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true))
+        return node.getNode("config").getValue(token, clazz.newInstance())
     }
 
-    public void reload() {
-        this.config = load();
+    fun reload() {
+        config = load()
     }
 
-    public T get() {
-        return this.config;
+    fun get(): T {
+        return config
     }
 
-    public void save() {
-        try {
-            CommentedConfigurationNode node = this.loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true));
-            node.getNode("config").setValue(token, this.config);
+    private fun save() {
+        val node = loader.load(ConfigurationOptions.defaults().setShouldCopyDefaults(true))
+        node.getNode("config").setValue(token, config)
 
-            this.loader.save(node);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        loader.save(node)
     }
+
 
 }

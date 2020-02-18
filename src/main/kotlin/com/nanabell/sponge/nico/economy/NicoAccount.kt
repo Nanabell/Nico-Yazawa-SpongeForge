@@ -1,153 +1,130 @@
-package com.nanabell.sponge.nico.economy;
+package com.nanabell.sponge.nico.economy
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-import com.nanabell.sponge.nico.storage.IdentifiableDaoEnabled;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.service.ServiceManager;
-import org.spongepowered.api.service.context.Context;
-import org.spongepowered.api.service.economy.Currency;
-import org.spongepowered.api.service.economy.account.Account;
-import org.spongepowered.api.service.economy.account.UniqueAccount;
-import org.spongepowered.api.service.economy.transaction.ResultType;
-import org.spongepowered.api.service.economy.transaction.TransactionResult;
-import org.spongepowered.api.service.economy.transaction.TransactionTypes;
-import org.spongepowered.api.service.economy.transaction.TransferResult;
-import org.spongepowered.api.service.user.UserStorageService;
-import org.spongepowered.api.text.Text;
-
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.*;
-
+import com.j256.ormlite.field.DatabaseField
+import com.j256.ormlite.table.DatabaseTable
+import com.nanabell.sponge.nico.economy.NicoCurrency
+import com.nanabell.sponge.nico.storage.IdentifiableDaoEnabled
+import org.spongepowered.api.Sponge
+import org.spongepowered.api.entity.living.player.User
+import org.spongepowered.api.event.cause.Cause
+import org.spongepowered.api.service.context.Context
+import org.spongepowered.api.service.economy.Currency
+import org.spongepowered.api.service.economy.account.Account
+import org.spongepowered.api.service.economy.account.UniqueAccount
+import org.spongepowered.api.service.economy.transaction.ResultType
+import org.spongepowered.api.service.economy.transaction.TransactionResult
+import org.spongepowered.api.service.economy.transaction.TransactionTypes
+import org.spongepowered.api.service.economy.transaction.TransferResult
+import org.spongepowered.api.service.user.UserStorageService
+import org.spongepowered.api.text.Text
+import java.math.BigDecimal
+import java.sql.SQLException
+import java.util.*
 
 @DatabaseTable(tableName = "nico-accounts")
-@SuppressWarnings("NotNullFieldNotInitialized")
-public class NicoAccount extends IdentifiableDaoEnabled<NicoAccount> implements UniqueAccount {
+class NicoAccount : IdentifiableDaoEnabled<NicoAccount?>(), UniqueAccount {
 
-    private ServiceManager serviceManager = Sponge.getServiceManager();
+    private val serviceManager = Sponge.getServiceManager()
 
     @DatabaseField(id = true)
-    private UUID uuid;
+    private lateinit var uuid: UUID
 
     @DatabaseField(defaultValue = "0")
-    private BigDecimal balance;
+    private lateinit var balance: BigDecimal
 
-    public NicoAccount() {
+
+    override fun getDisplayName(): Text {
+        return Text.of(serviceManager.provideUnchecked(UserStorageService::class.java)[uuid].map { it.name }.orElse(uuid.toString()))
     }
 
-    @Override
-    public Text getDisplayName() {
-        return Text.of(serviceManager.provideUnchecked(UserStorageService.class).get(uuid).map(User::getName).orElse(uuid.toString()));
+    override fun getDefaultBalance(currency: Currency): BigDecimal {
+        return BigDecimal(0)
     }
 
-    @Override
-    public BigDecimal getDefaultBalance(Currency currency) {
-        return new BigDecimal(0);
+    override fun hasBalance(currency: Currency, contexts: Set<Context>): Boolean {
+        return true // Ignoring Currency and Context for simplicity as of now
     }
 
-    @Override
-    public boolean hasBalance(Currency currency, Set<Context> contexts) {
-        return true; // Ignoring Currency and Context for simplicity as of now
+    override fun getBalance(currency: Currency, contexts: Set<Context>): BigDecimal {
+        return this.balance
     }
 
-    @Override
-    public BigDecimal getBalance(Currency currency, Set<Context> contexts) {
-        return balance;
+    override fun getBalances(contexts: Set<Context>): Map<Currency, BigDecimal> {
+        return mapOf(NicoCurrency.currency to this.balance)
     }
 
-    @Override
-    public Map<Currency, BigDecimal> getBalances(Set<Context> contexts) {
-        return new HashMap<Currency, BigDecimal>() {{
-            put(NicoCurrency.getCurrency(), balance);
-        }};
-    }
-
-    @Override
-    public TransactionResult setBalance(Currency currency, BigDecimal amount, Cause cause, Set<Context> contexts) {
-        if (amount.compareTo(BigDecimal.ZERO) < 0) {
-            return new NicoTransactionResult(this, amount, TransactionTypes.DEPOSIT, ResultType.FAILED);
+    override fun setBalance(currency: Currency, amount: BigDecimal, cause: Cause, contexts: Set<Context>): TransactionResult {
+        if (amount < BigDecimal.ZERO) {
+            return NicoTransactionResult(this, amount, TransactionTypes.DEPOSIT, ResultType.FAILED)
         }
 
-        this.balance = amount;
-        save();
+        this.balance = amount
+        save()
 
-        return new NicoTransactionResult(this, amount, TransactionTypes.DEPOSIT, ResultType.SUCCESS);
+        return NicoTransactionResult(this, amount, TransactionTypes.DEPOSIT, ResultType.SUCCESS)
     }
 
-    @Override
-    public Map<Currency, TransactionResult> resetBalances(Cause cause, Set<Context> contexts) {
-        return new HashMap<Currency, TransactionResult>() {{
-            put(NicoCurrency.getCurrency(), resetBalance(NicoCurrency.getCurrency(), cause, contexts));
-        }};
+    override fun resetBalances(cause: Cause, contexts: Set<Context>): Map<Currency, TransactionResult> {
+        return mapOf(NicoCurrency.currency to resetBalance(NicoCurrency.currency, cause, contexts))
     }
 
-    @Override
-    public TransactionResult resetBalance(Currency currency, Cause cause, Set<Context> contexts) {
-        this.balance = BigDecimal.ZERO;
-        save();
+    override fun resetBalance(currency: Currency, cause: Cause, contexts: Set<Context>): TransactionResult {
+        this.balance = getDefaultBalance(currency)
+        save()
 
-        return new NicoTransactionResult(this, balance, TransactionTypes.WITHDRAW, ResultType.SUCCESS);
+        return NicoTransactionResult(this, balance, TransactionTypes.WITHDRAW, ResultType.SUCCESS
+        )
     }
 
-    @Override
-    public TransactionResult deposit(Currency currency, BigDecimal amount, Cause cause, Set<Context> contexts) {
-        this.balance = this.balance.add(amount);
-        save();
+    override fun deposit(currency: Currency, amount: BigDecimal, cause: Cause, contexts: Set<Context>): TransactionResult {
+        balance = balance.add(amount)
+        save()
 
-        return new NicoTransactionResult(this, amount, TransactionTypes.DEPOSIT, ResultType.SUCCESS);
+        return NicoTransactionResult(this, amount, TransactionTypes.DEPOSIT, ResultType.SUCCESS)
     }
 
-    @Override
-    public TransactionResult withdraw(Currency currency, BigDecimal amount, Cause cause, Set<Context> contexts) {
-        if (this.balance.subtract(amount).compareTo(BigDecimal.ZERO) < 0) {
-            return new NicoTransactionResult(this, amount, TransactionTypes.WITHDRAW, ResultType.ACCOUNT_NO_FUNDS);
+    override fun withdraw(currency: Currency, amount: BigDecimal, cause: Cause, contexts: Set<Context>): TransactionResult {
+        if (balance.subtract(amount) < BigDecimal.ZERO) {
+            return NicoTransactionResult(this, amount, TransactionTypes.WITHDRAW, ResultType.ACCOUNT_NO_FUNDS)
         }
 
-        this.balance = this.balance.subtract(amount);
-        save();
+        balance = balance.subtract(amount)
+        save()
 
-        return new NicoTransactionResult(this, amount, TransactionTypes.WITHDRAW, ResultType.SUCCESS);
+        return NicoTransactionResult(this, amount, TransactionTypes.WITHDRAW, ResultType.SUCCESS)
     }
 
-    @Override
-    public TransferResult transfer(Account to, Currency currency, BigDecimal amount, Cause cause, Set<Context> contexts) {
-        TransactionResult withdrawResult = withdraw(currency, amount, cause, contexts);
-        if (withdrawResult.getResult() != ResultType.ACCOUNT_NO_FUNDS) {
-            return new NicoTransferResult(this, to, amount, TransactionTypes.TRANSFER, withdrawResult.getResult());
+    override fun transfer(to: Account, currency: Currency, amount: BigDecimal, cause: Cause, contexts: Set<Context>): TransferResult {
+        val withdrawResult = withdraw(currency, amount, cause, contexts)
+        if (withdrawResult.result != ResultType.ACCOUNT_NO_FUNDS) {
+            return NicoTransferResult(this, to, amount, TransactionTypes.TRANSFER, withdrawResult.result)
         }
 
-        TransactionResult depositResult = to.deposit(currency, amount, cause, contexts);
-        return new NicoTransferResult(this, to, amount, TransactionTypes.TRANSFER, depositResult.getResult());
+        val depositResult = to.deposit(currency, amount, cause, contexts)
+        return NicoTransferResult(this, to, amount, TransactionTypes.TRANSFER, depositResult.result)
     }
 
-    @Override
-    public String getIdentifier() {
-        return uuid.toString();
+    override fun getIdentifier(): String {
+        return uuid.toString()
     }
 
-    @Override
-    public Set<Context> getActiveContexts() {
-        return new HashSet<>();
+    override fun getActiveContexts(): Set<Context> {
+        return HashSet()
     }
 
-    @Override
-    public UUID getUniqueId() {
-        return uuid;
+    override fun getUniqueId(): UUID {
+        return uuid
     }
 
-    @Override
-    public void setUniqueId(UUID uuid) {
-        this.uuid = uuid;
+    override fun setUniqueId(uuid: UUID) {
+        this.uuid = uuid
     }
 
-    private void save() {
+    private fun save() {
         try {
-            super.update();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            super.update()
+        } catch (e: SQLException) {
+            e.printStackTrace()
         }
     }
 }

@@ -1,24 +1,16 @@
-package com.nanabell.sponge.nico.link;
+package com.nanabell.sponge.nico.link
 
-import org.jetbrains.annotations.NotNull;
+typealias DiscordUser = net.dv8tion.jda.api.entities.User
+typealias MinecraftUser = org.spongepowered.api.entity.living.player.User
 
-import java.util.UUID;
-
-public interface LinkService {
-
-    boolean pendingLink(@NotNull Long discordId);
-
-    boolean pendingLink(@NotNull UUID minecraftId);
-
-    boolean isLinked(@NotNull Long discordId);
-
-    boolean isLinked(@NotNull UUID minecraftId);
-
-    LinkResult confirmLink(@NotNull Long discordId);
-
-    LinkResult confirmLink(@NotNull UUID minecraftId);
-
-    LinkResult unlink(@NotNull Long discordId);
-
-    LinkResult unlink(@NotNull UUID minecraftId);
+interface LinkService {
+    fun pendingLink(user: DiscordUser): Boolean
+    fun pendingLink(user: MinecraftUser): Boolean
+    fun isLinked(user: DiscordUser): Boolean
+    fun isLinked(user: MinecraftUser): Boolean
+    fun confirmLink(user: DiscordUser): LinkResult?
+    fun confirmLink(user: MinecraftUser): LinkResult?
+    fun unlink(user: DiscordUser): LinkResult?
+    fun unlink(user: MinecraftUser): LinkResult?
 }
+
