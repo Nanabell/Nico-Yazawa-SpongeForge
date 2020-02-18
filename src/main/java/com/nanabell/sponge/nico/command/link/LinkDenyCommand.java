@@ -20,6 +20,7 @@ public class LinkDenyCommand implements CommandExecutor, SelfSpecCommand {
     public  CommandSpec spec() {
         return CommandSpec.builder()
                 .description(Text.of("Deny a pending Discord-Link request"))
+                .executor(this)
                 .build();
     }
 
