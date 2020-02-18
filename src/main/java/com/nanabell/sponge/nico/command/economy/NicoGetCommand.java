@@ -1,12 +1,15 @@
-package com.nanabell.sponge.nico.command;
+package com.nanabell.sponge.nico.command.economy;
 
+import com.nanabell.sponge.nico.command.SelfSpecCommand;
 import com.nanabell.sponge.nico.economy.NicoCurrency;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.economy.EconomyService;
@@ -15,7 +18,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-public class NicoGetCommand implements CommandExecutor {
+public class NicoGetCommand implements CommandExecutor, SelfSpecCommand {
 
     private final ServiceManager serviceManager = Sponge.getServiceManager();
 
@@ -38,5 +41,18 @@ public class NicoGetCommand implements CommandExecutor {
 
         player.sendMessage(Text.of("You currently have ").concat(currency.format(account.getBalance(currency))));
         return CommandResult.success();
+    }
+
+    @Override
+    public @NotNull String[] aliases() {
+        return new String[]{"get"};
+    }
+
+    @Override
+    public @NotNull CommandSpec spec() {
+        return CommandSpec.builder()
+                .description(Text.of("View your current Nico Points"))
+                .executor(this)
+                .build();
     }
 }

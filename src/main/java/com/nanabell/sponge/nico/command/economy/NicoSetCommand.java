@@ -1,11 +1,15 @@
-package com.nanabell.sponge.nico.command;
+package com.nanabell.sponge.nico.command.economy;
 
+import com.nanabell.sponge.nico.command.SelfSpecCommand;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.EventContext;
@@ -17,7 +21,7 @@ import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.service.economy.transaction.TransactionResult;
 import org.spongepowered.api.text.Text;
 
-public class NicoSetCommand implements CommandExecutor {
+public class NicoSetCommand implements CommandExecutor, SelfSpecCommand {
 
     private ServiceManager serviceManager = Sponge.getServiceManager();
 
@@ -50,5 +54,19 @@ public class NicoSetCommand implements CommandExecutor {
         }
 
         return CommandResult.success();
+    }
+
+    @Override
+    public @NotNull String[] aliases() {
+        return new String[]{"set"};
+    }
+
+    @Override
+    public @NotNull CommandSpec spec() {
+        return CommandSpec.builder()
+                .description(Text.of("Set your Balance to a specified amount"))
+                .arguments(GenericArguments.bigDecimal(Text.of("amount")))
+                .executor(this)
+                .build();
     }
 }

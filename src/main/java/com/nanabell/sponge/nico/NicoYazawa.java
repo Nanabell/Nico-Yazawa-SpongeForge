@@ -2,8 +2,7 @@ package com.nanabell.sponge.nico;
 
 import com.google.inject.Inject;
 import com.nanabell.sponge.nico.activity.ActivityTracker;
-import com.nanabell.sponge.nico.command.NicoGetCommand;
-import com.nanabell.sponge.nico.command.NicoSetCommand;
+import com.nanabell.sponge.nico.command.CommandRegistar;
 import com.nanabell.sponge.nico.config.Config;
 import com.nanabell.sponge.nico.config.MainConfig;
 import com.nanabell.sponge.nico.economy.NicoAccount;
@@ -12,17 +11,14 @@ import com.nanabell.sponge.nico.storage.Persistable;
 import com.nanabell.sponge.nico.storage.PersistenceManager;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandManager;
-import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.economy.EconomyService;
-import org.spongepowered.api.text.Text;
 
 import java.nio.file.Path;
 
@@ -48,27 +44,16 @@ public class NicoYazawa {
     @Listener
     public void onInit(GameInitializationEvent event) {
         configManager = new Config<>(MainConfig.class, "nicos-yazawa.conf", configDir);
+        ServiceManager serviceManager = Sponge.getServiceManager();
+
 
         PersistenceManager persistenceManager = new PersistenceManager();
         persistenceManager.register(new Persistable<>(configManager.get().getDatabaseUrl(), NicoAccount.class));
 
-        Sponge.getServiceManager().setProvider(this, PersistenceManager.class, persistenceManager);
-        Sponge.getServiceManager().setProvider(this, EconomyService.class, new NicoEconomyService());
+        serviceManager.setProvider(this, PersistenceManager.class, persistenceManager);
+        serviceManager.setProvider(this, EconomyService.class, new NicoEconomyService());
+        serviceManager.setProvider(this, CommandRegistar.class, new CommandRegistar(this));
 
-        CommandManager manager = Sponge.getCommandManager();
-        CommandSpec nicoGet = CommandSpec.builder()
-                .description(Text.of("View your current Nico Points"))
-                .executor(new NicoGetCommand())
-                .build();
-
-        CommandSpec nicoSet = CommandSpec.builder()
-                .description(Text.of("Set your Balance to a specified amount"))
-                .arguments(GenericArguments.bigDecimal(Text.of("amount")))
-                .executor(new NicoSetCommand())
-                .build();
-
-        manager.register(this, nicoGet, "nico-get");
-        manager.register(this, nicoSet, "nico-set");
     }
 
     @Listener
@@ -90,6 +75,10 @@ public class NicoYazawa {
 
     public Config<MainConfig> getConfigManager() {
         return configManager;
+    }
+
+    public ServiceManager getServiceManager() {
+        return Sponge.getServiceManager();
     }
 
     public static PersistenceManager getPersistenceManager() {
