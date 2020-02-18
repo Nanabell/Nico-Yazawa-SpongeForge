@@ -23,7 +23,7 @@ import org.spongepowered.api.service.economy.EconomyService;
 import java.nio.file.Path;
 
 @Plugin(
-        id = "nico-Yazawa",
+        id = "nico-yazawa",
         name = "Nico Yazawa",
         description = "Linking Minecraft & Discord Nico Style!",
         authors = {
@@ -45,7 +45,6 @@ public class NicoYazawa {
     public void onInit(GameInitializationEvent event) {
         configManager = new Config<>(MainConfig.class, "nicos-yazawa.conf", configDir);
         ServiceManager serviceManager = Sponge.getServiceManager();
-
 
         PersistenceManager persistenceManager = new PersistenceManager();
         persistenceManager.register(new Persistable<>(configManager.get().getDatabaseUrl(), NicoAccount.class));
