@@ -1,5 +1,6 @@
 package com.nanabell.sponge.nico.link;
 
+import com.google.common.collect.HashBiMap;
 import com.nanabell.sponge.nico.NicoYazawa;
 import com.nanabell.sponge.nico.link.event.LinkEventContextKeys;
 import com.nanabell.sponge.nico.link.event.LinkRequestEvent;
@@ -23,8 +24,8 @@ public class MemoryLinkService implements LinkService {
 
     private final Logger logger = LoggerFactory.getLogger(MemoryLinkService.class);
 
-    private final Map<Long, UUID> links = new HashMap<>();
-    private final Set<Long> pendingLinks = new HashSet<>();
+    private final HashBiMap<Long, UUID> pendingLinks = HashBiMap.create();
+    private final HashBiMap<Long, UUID> links = HashBiMap.create();
 
     public MemoryLinkService(NicoYazawa plugin) {
         Sponge.getEventManager().registerListeners(plugin, this);
@@ -32,7 +33,12 @@ public class MemoryLinkService implements LinkService {
 
     @Override
     public boolean pendingLink(@NotNull Long discordId) {
-        return pendingLinks.contains(discordId);
+        return pendingLinks.containsKey(discordId);
+    }
+
+    @Override
+    public boolean pendingLink(@NotNull UUID minecraftId) {
+        return pendingLinks.containsValue(minecraftId);
     }
 
     @Override
@@ -46,20 +52,36 @@ public class MemoryLinkService implements LinkService {
     }
 
     @Override
-    public LinkResult link(@NotNull Long discordId, @NotNull UUID minecraftId) {
+    public LinkResult confirmLink(@NotNull Long discordId) {
         if (links.containsKey(discordId)) {
-            return LinkResult.DISCORD_ALREADY_LINKED;
-        } else if (links.containsValue(minecraftId)) {
-            return LinkResult.MINECRAFT_ALREADY_LINKED;
+            return LinkResult.ALREADY_LINKED;
         }
 
-        links.put(discordId, minecraftId);
+        if (!pendingLinks.containsKey(discordId)) {
+            return LinkResult.NO_LINK_REQUEST;
+        }
+
+        links.put(discordId, pendingLinks.get(discordId));
+        pendingLinks.remove(discordId);
+        return LinkResult.SUCCESS;
+    }
+
+    @Override
+    public LinkResult confirmLink(@NotNull UUID minecraftId) {
+        if (links.containsValue(minecraftId)) {
+            return LinkResult.ALREADY_LINKED;
+        } else if (!pendingLinks.containsValue(minecraftId)) {
+            return LinkResult.NO_LINK_REQUEST;
+        }
+
+        links.put(pendingLinks.inverse().get(minecraftId), minecraftId);
+        pendingLinks.inverse().remove(minecraftId);
         return LinkResult.SUCCESS;
     }
 
     @Override
     public LinkResult unlink(@NotNull Long discordId) {
-        if (links.containsKey(discordId)) {
+        if (!links.containsKey(discordId)) {
             return LinkResult.NOT_LINKED;
         }
 
@@ -69,12 +91,12 @@ public class MemoryLinkService implements LinkService {
 
     @Override
     public LinkResult unlink(@NotNull UUID minecraftId) {
-        Optional<Long> oDiscordId = links.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(minecraftId))
-                .map(Map.Entry::getKey)
-                .findFirst();
+        if (!links.containsValue(minecraftId)) {
+            return LinkResult.NOT_LINKED;
+        }
 
-        return oDiscordId.isPresent() ? unlink(oDiscordId.get()) : LinkResult.NOT_LINKED;
+        links.inverse().remove(minecraftId);
+        return LinkResult.SUCCESS;
     }
 
     @Listener
@@ -102,9 +124,9 @@ public class MemoryLinkService implements LinkService {
             return;
         }
 
-        pendingLinks.add(user.getIdLong());
-
         Player player = oPlayer.get();
+        pendingLinks.put(user.getIdLong(), player.getUniqueId());
+
         Text msg = Text.builder("Incoming Discord link request: ").color(TextColors.BLUE)
                 .append(Text.of(user.getAsTag() + " "))
                 .append(Text.of(TextColors.GREEN, "[Confirm]", TextActions.runCommand("/nico link accept")))
