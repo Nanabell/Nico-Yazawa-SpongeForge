@@ -26,9 +26,22 @@ class DiscordService(plugin: NicoYazawa) : ListenerAdapter() {
     private val configManager: Config<MainConfig> = plugin.configManager
     private val linkService: LinkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
 
-    private var jda: JDA? = null
     private val pendingUsername: MutableSet<Long> = HashSet()
 
+    lateinit var jda: JDA
+
+    init {
+        try {
+            this.jda = JDABuilder(configManager.get().discordLinkConfig.token).build().awaitReady()
+        } catch (e: InterruptedException) {
+            logger.error("Error connecting to discord", e)
+        } catch (e: LoginException) {
+            logger.error("Failed to Log into Discord! Please Provide a valid Token!", e)
+        }
+
+        jda.addEventListener(this)
+        setInitialReaction()
+    }
 
     override fun onGuildMessageReactionAdd(@Nonnull event: GuildMessageReactionAddEvent) {
         val user = event.user
@@ -36,7 +49,7 @@ class DiscordService(plugin: NicoYazawa) : ListenerAdapter() {
         val config = configManager.get().discordLinkConfig
         if (event.messageIdLong == config.messageId) {
             if (event.reactionEmote.asCodepoints == config.reactionEmote) {
-                if (!linkService.pendingLink(user)) {
+                if (!linkService.isPending(user)) {
                     pendingUsername.add(user.idLong)
                     user.openPrivateChannel().queue { privateChannel: PrivateChannel -> privateChannel.sendMessage("What is you Minecraft username?").queue() }
                 }
@@ -60,30 +73,17 @@ class DiscordService(plugin: NicoYazawa) : ListenerAdapter() {
         Sponge.getEventManager().post(LinkRequestEvent(username, Cause.of(eventContext, this)))
     }
 
-    init {
-        try {
-            this.jda = JDABuilder(configManager.get().discordLinkConfig.token).build().awaitReady()
-        } catch (e: InterruptedException) {
-            logger.error("Error connecting to discord", e)
-        } catch (e: LoginException) {
-            logger.error("Failed to Log into Discord! Please Provide a valid Token!", e)
-        }
-
-        val jda = this.jda
-        if (jda != null) {
-            jda.addEventListener(this)
-            val config = configManager.get().discordLinkConfig
-            val guild = jda.getGuildById(config.guildId)
-            if (guild != null) {
-                val channel = guild.getTextChannelById(config.channelId)
-                if (channel != null) {
-                    val message = channel.getHistoryAround(config.messageId, 1).complete().getMessageById(config.messageId)
-                    if (message != null && message.reactions.isEmpty()) {
-                        message.addReaction(config.reactionEmote).queue()
-                    }
+    private fun setInitialReaction() {
+        val config = configManager.get().discordLinkConfig
+        val guild = jda.getGuildById(config.guildId)
+        if (guild != null) {
+            val channel = guild.getTextChannelById(config.channelId)
+            if (channel != null) {
+                val message = channel.getHistoryAround(config.messageId, 1).complete().getMessageById(config.messageId)
+                if (message != null && message.reactions.isEmpty()) {
+                    message.addReaction(config.reactionEmote).queue()
                 }
             }
         }
-
     }
 }
