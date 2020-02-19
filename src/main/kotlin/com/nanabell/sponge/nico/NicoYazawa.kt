@@ -9,6 +9,7 @@ import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.economy.NicoAccount
 import com.nanabell.sponge.nico.economy.NicoEconomyService
 import com.nanabell.sponge.nico.extensions.orNull
+import com.nanabell.sponge.nico.link.LinkListener
 import com.nanabell.sponge.nico.link.LinkService
 import com.nanabell.sponge.nico.link.MemoryLinkService
 import com.nanabell.sponge.nico.storage.Persistable
@@ -49,7 +50,7 @@ class NicoYazawa {
         val serviceManager = Sponge.getServiceManager()
         serviceManager.setProvider(this, PersistenceManager::class.java, PersistenceManager())
         serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService())
-        serviceManager.setProvider(this, LinkService::class.java, MemoryLinkService(this))
+        serviceManager.setProvider(this, LinkService::class.java, MemoryLinkService())
         serviceManager.setProvider(this, DiscordService::class.java, DiscordService(this))
         serviceManager.setProvider(this, CommandRegistar::class.java, CommandRegistar(this))
         serviceManager.setProvider(this, ActivityTracker::class.java, ActivityTracker(this))
@@ -57,6 +58,8 @@ class NicoYazawa {
 
     @Listener
     fun onGameAboutToStartServer(event: GameAboutToStartServerEvent) {
+        Sponge.getEventManager().registerListeners(this, LinkListener())
+
         Sponge.getServiceManager().provide(PersistenceManager::class.java).orNull()!!.register(Persistable(configManager.get().databaseUrl, NicoAccount::class.java))
         Sponge.getServiceManager().provide(ActivityTracker::class.java).orNull()!!.init()
     }

@@ -4,24 +4,13 @@ import com.google.common.collect.HashBiMap
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.extensions.DiscordUser
 import com.nanabell.sponge.nico.extensions.MinecraftUser
-import com.nanabell.sponge.nico.extensions.orNull
-import com.nanabell.sponge.nico.extensions.toText
-import com.nanabell.sponge.nico.link.event.LinkEventContextKeys
-import com.nanabell.sponge.nico.link.event.LinkRequestEvent
 import com.nanabell.sponge.nico.link.event.LinkStateChangeEvent
-import net.dv8tion.jda.api.entities.MessageChannel
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.cause.Cause
-import org.spongepowered.api.event.cause.EventContext
-import org.spongepowered.api.text.Text
-import org.spongepowered.api.text.action.TextActions
-import org.spongepowered.api.text.format.TextColors
 import java.util.*
 
-class MemoryLinkService(plugin: NicoYazawa) : LinkService {
+class MemoryLinkService : LinkService {
 
-    private val logger = NicoYazawa.getLogger()
     private val eventManager = Sponge.getEventManager()
 
     private val pendingLinks = HashBiMap.create<Long, UUID>()
@@ -34,6 +23,10 @@ class MemoryLinkService(plugin: NicoYazawa) : LinkService {
 
     override fun isPending(user: MinecraftUser): Boolean {
         return pendingLinks.containsValue(user.uniqueId)
+    }
+
+    override fun addPending(discordUser: DiscordUser, minecraftUser: MinecraftUser): Boolean {
+        return pendingLinks.putIfAbsent(discordUser.idLong, minecraftUser.uniqueId) == null
     }
 
     override fun isLinked(user: MinecraftUser): Boolean {
@@ -67,49 +60,5 @@ class MemoryLinkService(plugin: NicoYazawa) : LinkService {
         eventManager.post(LinkStateChangeEvent(LinkState.UNLINKED, cause))
 
         return LinkResult.success(LinkState.UNLINKED, id!!, user.uniqueId)
-    }
-
-    @Listener
-    fun onLinkRequest(event: LinkRequestEvent) {
-        val context = event.cause.context
-        val user = context.get(LinkEventContextKeys.USER).orNull()
-        if (user == null) {
-            logger.warn("OnLinkRequest did not include a context User. $event")
-            return
-        }
-
-        if (isPending(user)) {
-            logger.warn("Received LinkRequestEvent for user who already has a pending Request $event")
-            return  // Already Pending Link
-        }
-
-        val player = Sponge.getServer().getPlayer(event.target).orNull()
-        if (player == null) {
-            eventManager.post(LinkStateChangeEvent(LinkState.USER_NOT_FOUND, Cause.of(EventContext.empty(), this)))
-
-            context.get(LinkEventContextKeys.MESSAGE_CHANNEL).ifPresent { messageChannel: MessageChannel ->
-                messageChannel.sendMessage(event.target + " is not online.\nProvide the name of an online player.").queue()
-            }
-            return
-        }
-
-        pendingLinks[user.idLong] = player.uniqueId
-        val msg: Text = Text.builder("Incoming Discord link request: ").color(TextColors.BLUE)
-                .append(Text.of(user.asTag + " "))
-                .append(Text.of(TextColors.GREEN,
-                        TextActions.runCommand("/nico link accept"),
-                        TextActions.showText("/nico link accept".toText()),
-                        "[Confirm]"))
-                .append(Text.of(" "))
-                .append(Text.of(TextColors.RED,
-                        TextActions.runCommand("/nico link deny"),
-                        TextActions.showText("/nico link deny".toText()),
-                        "[Deny]"))
-                .build()
-        player.sendMessage(msg)
-    }
-
-    init {
-        Sponge.getEventManager().registerListeners(plugin, this)
     }
 }

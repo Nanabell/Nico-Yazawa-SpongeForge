@@ -8,6 +8,7 @@ interface LinkService {
 
     fun isPending(user: DiscordUser): Boolean
     fun isPending(user: MinecraftUser): Boolean
+    fun addPending(discordUser: DiscordUser, minecraftUser: MinecraftUser): Boolean
     fun removePending(user: MinecraftUser): Boolean
 
     fun isLinked(user: MinecraftUser): Boolean
