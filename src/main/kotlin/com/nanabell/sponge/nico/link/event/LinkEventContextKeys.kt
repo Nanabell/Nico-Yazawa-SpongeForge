@@ -1,21 +1,18 @@
-package com.nanabell.sponge.nico.event;
+package com.nanabell.sponge.nico.link.event
 
-import com.nanabell.sponge.nico.link.LinkResult;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
-import org.spongepowered.api.event.cause.EventContextKey;
-import org.spongepowered.api.util.generator.dummy.DummyObjectProvider;
+import com.nanabell.sponge.nico.link.LinkResult
+import net.dv8tion.jda.api.entities.MessageChannel
+import net.dv8tion.jda.api.entities.User
+import org.spongepowered.api.event.cause.EventContextKey
+import org.spongepowered.api.util.generator.dummy.DummyObjectProvider
 
-public class LinkEventContextKeys {
+object LinkEventContextKeys {
+    val USER = createFor<User>("DISCORD_USER")
+    val MESSAGE_CHANNEL = createFor<MessageChannel>("DISCORD_MESSAGE_CHANNEL")
+    val LINK_RESULT = createFor<LinkResult>("Nico-Yazawa:LINK_RESULT")
 
-    public static final EventContextKey<User> USER = createFor("DISCORD_USER");
-    public static final EventContextKey<MessageChannel> MESSAGE_CHANNEL = createFor("DISCORD_MESSAGE_CHANNEL");
-    public static final EventContextKey<LinkResult> LINK_RESULT = createFor("Nico-Yazawa:LINK_RESULT");
-
-
-    @SuppressWarnings("unchecked")
-    private static <T> EventContextKey<T> createFor(String id) {
-        return DummyObjectProvider.createFor(EventContextKey.class, id);
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> createFor(id: String): EventContextKey<T> {
+        return DummyObjectProvider.createFor<EventContextKey<*>>(EventContextKey::class.java, id) as EventContextKey<T>
     }
-
 }

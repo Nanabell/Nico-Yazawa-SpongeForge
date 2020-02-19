@@ -2,9 +2,9 @@ package com.nanabell.sponge.nico.link
 
 import com.google.common.collect.HashBiMap
 import com.nanabell.sponge.nico.*
-import com.nanabell.sponge.nico.event.LinkEventContextKeys
-import com.nanabell.sponge.nico.event.LinkRequestEvent
-import com.nanabell.sponge.nico.event.LinkStateChangeEvent
+import com.nanabell.sponge.nico.link.event.LinkEventContextKeys
+import com.nanabell.sponge.nico.link.event.LinkRequestEvent
+import com.nanabell.sponge.nico.link.event.LinkStateChangeEvent
 import com.nanabell.sponge.nico.extensions.orNull
 import net.dv8tion.jda.api.entities.MessageChannel
 import org.spongepowered.api.Sponge
@@ -23,7 +23,6 @@ class MemoryLinkService(plugin: NicoYazawa) : LinkService {
 
     private val pendingLinks = HashBiMap.create<Long, UUID>()
     private val links = HashBiMap.create<Long, UUID>()
-
 
 
     override fun pendingLink(user: DiscordUser): Boolean {
@@ -94,13 +93,15 @@ class MemoryLinkService(plugin: NicoYazawa) : LinkService {
             return  // Already Pending Link
         }
 
-        val player = Sponge.getServer().getPlayer(event.targetUserName).orNull()
+        val player = Sponge.getServer().getPlayer(event.target).orNull()
         if (player == null) {
             val linkContext = EventContext.builder().add(LinkEventContextKeys.LINK_RESULT, LinkResult.USER_NOT_FOUND).build()
             val linkCause = Cause.builder().from(event.cause).append(this).build(linkContext)
             eventManager.post(LinkStateChangeEvent(LinkState.BROKEN, Cause.of(linkContext, linkCause)))
 
-            context.get(LinkEventContextKeys.MESSAGE_CHANNEL).ifPresent { messageChannel: MessageChannel -> messageChannel.sendMessage(event.targetUserName + " is not online.\nProvide the name of an online player.").queue() }
+            context.get(LinkEventContextKeys.MESSAGE_CHANNEL).ifPresent { messageChannel: MessageChannel ->
+                messageChannel.sendMessage(event.target + " is not online.\nProvide the name of an online player.").queue()
+            }
             return
         }
 

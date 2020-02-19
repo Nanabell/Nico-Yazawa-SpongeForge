@@ -2,10 +2,8 @@ package com.nanabell.sponge.nico.economy
 
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
-import com.nanabell.sponge.nico.economy.NicoCurrency
 import com.nanabell.sponge.nico.storage.IdentifiableDaoEnabled
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.entity.living.player.User
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.service.context.Context
 import org.spongepowered.api.service.economy.Currency
@@ -22,12 +20,12 @@ import java.sql.SQLException
 import java.util.*
 
 @DatabaseTable(tableName = "nico-accounts")
-class NicoAccount : IdentifiableDaoEnabled<NicoAccount?>(), UniqueAccount {
+class NicoAccount : IdentifiableDaoEnabled<NicoAccount>(), UniqueAccount {
 
     private val serviceManager = Sponge.getServiceManager()
 
     @DatabaseField(id = true)
-    private lateinit var uuid: UUID
+    override lateinit var uuid: UUID
 
     @DatabaseField(defaultValue = "0")
     private lateinit var balance: BigDecimal
@@ -114,10 +112,6 @@ class NicoAccount : IdentifiableDaoEnabled<NicoAccount?>(), UniqueAccount {
 
     override fun getUniqueId(): UUID {
         return uuid
-    }
-
-    override fun setUniqueId(uuid: UUID) {
-        this.uuid = uuid
     }
 
     private fun save() {

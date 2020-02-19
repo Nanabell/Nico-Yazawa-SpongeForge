@@ -1,18 +1,12 @@
-package com.nanabell.sponge.nico.event;
+package com.nanabell.sponge.nico.link.event
 
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.impl.AbstractEvent;
+import org.spongepowered.api.event.cause.Cause
+import org.spongepowered.api.event.impl.AbstractEvent
 
-public class LinkEvent extends AbstractEvent {
+open class LinkEvent(private val cause: Cause) : AbstractEvent() {
 
-    private Cause cause;
-
-    public LinkEvent(Cause cause) {
-        this.cause = cause;
+    override fun getCause(): Cause {
+        return cause
     }
 
-    @Override
-    public Cause getCause() {
-        return cause;
-    }
 }

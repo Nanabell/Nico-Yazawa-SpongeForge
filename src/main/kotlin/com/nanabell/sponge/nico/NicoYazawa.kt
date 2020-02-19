@@ -38,7 +38,7 @@ class NicoYazawa {
     lateinit var configManager: Config<MainConfig>
 
     @Listener
-    fun onPreInit(event: GamePreInitializationEvent?) {
+    fun onPreInit(event: GamePreInitializationEvent) {
         instance = this
     }
 
@@ -62,7 +62,7 @@ class NicoYazawa {
     }
 
     @Listener
-    fun onGameReload(event: GameReloadEvent?) {
+    fun onGameReload(event: GameReloadEvent) {
         configManager.reload()
     }
 

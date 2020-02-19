@@ -3,8 +3,8 @@ package com.nanabell.sponge.nico.discord
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
-import com.nanabell.sponge.nico.event.LinkEventContextKeys
-import com.nanabell.sponge.nico.event.LinkRequestEvent
+import com.nanabell.sponge.nico.link.event.LinkEventContextKeys
+import com.nanabell.sponge.nico.link.event.LinkRequestEvent
 import com.nanabell.sponge.nico.link.LinkService
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
