@@ -1,10 +1,9 @@
 package com.nanabell.sponge.nico.command.link
 
-import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.command.SelfSpecCommand
 import com.nanabell.sponge.nico.extensions.toText
-import com.nanabell.sponge.nico.link.LinkResult
 import com.nanabell.sponge.nico.link.LinkService
+import com.nanabell.sponge.nico.link.LinkState
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandException
 import org.spongepowered.api.command.CommandResult
@@ -14,11 +13,12 @@ import org.spongepowered.api.command.args.GenericArguments
 import org.spongepowered.api.command.spec.CommandExecutor
 import org.spongepowered.api.command.spec.CommandSpec
 import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.event.cause.Cause
+import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.text.Text
 
 class LinkAcceptCommand : CommandExecutor, SelfSpecCommand {
 
-    private val logger = NicoYazawa.getLogger()
     private val linkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
 
     override fun aliases(): Array<String> {
@@ -42,22 +42,16 @@ class LinkAcceptCommand : CommandExecutor, SelfSpecCommand {
         }
 
         val target = if (src is Player) src else args.requireOne("target")
-        if (!linkService.pendingLink(target)) {
-            if (linkService.isLinked(target)) {
-                logger.warn("Requested to Accept Link while account is already linked.")
-                // Already Linked
-            } else {
-                logger.warn("Requested to Accept Link while account is not pending to be linked")
-                // No Pending Link
-            }
-            return CommandResult.success()
-        }
-        val result = linkService.confirmLink(target)
-        if (result !== LinkResult.SUCCESS) {
-            logger.warn("Failed to Link Account {}. Result: {}", target, result)
+
+        val result = linkService.confirmLink(target, Cause.of(EventContext.empty(), this))
+        val message: Text = when (result.state) {
+            LinkState.LINKED -> "Successfully Linked Discord Account".toText()
+            LinkState.ALREADY_LINKED -> "User is already linked to a different Discord Account".toText()
+            LinkState.NO_LINK_REQUEST -> "There are no pending Link Requests!".toText()
+            else -> "Unknown Failure! Contact Administrator to take a look at the Logs!".toText()
         }
 
-        src.sendMessage("Successfully Linked Discord Account".toText())
+        src.sendMessage(message)
         return CommandResult.success()
     }
 }
