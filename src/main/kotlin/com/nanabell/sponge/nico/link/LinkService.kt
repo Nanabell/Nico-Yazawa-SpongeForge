@@ -1,16 +1,19 @@
 package com.nanabell.sponge.nico.link
 
-typealias DiscordUser = net.dv8tion.jda.api.entities.User
-typealias MinecraftUser = org.spongepowered.api.entity.living.player.User
+import com.nanabell.sponge.nico.extensions.DiscordUser
+import com.nanabell.sponge.nico.extensions.MinecraftUser
+import org.spongepowered.api.event.cause.Cause
 
 interface LinkService {
-    fun pendingLink(user: DiscordUser): Boolean
-    fun pendingLink(user: MinecraftUser): Boolean
-    fun isLinked(user: DiscordUser): Boolean
+
+    fun isPending(user: DiscordUser): Boolean
+    fun isPending(user: MinecraftUser): Boolean
+    fun removePending(user: MinecraftUser): Boolean
+
     fun isLinked(user: MinecraftUser): Boolean
-    fun confirmLink(user: DiscordUser): LinkResult?
-    fun confirmLink(user: MinecraftUser): LinkResult?
-    fun unlink(user: DiscordUser): LinkResult?
-    fun unlink(user: MinecraftUser): LinkResult?
+    fun getLink(user: MinecraftUser): Link?
+    fun confirmLink(user: MinecraftUser, cause: Cause): LinkResult
+    fun unlink(user: MinecraftUser, cause: Cause): LinkResult
+
 }
 
