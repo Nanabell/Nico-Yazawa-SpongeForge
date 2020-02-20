@@ -1,6 +1,7 @@
 package com.nanabell.sponge.nico.command.link
 
 import com.nanabell.sponge.nico.command.SelfSpecCommand
+import com.nanabell.sponge.nico.command.requirePlayerOrArg
 import com.nanabell.sponge.nico.extensions.gold
 import com.nanabell.sponge.nico.extensions.red
 import com.nanabell.sponge.nico.extensions.toText
@@ -37,18 +38,14 @@ class LinkDenyCommand : CommandExecutor, SelfSpecCommand {
                 .build()
     }
 
-    override fun permissionDescriptions(builder: PermissionDescription.Builder): List<PermissionDescription> {
-        return listOf(builder.id("nico.command.link.deny.self").register(),
-                builder.id("nico.command.link.deny.others").register())
+    override fun permissionDescriptions(builder: PermissionDescription.Builder) {
+        builder.id("nico.command.link.deny.self").register()
+        builder.id("nico.command.link.deny.others").register()
     }
 
     @Throws(CommandException::class)
     override fun execute(src: CommandSource, args: CommandContext): CommandResult {
-        if (!args.hasAny(Text.of("target")) && src !is Player) {
-            throw CommandException(Text.of("Cannot Target " + src.name + ". Valid Target is [Player]"))
-        }
-
-        val target = if (src is Player) src else args.requireOne("target")
+        val target = src.requirePlayerOrArg(args, "target")
 
         if (linkService.removePending(target))
             src.sendMessage("Removed Pending Link Request".toText().gold())

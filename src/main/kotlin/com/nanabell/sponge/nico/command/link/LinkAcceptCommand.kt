@@ -1,6 +1,7 @@
 package com.nanabell.sponge.nico.command.link
 
 import com.nanabell.sponge.nico.command.SelfSpecCommand
+import com.nanabell.sponge.nico.command.requirePlayerOrArg
 import com.nanabell.sponge.nico.extensions.darkRed
 import com.nanabell.sponge.nico.extensions.gold
 import com.nanabell.sponge.nico.extensions.red
@@ -38,18 +39,14 @@ class LinkAcceptCommand : CommandExecutor, SelfSpecCommand {
                 .build()
     }
 
-    override fun permissionDescriptions(builder: PermissionDescription.Builder): List<PermissionDescription> {
-        return listOf(builder.id("nico.command.link.accept.self").register(),
-                builder.id("nico.command.link.accept.others").register())
+    override fun permissionDescriptions(builder: PermissionDescription.Builder) {
+        builder.id("nico.command.link.accept.self").register()
+        builder.id("nico.command.link.accept.others").register()
     }
 
     @Throws(CommandException::class)
     override fun execute(src: CommandSource, args: CommandContext): CommandResult {
-        if (!args.hasAny(Text.of("target")) && src !is Player) {
-            throw CommandException(Text.of("Cannot Target " + src.name + ". Valid Target is [Player]"))
-        }
-
-        val target = if (src is Player) src else args.requireOne("target")
+        val target = src.requirePlayerOrArg(args, "target")
 
         val result = linkService.confirmLink(target)
         val message: Text = when (result.state) {

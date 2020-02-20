@@ -34,8 +34,8 @@ class NicoSetCommand : CommandExecutor, SelfSpecCommand {
                 .build()
     }
 
-    override fun permissionDescriptions(builder: PermissionDescription.Builder): List<PermissionDescription> {
-        return listOf(builder.id("nico.command.points.set.self").register())
+    override fun permissionDescriptions(builder: PermissionDescription.Builder) {
+        builder.id("nico.command.points.set.self").register()
     }
 
     @Throws(CommandException::class)

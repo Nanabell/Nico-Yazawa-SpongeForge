@@ -6,5 +6,5 @@ import org.spongepowered.api.service.permission.PermissionDescription
 interface SelfSpecCommand {
     fun aliases(): Array<String>
     fun spec(): CommandSpec
-    fun permissionDescriptions(builder: PermissionDescription.Builder): List<PermissionDescription>
+    fun permissionDescriptions(builder: PermissionDescription.Builder)
 }
