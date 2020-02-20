@@ -1,19 +1,18 @@
 package com.nanabell.sponge.nico
 
 import com.google.inject.Inject
+import com.mongodb.MongoClient
 import com.nanabell.sponge.nico.activity.ActivityTracker
 import com.nanabell.sponge.nico.command.CommandRegistar
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.discord.DiscordService
-import com.nanabell.sponge.nico.economy.NicoAccount
 import com.nanabell.sponge.nico.economy.NicoEconomyService
 import com.nanabell.sponge.nico.extensions.orNull
-import com.nanabell.sponge.nico.link.LinkListener
 import com.nanabell.sponge.nico.link.LinkService
-import com.nanabell.sponge.nico.link.MemoryLinkService
-import com.nanabell.sponge.nico.storage.Persistable
-import com.nanabell.sponge.nico.storage.PersistenceManager
+import com.nanabell.sponge.nico.link.LinkListener
+import dev.morphia.Datastore
+import dev.morphia.Morphia
 import org.slf4j.Logger
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.config.ConfigDir
@@ -47,10 +46,16 @@ class NicoYazawa {
     fun onInit(event: GameInitializationEvent) {
         configManager = Config(MainConfig::class.java, "nicos-yazawa.conf", configDir)
 
+        val morphia = Morphia()
+        morphia.mapPackage("com.nanabell.sponge.nico.database.entity")
+
+        val dataStore = morphia.createDatastore(MongoClient(), "dummy-nico")
+        dataStore.ensureIndexes()
+
         val serviceManager = Sponge.getServiceManager()
-        serviceManager.setProvider(this, PersistenceManager::class.java, PersistenceManager())
+        serviceManager.setProvider(this, Datastore::class.java, dataStore)
         serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService())
-        serviceManager.setProvider(this, LinkService::class.java, MemoryLinkService())
+        serviceManager.setProvider(this, LinkService::class.java, LinkService())
         serviceManager.setProvider(this, DiscordService::class.java, DiscordService(this))
         serviceManager.setProvider(this, CommandRegistar::class.java, CommandRegistar(this))
         serviceManager.setProvider(this, ActivityTracker::class.java, ActivityTracker(this))
@@ -60,7 +65,6 @@ class NicoYazawa {
     fun onGameAboutToStartServer(event: GameAboutToStartServerEvent) {
         Sponge.getEventManager().registerListeners(this, LinkListener())
 
-        Sponge.getServiceManager().provide(PersistenceManager::class.java).orNull()!!.register(Persistable(configManager.get().databaseUrl, NicoAccount::class.java))
         Sponge.getServiceManager().provide(ActivityTracker::class.java).orNull()!!.init()
     }
 

@@ -1,5 +1,6 @@
 package com.nanabell.sponge.nico.link
 
+import com.nanabell.sponge.nico.store.Link
 import java.util.*
 
 data class LinkResult(

@@ -1,6 +1,7 @@
 package com.nanabell.sponge.nico.link
 
 import com.nanabell.sponge.nico.NicoYazawa
+import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.extensions.toText
 import com.nanabell.sponge.nico.link.event.LinkEventContextKeys
@@ -19,6 +20,7 @@ import org.spongepowered.api.text.format.TextColors
 class LinkListener {
 
     private val logger = NicoYazawa.getLogger()
+    private val discordService = Sponge.getServiceManager().provideUnchecked(DiscordService::class.java)
     private val linkService: LinkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
     private val eventManager: EventManager = Sponge.getEventManager()
 
@@ -46,7 +48,16 @@ class LinkListener {
             return
         }
 
+        if (linkService.isLinked(player)) {
+            context.get(LinkEventContextKeys.MESSAGE_CHANNEL).ifPresent {
+                it.sendMessage("${event.target} is already Linked.\nProvide the name of an online player.").queue()
+            }
+            return
+        }
+
+        discordService.removePending(user.idLong)
         linkService.addPending(user, player)
+
         val msg: Text = Text.builder("Incoming Discord link request: ").color(TextColors.BLUE)
                 .append(Text.of(user.asTag + " "))
                 .append(Text.of(TextColors.GREEN,
