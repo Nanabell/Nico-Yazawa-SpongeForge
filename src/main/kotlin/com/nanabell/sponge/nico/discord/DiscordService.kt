@@ -3,12 +3,13 @@ package com.nanabell.sponge.nico.discord
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
+import com.nanabell.sponge.nico.link.LinkService
 import com.nanabell.sponge.nico.link.event.LinkEventContextKeys
 import com.nanabell.sponge.nico.link.event.LinkRequestEvent
-import com.nanabell.sponge.nico.link.LinkService
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.PrivateChannel
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -24,7 +25,7 @@ class DiscordService(plugin: NicoYazawa) : ListenerAdapter() {
 
     private val logger = NicoYazawa.getLogger()
     private val configManager: Config<MainConfig> = plugin.configManager
-    private val linkService: LinkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
+    private val linkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
 
     private val pendingUsername: MutableSet<Long> = HashSet()
 
@@ -72,7 +73,9 @@ class DiscordService(plugin: NicoYazawa) : ListenerAdapter() {
         if (user.isBot || user.isFake) return
         if (!pendingUsername.contains(user.idLong)) {
             logger.warn("Received Private Message from user without Linking Request")
+            return
         }
+
         pendingUsername.remove(user.idLong)
         val username = event.message.contentRaw.split(" ").toTypedArray()[0]
         val eventContext = EventContext.builder()
