@@ -16,6 +16,7 @@ import org.spongepowered.api.command.args.GenericArguments
 import org.spongepowered.api.command.spec.CommandExecutor
 import org.spongepowered.api.command.spec.CommandSpec
 import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.service.permission.PermissionDescription
 import org.spongepowered.api.service.user.UserStorageService
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.format.TextColors
@@ -24,22 +25,32 @@ class LinkCommand : CommandExecutor, SelfSpecCommand {
 
     private val linkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
 
+    private val acceptCommand = LinkAcceptCommand()
+    private val denyCommand = LinkDenyCommand()
+
     override fun aliases(): Array<String> {
         return arrayOf("link")
     }
 
     override fun spec(): CommandSpec {
-        val acceptCommand = LinkAcceptCommand()
-        val denyCommand = LinkDenyCommand()
+
         return CommandSpec.builder()
                 .description(Text.of("Commands to View / Accept / Deny pending & existing Discord-Links"))
+                .permission("nico.command.link.self")
                 .executor(this)
                 .arguments(GenericArguments.optional(
                         GenericArguments.requiringPermission(
-                                GenericArguments.longNum(Text.of("target")), "nico.link.others")))
+                                GenericArguments.longNum(Text.of("target")), "nico.command.link.others")))
                 .child(acceptCommand.spec(), *acceptCommand.aliases())
                 .child(denyCommand.spec(), *denyCommand.aliases())
                 .build()
+    }
+
+    override fun permissionDescriptions(builder: PermissionDescription.Builder): List<PermissionDescription> {
+        return listOf(builder.id("nico.command.link.view").register(),
+                builder.id("nico.command.link.others").register()).toMutableList()
+                .plus(acceptCommand.permissionDescriptions(builder))
+                .plus(denyCommand.permissionDescriptions(builder))
     }
 
     @Throws(CommandException::class)
@@ -64,11 +75,12 @@ class LinkCommand : CommandExecutor, SelfSpecCommand {
                     .append("Discord: ".toText())
                     .append((discordUser?.asTag ?: "[Unable to Fetch Discord Username (${link.discordId})]").toText()
                             .color(if (discordUser != null) TextColors.GOLD else TextColors.RED))
+                    .append(Text.NEW_LINE)
                     .append("Minecraft: ".toText())
                     .append((minecraftUser?.name ?: "[Failed to Fetch Minecraft Name (${link.minecraftId})]").toText()
                             .color(if (minecraftUser != null) TextColors.GOLD else TextColors.RED))
                     .build()
-            
+
             src.sendMessage(msg)
         }
 

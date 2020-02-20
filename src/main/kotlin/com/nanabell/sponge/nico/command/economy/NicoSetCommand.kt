@@ -14,6 +14,7 @@ import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.service.economy.EconomyService
 import org.spongepowered.api.service.economy.transaction.ResultType
+import org.spongepowered.api.service.permission.PermissionDescription
 import org.spongepowered.api.text.Text
 
 class NicoSetCommand : CommandExecutor, SelfSpecCommand {
@@ -27,9 +28,14 @@ class NicoSetCommand : CommandExecutor, SelfSpecCommand {
     override fun spec(): CommandSpec {
         return CommandSpec.builder()
                 .description(Text.of("Set your Balance to a specified amount"))
+                .permission("nico.command.points.set.self")
                 .arguments(GenericArguments.bigDecimal(Text.of("amount")))
                 .executor(this)
                 .build()
+    }
+
+    override fun permissionDescriptions(builder: PermissionDescription.Builder): List<PermissionDescription> {
+        return listOf(builder.id("nico.command.points.set.self").register())
     }
 
     @Throws(CommandException::class)
