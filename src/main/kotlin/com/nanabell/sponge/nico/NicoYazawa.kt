@@ -2,6 +2,7 @@ package com.nanabell.sponge.nico
 
 import com.google.inject.Inject
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientURI
 import com.nanabell.sponge.nico.activity.ActivityTracker
 import com.nanabell.sponge.nico.command.CommandRegistar
 import com.nanabell.sponge.nico.config.Config
@@ -49,12 +50,12 @@ class NicoYazawa {
         val morphia = Morphia()
         morphia.mapPackage("com.nanabell.sponge.nico.database.entity")
 
-        val dataStore = morphia.createDatastore(MongoClient(), "dummy-nico")
+        val dataStore = morphia.createDatastore(MongoClient(MongoClientURI(configManager.get().databaseUrl)), "dummy-nico")
         dataStore.ensureIndexes()
 
         val serviceManager = Sponge.getServiceManager()
         serviceManager.setProvider(this, Datastore::class.java, dataStore)
-        serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService())
+        serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService(this))
         serviceManager.setProvider(this, LinkService::class.java, LinkService())
         serviceManager.setProvider(this, DiscordService::class.java, DiscordService(this))
         serviceManager.setProvider(this, CommandRegistar::class.java, CommandRegistar(this))

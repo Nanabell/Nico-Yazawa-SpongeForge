@@ -27,7 +27,7 @@ class NicoAccount(private val userId: String): UniqueAccount {
     private val discordService = Sponge.getServiceManager().provideUnchecked(DiscordService::class.java)
 
     override fun getDisplayName(): Text {
-        return (discordService.getUserTagById(retrieveUserData()?.userId) ?: "Unable to contact Database. User: ($userId)").toText()
+        return (discordService.getUserTagById(retrieveUserData()?.userId) ?: "Unable retrieve User: ($userId)").toText()
     }
 
     override fun getUniqueId(): UUID? {

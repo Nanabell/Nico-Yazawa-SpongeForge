@@ -1,5 +1,6 @@
 package com.nanabell.sponge.nico.economy
 
+import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.extensions.toOptional
 import com.nanabell.sponge.nico.store.Link
 import com.nanabell.sponge.nico.store.UserData
@@ -12,9 +13,10 @@ import org.spongepowered.api.service.economy.account.Account
 import org.spongepowered.api.service.economy.account.UniqueAccount
 import java.util.*
 
-class NicoEconomyService : EconomyService {
+class NicoEconomyService(plugin: NicoYazawa) : EconomyService {
 
     private val dataStore = Sponge.getServiceManager().provideUnchecked(Datastore::class.java)
+    private val configManager = plugin.configManager
 
     override fun getDefaultCurrency(): Currency {
         return NicoCurrency.currency
@@ -42,7 +44,17 @@ class NicoEconomyService : EconomyService {
     }
 
     override fun getOrCreateAccount(identifier: String): Optional<Account> {
-        return if (hasAccount(identifier)) NicoAccount(identifier).toOptional() else Optional.empty()
+        if (hasAccount(identifier))
+            return NicoAccount(identifier).toOptional()
+
+        if (configManager.get().economyConfig.createAccounts){
+            val userData = UserData(identifier, 0, 0)
+            dataStore.save(userData)
+
+            return NicoAccount(identifier).toOptional()
+        }
+
+        return Optional.empty()
     }
 
     override fun registerContextCalculator(calculator: ContextCalculator<Account>) {}

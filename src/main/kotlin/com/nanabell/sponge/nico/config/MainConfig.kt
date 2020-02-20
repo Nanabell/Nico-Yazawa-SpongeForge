@@ -7,7 +7,8 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 class MainConfig(
         databaseUrl: String = "jdbc:sqlite:nicos-office.db",
         activityConfig: ActivityConfig = ActivityConfig(),
-        discordLinkConfig: DiscordLinkConfig = DiscordLinkConfig()
+        discordLinkConfig: DiscordLinkConfig = DiscordLinkConfig(),
+        economyConfig: EconomyConfig = EconomyConfig()
 ) {
 
     @Setting(comment = "Database URL used by Nico to store immediate data")
@@ -20,5 +21,9 @@ class MainConfig(
 
     @Setting(value = "discord", comment = "Discord Linking Settings. \"Authenticate\" Minecraft users with Discord")
     var discordLinkConfig = discordLinkConfig
+        private set
+
+    @Setting(value = "economy")
+    var economyConfig = economyConfig
         private set
 }
