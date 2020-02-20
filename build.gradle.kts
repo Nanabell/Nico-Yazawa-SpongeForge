@@ -14,13 +14,11 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation("net.dv8tion:JDA:4.ALPHA.0_76") {
+    shadow(kotlin("stdlib-jdk8"))
+    shadow("dev.morphia.morphia:core:1.5.8")
+    shadow("net.dv8tion:JDA:4.ALPHA.0_76") {
         exclude("opus-java")
     }
-
-    shadow("com.j256.ormlite:ormlite-core:4.48") { isTransitive = false }
-    shadow("com.j256.ormlite:ormlite-jdbc:4.48") { isTransitive = false }
 
     compileOnly("org.jetbrains:annotations:16.0.2")
     compileOnly("org.spongepowered:spongeapi:7.1.0")
@@ -30,10 +28,6 @@ dependencies {
 configure<JavaPluginConvention>() {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-shadow {
-
 }
 
 configurations {
@@ -50,6 +44,7 @@ tasks {
             exclude("org/apache/logging/**")
         }
 
+        exclude("META-INF/**")
         classifier = ""
     }
 

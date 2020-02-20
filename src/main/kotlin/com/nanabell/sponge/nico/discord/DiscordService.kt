@@ -43,6 +43,15 @@ class DiscordService(plugin: NicoYazawa) : ListenerAdapter() {
         setInitialReaction()
     }
 
+    fun getUserById(userId: Long?): User? = if (userId == null) null else jda.getUserById(userId)
+    fun getUserById(userId: String?): User? = if (userId == null) null else jda.getUserById(userId)
+    fun getUserTagById(userId: Long?): String? = if (userId == null) null else jda.getUserById(userId)?.asTag
+    fun getUserTagById(userId: String?): String? = if (userId == null) null else jda.getUserById(userId)?.asTag
+
+    fun removePending(userId: Long) {
+        pendingUsername.remove(userId)
+    }
+
     override fun onGuildMessageReactionAdd(@Nonnull event: GuildMessageReactionAddEvent) {
         val user = event.user
         if (user.isBot || user.isFake) return
