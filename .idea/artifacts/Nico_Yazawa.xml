@@ -1,6 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="Nico-Yazawa">
-    <output-path>$PROJECT_DIR$/../../sponge-forge_server/mods</output-path>
-    <root id="archive" name="Nico-Yazawa.jar" />
-  </artifact>
-</component>
