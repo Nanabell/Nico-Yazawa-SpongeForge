@@ -33,7 +33,7 @@ class NicoEconomyService(plugin: NicoYazawa) : EconomyService {
     }
 
     override fun hasAccount(identifier: String): Boolean {
-        return dataStore.createQuery(UserData::class.java).field("userId").equal(identifier).count() == 1L
+        return dataStore.createQuery(UserData::class.java).field("userId").equal(identifier).first() != null
     }
 
     @Suppress("DuplicatedCode")

@@ -34,8 +34,8 @@ class ActivityService(private val plugin: NicoYazawa) {
         Sponge.getScheduler().createTaskBuilder()
                 .name("NicoYazawa-A-ActivityService")
                 .async()
-                .delay(2, TimeUnit.MINUTES)
-                .interval(2, TimeUnit.MINUTES)
+                .delay(10, TimeUnit.SECONDS)
+                .interval(10, TimeUnit.SECONDS)
                 .execute(activityTask())
                 .submit(plugin)
 
@@ -83,8 +83,8 @@ class ActivityService(private val plugin: NicoYazawa) {
                 if (configManager.get().activityConfig.disabledWorlds.contains(mcPlayer.world.name))
                     continue // Your Nico points are in another Castle (World)
 
-                for (paymentConfig in configManager.get().activityConfig.paymentConfigs) {
-                    if (!mcPlayer.hasPermission(paymentConfig.requiredPermission)) continue
+                payout@ for (paymentConfig in configManager.get().activityConfig.paymentConfigs) {
+                    if (paymentConfig.requiredPermission.isNotEmpty() && !mcPlayer.hasPermission(paymentConfig.requiredPermission)) continue
                     if (paymentConfig.dailyPaymentLimit > 0 && player.totalPayment >= paymentConfig.dailyPaymentLimit) continue
                     if (paymentConfig.paymentChance == 0 || (paymentConfig.paymentChance != 100 && RANDOM.nextInt(101) > paymentConfig.paymentChance)) continue
 
@@ -102,7 +102,7 @@ class ActivityService(private val plugin: NicoYazawa) {
                         logger.warn("Unable to award ${mcPlayer.name} with ${paymentConfig.paymentAmount} due to missing EconomyAccount")
                     }
 
-                    break
+                    break@payout
                 }
             }
         }
