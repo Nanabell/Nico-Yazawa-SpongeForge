@@ -57,18 +57,18 @@ class ActivityService(private val plugin: NicoYazawa) {
         return Runnable {
             logger.debug("Running main activity task")
             for ((_, player) in activityPlayers) {
-                val mcPlayer = Sponge.getServer().getPlayer(player.uuid).orNull() ?: return@Runnable
+                val mcPlayer = Sponge.getServer().getPlayer(player.uuid).orNull() ?: continue
 
                 // Set inactive players afk
                 if (!player.isAFK) {
                     val inactiveSince = (System.currentTimeMillis() - player.lastInteract) / 1000
 
                     val afkTimeout = configManager.get().activityConfig.afkTimeout
-                    if (afkTimeout <= 0) return@Runnable
+                    if (afkTimeout <= 0) continue
 
                     if (inactiveSince >= afkTimeout) {
                         if (mcPlayer.hasPermission("nico.activity.afk-immunity"))
-                            return@Runnable
+                            continue
 
                         player.startAFK(Cause.of(EventContext.of(mapOf(ActivityContextKeys.INACTIVE to inactiveSince)), this))
                         logger.info("Changed ${mcPlayer.name}'s status to AFK")
@@ -77,11 +77,11 @@ class ActivityService(private val plugin: NicoYazawa) {
 
                 // Handle Nico Points
                 if (player.isAFK)
-                    return@Runnable // no points for AFKs ヽ༼ ಠ益ಠ ༽ﾉ
+                    continue // no points for AFKs ヽ༼ ಠ益ಠ ༽ﾉ
 
 
                 if (configManager.get().activityConfig.disabledWorlds.contains(mcPlayer.world.name))
-                    return@Runnable // Your Nico points are in another Castle (World)
+                    continue // Your Nico points are in another Castle (World)
 
                 for (paymentConfig in configManager.get().activityConfig.paymentConfigs) {
                     if (!mcPlayer.hasPermission(paymentConfig.requiredPermission)) continue
@@ -102,7 +102,7 @@ class ActivityService(private val plugin: NicoYazawa) {
                         logger.warn("Unable to award ${mcPlayer.name} with ${paymentConfig.paymentAmount} due to missing EconomyAccount")
                     }
 
-                    return@Runnable
+                    break
                 }
             }
         }
