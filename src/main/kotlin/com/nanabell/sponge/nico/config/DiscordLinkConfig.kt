@@ -11,7 +11,10 @@ class DiscordLinkConfig(
         messageId: Long = -1L,
         reactionEmote: String = "U+1f517",
         linkRole: Long = -1L,
-        linkGroup: String = ""
+        linkGroup: String = "",
+        kickUnlinked: Boolean = true,
+        kickInterval: Long = 5,
+        kickPlaytime: Long = 5
 ) {
 
     @Setting(comment = "Discord Bot Token")
@@ -40,5 +43,17 @@ class DiscordLinkConfig(
 
     @Setting(value = "link_group", comment = "The Minecraft Permission Group that should be awarded upon successful linking (empty to disable)")
     var linkGroup: String = linkGroup
+        private set
+
+    @Setting("kick-unlinked")
+    var kickUnlinked: Boolean = kickUnlinked
+        private set
+
+    @Setting("kick-interval")
+    var kickInterval: Long = kickInterval
+        private set
+
+    @Setting("kick-max-playtime")
+    var kickPlaytime: Long = kickPlaytime
         private set
 }

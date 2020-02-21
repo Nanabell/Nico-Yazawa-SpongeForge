@@ -3,38 +3,53 @@ package com.nanabell.sponge.nico.link
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.extensions.toText
 import org.spongepowered.api.Sponge
-import java.time.Duration
-import java.time.Instant
-import java.time.temporal.ChronoUnit
+import org.spongepowered.api.event.Listener
+import org.spongepowered.api.event.network.ClientConnectionEvent
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class UserLinkWatchdog(private val plugin: NicoYazawa) {
 
+    private val logger = NicoYazawa.getLogger()
+    private val config = NicoYazawa.getConfig()
     private val linkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
 
+    private val joinTimes: MutableMap<UUID, Long> = mutableMapOf()
+
     fun init() {
-        Sponge.getScheduler().createTaskBuilder()
-                .name("NicoYazawa-A-LinkWatchdog")
-                .async()
-                .delay(10, TimeUnit.MINUTES)
-                .interval(5, TimeUnit.MINUTES) // TODO: Remember to make configurable
-                .execute(runWatchdog())
-                .submit(plugin)
+        Sponge.getEventManager().registerListeners(plugin, this)
+
+        if (config.get().discordLinkConfig.kickUnlinked)
+            Sponge.getScheduler().createTaskBuilder()
+                    .name("NicoYazawa-A-LinkWatchdog")
+                    .async()
+                    .delay(config.get().discordLinkConfig.kickInterval * 2, TimeUnit.MINUTES)
+                    .interval(config.get().discordLinkConfig.kickInterval, TimeUnit.MINUTES)
+                    .execute(runWatchdog())
+                    .submit(plugin)
+    }
+
+    @Listener
+    fun onPlayerJoin(event: ClientConnectionEvent.Join) {
+        joinTimes[event.targetEntity.uniqueId] = System.currentTimeMillis()
     }
 
 
-    fun runWatchdog(): Runnable {
+    private fun runWatchdog(): Runnable {
         return Runnable {
+            logger.debug("Starting UserLinkWatchdog...")
             for (player in Sponge.getServer().onlinePlayers) {
                 if (linkService.isLinked(player)) { // TODO: Possibly in the future retrieve all links at once
-                    return@Runnable
+                    continue
                 }
 
-                val onServerSince = Duration.between(Instant.now(), player.joinData.lastPlayed().get())
-                if (onServerSince > Duration.of(5, ChronoUnit.MINUTES)) {
+                val seconds = (System.currentTimeMillis() - joinTimes[player.uniqueId]!!) / 1000
+                if (seconds > config.get().discordLinkConfig.kickPlaytime) {
                     player.kick("You need to Link your Minecraft Account to your Discord Account. Please read the Instructions at <INSERT-CHANNEL-NAME-HERE> and rejoin.".toText()) // TODO: Inject Channel name via config here
+                    logger.info("${player.name} has been kicked after being on the server for $seconds seconds and not having their Account linked to Discord")
                 }
             }
+            logger.info("Finished UserLinkWatchdog")
         }
     }
 }
