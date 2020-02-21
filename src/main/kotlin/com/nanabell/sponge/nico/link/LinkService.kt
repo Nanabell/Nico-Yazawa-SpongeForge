@@ -12,14 +12,13 @@ import dev.morphia.query.Query
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
-import org.spongepowered.api.event.cause.EventContextKeys
 import java.util.*
 
 class LinkService {
 
     private val dataSource = Sponge.getServiceManager().provideUnchecked(Datastore::class.java)
     private val discordService by lazy { Sponge.getServiceManager().provideUnchecked(DiscordService::class.java) }
-    private val eventManager = Sponge.getEventManager();
+    private val eventManager = Sponge.getEventManager()
 
 
     private val pendingLinks = HashBiMap.create<Long, UUID>()
@@ -69,10 +68,12 @@ class LinkService {
     }
 
     fun unlink(user: MinecraftUser): LinkResult {
-        if (!isLinked(user)) return LinkResult.error(LinkState.NOT_LINKED)
+        val link = getLink(user) ?: return LinkResult.error(LinkState.NOT_LINKED)
+        val dUser = link.fetchUser(discordService.jda)
 
         dataSource.delete(getQuery(user.uniqueId))
-        eventManager.post(LinkStateChangeEvent(LinkState.UNLINKED, Cause.of(EventContext.of(mapOf(EventContextKeys.PLAYER to user)), this)))
+
+        eventManager.post(LinkStateChangeEvent(LinkState.UNLINKED, Cause.of(EventContext.of(mapOf(LinkEventContextKeys.DISCORD_USER to dUser, LinkEventContextKeys.MINECRAFT_USER to user)), this)))
         return LinkResult(LinkState.UNLINKED, null)
     }
 

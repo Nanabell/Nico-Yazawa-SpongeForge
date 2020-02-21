@@ -11,7 +11,7 @@ class DiscordLinkConfig(
         messageId: Long = -1L,
         reactionEmote: String = "U+1f517",
         linkRole: Long = -1L,
-        linkGroup: String? = null
+        linkGroup: String = ""
 ) {
 
     @Setting(comment = "Discord Bot Token")
@@ -39,6 +39,6 @@ class DiscordLinkConfig(
         private set
 
     @Setting(value = "link_group", comment = "The Minecraft Permission Group that should be awarded upon successful linking (empty to disable)")
-    var linkGroup: String? = linkGroup
+    var linkGroup: String = linkGroup
         private set
 }
