@@ -4,26 +4,18 @@ import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
 @ConfigSerializable
-class MainConfig(
-        databaseUrl: String = "jdbc:sqlite:nicos-office.db",
-        activityConfig: ActivityConfig = ActivityConfig(),
-        discordLinkConfig: DiscordLinkConfig = DiscordLinkConfig(),
-        economyConfig: EconomyConfig = EconomyConfig()
-) {
+data class MainConfig(
 
-    @Setting(comment = "Database URL used by Nico to store immediate data")
-    var databaseUrl = databaseUrl
-        private set
+        @Setting(comment = "Database URL used by Nico to store immediate data")
+        val databaseUrl: String = "mongodb://user:password@host/database",
 
-    @Setting(value = "activity", comment = "Nico Points Activity Settings. Gain NicoPoints by being active in Minecraft")
-    var activityConfig = activityConfig
-        private set
+        @Setting(value = "activity", comment = "Nico Points Activity Settings. Gain NicoPoints by being active in Minecraft")
+        val activityConfig: ActivityConfig = ActivityConfig(),
 
-    @Setting(value = "discord", comment = "Discord Linking Settings. \"Authenticate\" Minecraft users with Discord")
-    var discordLinkConfig = discordLinkConfig
-        private set
+        @Setting(value = "discord", comment = "Discord Linking Settings. \"Authenticate\" Minecraft users with Discord")
+        val discordLinkConfig: DiscordLinkConfig = DiscordLinkConfig(),
 
-    @Setting(value = "economy")
-    var economyConfig = economyConfig
-        private set
-}
+        @Setting(value = "economy")
+        val economyConfig: EconomyConfig = EconomyConfig()
+
+)

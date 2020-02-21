@@ -4,61 +4,38 @@ import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
 @ConfigSerializable
-class DiscordLinkConfig(
-        token: String = "DISCORD_TOKEN_HERE",
-        guildId: Long = -1L,
-        channelId: Long = -1L,
-        messageId: Long = -1L,
-        reactionEmote: String = "U+1f517",
-        linkRole: Long = -1L,
-        linkGroup: String = "",
-        kickUnlinked: Boolean = true,
-        kickInterval: Long = 5,
-        kickPlaytime: Long = 5,
-        kickReferChannel: String = "<INSERT-CHANNEL-NAME-HERE>"
-) {
+data class DiscordLinkConfig(
 
-    @Setting(comment = "Discord Bot Token")
-    var token = token
-        private set
+        @Setting(comment = "Discord Bot Token")
+        val token: String = "DISCORD_TOKEN_HERE",
 
-    @Setting(value = "link-guild", comment = "Snowflake Id of the Discord Guild")
-    var guildId = guildId
-        private set
+        @Setting(value = "link-guild", comment = "Snowflake Id of the Discord Guild")
+        val guildId: Long = -1L,
 
-    @Setting(value = "link-channel", comment = "Snowflake Id of the Discord Channel")
-    var channelId = channelId
-        private set
+        @Setting(value = "link-channel", comment = "Snowflake Id of the Discord Channel")
+        val channelId: Long = -1L,
 
-    @Setting(value = "link-message", comment = "Snowflake ID of the Discord Message")
-    var messageId = messageId
-        private set
+        @Setting(value = "link-message", comment = "Snowflake ID of the Discord Message")
+        val messageId: Long = -1L,
 
-    @Setting(value = "reaction-emote", comment = "Reaction Emote which will be used to link Accounts")
-    var reactionEmote = reactionEmote
-        private set
+        @Setting(value = "reaction-emote", comment = "Reaction Emote which will be used to link Accounts")
+        val reactionEmote: String = "U+1f517",
 
-    @Setting(value = "link-role", comment = "The Discord Role that should be given if an account was linked successfully (-1 to disable)")
-    var linkRole = linkRole
-        private set
+        @Setting(value = "link-role", comment = "The Discord Role that should be given if an account was linked successfully (-1 to disable)")
+        val linkRole: Long = -1L,
 
-    @Setting(value = "link-group", comment = "The Minecraft Permission Group that should be awarded upon successful linking (empty to disable)")
-    var linkGroup: String = linkGroup
-        private set
+        @Setting(value = "link-group", comment = "The Minecraft Permission Group that should be awarded upon successful linking (empty to disable)")
+        val linkGroup: String = "",
 
-    @Setting("kick-unlinked")
-    var kickUnlinked: Boolean = kickUnlinked
-        private set
+        @Setting("kick-unlinked")
+        val kickUnlinked: Boolean = true,
 
-    @Setting("kick-interval")
-    var kickInterval: Long = kickInterval
-        private set
+        @Setting("kick-interval")
+        val kickInterval: Long = 5,
 
-    @Setting("kick-max-playtime")
-    var kickPlaytime: Long = kickPlaytime
-        private set
+        @Setting("kick-max-playtime")
+        val kickPlaytime: Long = 5,
 
-    @Setting("kick-refer-channel")
-    var kickReferChannel = kickReferChannel
-        private set
-}
+        @Setting("kick-refer-channel")
+        val kickReferChannel: String = "<INSERT-CHANNEL-NAME-HERE>"
+)
