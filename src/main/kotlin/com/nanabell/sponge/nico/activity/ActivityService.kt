@@ -55,7 +55,7 @@ class ActivityService(private val plugin: NicoYazawa) {
 
     private fun activityTask(): Runnable {
         return Runnable {
-            logger.info("Running main activity task")
+            logger.debug("Running main activity task")
             for ((_, player) in activityPlayers) {
                 val mcPlayer = Sponge.getServer().getPlayer(player.uuid).orNull() ?: return@Runnable
 
