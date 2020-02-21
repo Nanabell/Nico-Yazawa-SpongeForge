@@ -36,18 +36,30 @@ class NicoEconomyService(plugin: NicoYazawa) : EconomyService {
         return dataStore.createQuery(UserData::class.java).field("userId").equal(identifier).count() == 1L
     }
 
+    @Suppress("DuplicatedCode")
     override fun getOrCreateAccount(uuid: UUID): Optional<UniqueAccount> {
-        val link = dataStore.createQuery(Link::class.java).field("minecraftId").equal(uuid).first()
-                ?: return Optional.empty()
+        val link = dataStore.createQuery(Link::class.java).field("minecraftId").equal(uuid).first() ?: return Optional.empty()
+        val identifier = link.discordId.toString()
+        if (hasAccount(identifier))
+            return NicoAccount(identifier).toOptional()
 
-        return if (hasAccount(uuid)) NicoAccount(link.discordId.toString()).toOptional() else Optional.empty()
+        if (configManager.get().economyConfig.createAccounts) {
+            val userData = UserData(identifier, 0, 0)
+            dataStore.save(userData)
+
+            return NicoAccount(identifier).toOptional()
+        }
+
+
+        return Optional.empty()
     }
 
+    @Suppress("DuplicatedCode")
     override fun getOrCreateAccount(identifier: String): Optional<Account> {
         if (hasAccount(identifier))
             return NicoAccount(identifier).toOptional()
 
-        if (configManager.get().economyConfig.createAccounts){
+        if (configManager.get().economyConfig.createAccounts) {
             val userData = UserData(identifier, 0, 0)
             dataStore.save(userData)
 
