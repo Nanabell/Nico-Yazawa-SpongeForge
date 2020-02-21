@@ -5,6 +5,7 @@ import com.nanabell.sponge.nico.activity.event.ActivityContextKeys
 import com.nanabell.sponge.nico.extensions.gold
 import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.extensions.toText
+import com.nanabell.sponge.nico.extensions.yellow
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.entity.living.player.User
 import org.spongepowered.api.event.cause.Cause
@@ -34,8 +35,8 @@ class ActivityService(private val plugin: NicoYazawa) {
         Sponge.getScheduler().createTaskBuilder()
                 .name("NicoYazawa-A-ActivityService")
                 .async()
-                .delay(10, TimeUnit.SECONDS)
-                .interval(10, TimeUnit.SECONDS)
+                .delay(2, TimeUnit.MINUTES)
+                .interval(2, TimeUnit.MINUTES)
                 .execute(activityTask())
                 .submit(plugin)
 
@@ -94,8 +95,8 @@ class ActivityService(private val plugin: NicoYazawa) {
                         val result = account.deposit(economy.defaultCurrency, BigDecimal(paymentConfig.paymentAmount), cause)
 
                         mcPlayer.sendMessage(ChatTypes.ACTION_BAR, "You have earned ".toText().gold()
-                                .concat(economy.defaultCurrency.format(result.amount))
-                                .concat("for being active".toText().gold()))
+                                .concat(economy.defaultCurrency.format(result.amount).yellow())
+                                .concat(" for being active".toText().gold()))
 
                         logger.info("Awarded ${mcPlayer.name} with ${result.amount} ${economy.defaultCurrency.pluralDisplayName.toPlain()}")
                     } else {
