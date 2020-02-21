@@ -63,8 +63,8 @@ class NicoYazawa {
     @Listener
     fun onGameAboutToStartServer(event: GameAboutToStartServerEvent) {
         Sponge.getEventManager().registerListeners(this, LinkListener())
-
-        Sponge.getServiceManager().provide(ActivityTracker::class.java).orNull()!!.init()
+        if (configManager.get().activityConfig.enabled)
+            Sponge.getServiceManager().provideUnchecked(ActivityTracker::class.java).init()
     }
 
     @Listener
