@@ -1,6 +1,7 @@
 package com.nanabell.sponge.nico.link
 
 import com.google.common.collect.HashBiMap
+import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.extensions.DiscordUser
 import com.nanabell.sponge.nico.extensions.MinecraftUser
@@ -14,7 +15,7 @@ import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
 import java.util.*
 
-class LinkService {
+class LinkService(private val plugin: NicoYazawa) {
 
     private val dataSource = Sponge.getServiceManager().provideUnchecked(Datastore::class.java)
     private val discordService by lazy { Sponge.getServiceManager().provideUnchecked(DiscordService::class.java) }
@@ -23,7 +24,7 @@ class LinkService {
     private val pendingLinks = HashBiMap.create<Long, UUID>()
 
     fun init() {
-        Sponge.getEventManager().registerListeners(this, LinkListener())
+        Sponge.getEventManager().registerListeners(plugin, LinkListener())
     }
 
     fun isPending(user: DiscordUser): Boolean {
@@ -43,7 +44,7 @@ class LinkService {
     }
 
     fun isLinked(user: MinecraftUser): Boolean {
-        return getQuery(user.uniqueId).count() == 1L
+        return getLink(user) != null
     }
 
     fun getLink(user: MinecraftUser): Link? {
@@ -71,10 +72,8 @@ class LinkService {
     }
 
     fun unlink(user: MinecraftUser): LinkResult {
-        val link = getLink(user) ?: return LinkResult.error(LinkState.NOT_LINKED)
-        val dUser = link.fetchUser(discordService.jda)
-
-        dataSource.delete(getQuery(user.uniqueId))
+        val link = dataSource.findAndDelete(getQuery(user.uniqueId)) ?: return LinkResult.error(LinkState.NOT_LINKED)
+        val dUser =  link.fetchUser(discordService.jda)
 
         eventManager.post(LinkStateChangeEvent(LinkState.UNLINKED, Cause.of(EventContext.of(mapOf(LinkEventContextKeys.DISCORD_USER to dUser, LinkEventContextKeys.MINECRAFT_USER to user)), this)))
         return LinkResult(LinkState.UNLINKED, null)
