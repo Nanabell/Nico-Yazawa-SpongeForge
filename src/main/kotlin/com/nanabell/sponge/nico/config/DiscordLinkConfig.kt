@@ -31,11 +31,14 @@ data class DiscordLinkConfig(
         val kickUnlinked: Boolean = true,
 
         @Setting("kick-interval")
-        val kickInterval: Long = 5 * 60,
+        private val _kickInterval: Long = 5 * 60,
 
         @Setting("kick-max-playtime")
-        val kickPlaytime: Long = 5 * 60,
+        private val _kickPlaytime: Long = 5 * 60,
 
         @Setting("kick-refer-channel")
-        val kickReferChannel: String = "<INSERT-CHANNEL-NAME-HERE>"
-)
+        private val kickReferChannel: String = "<INSERT-CHANNEL-NAME-HERE>"
+) {
+        val kickInterval get() = _kickInterval.coerceAtLeast(60)
+        val kickPlaytime get() = _kickPlaytime.coerceAtLeast(60)
+}
