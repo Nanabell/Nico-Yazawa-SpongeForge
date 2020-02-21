@@ -11,6 +11,7 @@ import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.economy.NicoEconomyService
 import com.nanabell.sponge.nico.link.LinkListener
 import com.nanabell.sponge.nico.link.LinkService
+import com.nanabell.sponge.nico.link.UserLinkWatchdog
 import dev.morphia.Datastore
 import dev.morphia.Morphia
 import org.slf4j.Logger
@@ -20,6 +21,7 @@ import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.game.GameReloadEvent
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent
 import org.spongepowered.api.event.game.state.GameInitializationEvent
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent
 import org.spongepowered.api.plugin.Plugin
 import org.spongepowered.api.service.economy.EconomyService
@@ -60,12 +62,21 @@ class NicoYazawa {
     }
 
     @Listener
+    fun onPostInit(event: GamePostInitializationEvent) {
+        val serviceManager = Sponge.getServiceManager()
+
+        serviceManager.setProvider(this, UserLinkWatchdog::class.java, UserLinkWatchdog(this))
+    }
+
+    @Listener
     fun onGameAboutToStartServer(event: GameAboutToStartServerEvent) {
         Sponge.getEventManager().registerListeners(this, LinkListener())
         val serviceManager = Sponge.getServiceManager()
 
         if (configManager.get().activityConfig.enabled)
             serviceManager.provideUnchecked(ActivityService::class.java).init()
+
+        serviceManager.provideUnchecked(UserLinkWatchdog::class.java).init()
     }
 
     @Listener
