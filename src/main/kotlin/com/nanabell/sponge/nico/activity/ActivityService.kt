@@ -61,13 +61,14 @@ class ActivityService(private val plugin: NicoYazawa) {
 
                 // Set inactive players afk
                 if (!player.isAFK) {
-                    val inactiveSince = System.currentTimeMillis() - player.lastInteract / 1000
+                    val inactiveSince = (System.currentTimeMillis() - player.lastInteract) / 1000
 
                     val afkTimeout = configManager.get().activityConfig.afkTimeout
                     if (afkTimeout <= 0) return@Runnable
 
                     if (inactiveSince >= afkTimeout) {
                         if (mcPlayer.hasPermission("nico.activity.afk-immunity"))
+                            return@Runnable
 
                         player.startAFK(Cause.of(EventContext.of(mapOf(ActivityContextKeys.INACTIVE to inactiveSince)), this))
                         logger.info("Changed ${mcPlayer.name}'s status to AFK")
@@ -96,7 +97,7 @@ class ActivityService(private val plugin: NicoYazawa) {
                                 .concat(economy.defaultCurrency.format(result.amount))
                                 .concat("for being active".toText().gold()))
 
-                        logger.info("Awarded '${mcPlayer.name}' with ${result.amount} ${economy.defaultCurrency.pluralDisplayName.toPlain()}")
+                        logger.info("Awarded ${mcPlayer.name} with ${result.amount} ${economy.defaultCurrency.pluralDisplayName.toPlain()}")
                     } else {
                         logger.warn("Unable to award ${mcPlayer.name} with ${paymentConfig.paymentAmount} due to missing EconomyAccount")
                     }
@@ -112,7 +113,7 @@ class ActivityService(private val plugin: NicoYazawa) {
         val next = now.withHour(0).withMinute(15).withSecond(0)
         if (now > next) next.plusDays(1)
 
-        val duration = Duration.between(now, next)
+        val duration = Duration.between(next, now)
         return duration.seconds
     }
 

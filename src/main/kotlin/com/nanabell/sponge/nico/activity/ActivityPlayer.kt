@@ -32,7 +32,7 @@ class ActivityPlayer(val uuid: UUID) {
     fun stopAFK(cause: Cause) {
         if (eventManager.post(PlayerActiveEvent(this, cause))) return
 
-        forceStartAFK()
+        forceStopAFK()
     }
 
     fun forceStopAFK() {
