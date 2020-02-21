@@ -54,7 +54,10 @@ class LinkService {
         val dUser = discordService.getUserById(discordId) ?: return LinkResult.error(LinkState.USER_NOT_FOUND)
 
         dataSource.save(Link(discordId, user.uniqueId))
-        eventManager.post(LinkStateChangeEvent(LinkState.LINKED, Cause.of(EventContext.of(mapOf(LinkEventContextKeys.USER to dUser)), this)))
+
+        val cause = Cause.of(EventContext.of(mapOf(LinkEventContextKeys.DISCORD_USER to dUser, LinkEventContextKeys.MINECRAFT_USER to user)), this)
+        eventManager.post(LinkStateChangeEvent(LinkState.LINKED, cause))
+
         return LinkResult.success(discordId, user.uniqueId)
     }
 

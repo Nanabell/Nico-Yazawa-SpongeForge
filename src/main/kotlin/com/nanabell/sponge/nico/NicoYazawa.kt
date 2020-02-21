@@ -9,8 +9,8 @@ import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.economy.NicoEconomyService
-import com.nanabell.sponge.nico.link.LinkService
 import com.nanabell.sponge.nico.link.LinkListener
+import com.nanabell.sponge.nico.link.LinkService
 import dev.morphia.Datastore
 import dev.morphia.Morphia
 import org.slf4j.Logger
@@ -80,6 +80,11 @@ class NicoYazawa {
         @JvmStatic
         fun getLogger(): Logger {
             return instance.logger
+        }
+
+        @JvmStatic
+        fun getConfig(): Config<MainConfig> {
+            return instance.configManager
         }
     }
 }

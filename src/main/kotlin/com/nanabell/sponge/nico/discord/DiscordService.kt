@@ -80,7 +80,7 @@ class DiscordService(plugin: NicoYazawa) : ListenerAdapter() {
         val username = event.message.contentRaw.split(" ").toTypedArray()[0]
         val eventContext = EventContext.builder()
                 .add(LinkEventContextKeys.MESSAGE_CHANNEL, event.channel)
-                .add(LinkEventContextKeys.USER, event.author)
+                .add(LinkEventContextKeys.DISCORD_USER, event.author)
                 .build()
         Sponge.getEventManager().post(LinkRequestEvent(username, Cause.of(eventContext, this)))
     }
