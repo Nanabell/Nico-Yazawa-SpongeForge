@@ -44,8 +44,8 @@ class UserLinkWatchdog(private val plugin: NicoYazawa) {
                 }
 
                 val seconds = (System.currentTimeMillis() - joinTimes[player.uniqueId]!!) / 1000
-                if (seconds > config.get().discordLinkConfig.kickPlaytime) {
-                    player.kick("You need to Link your Minecraft Account to your Discord Account. Please read the Instructions at <INSERT-CHANNEL-NAME-HERE> and rejoin.".toText()) // TODO: Inject Channel name via config here
+                if (seconds > config.get().discordLinkConfig.kickPlaytime * 60) {
+                    player.kick("You need to Link your Minecraft Account to your Discord Account. Please read the Instructions at ${config.get().discordLinkConfig.kickReferChannel} and rejoin.".toText())
                     logger.info("${player.name} has been kicked after being on the server for $seconds seconds and not having their Account linked to Discord")
                 }
             }

@@ -14,7 +14,8 @@ class DiscordLinkConfig(
         linkGroup: String = "",
         kickUnlinked: Boolean = true,
         kickInterval: Long = 5,
-        kickPlaytime: Long = 5
+        kickPlaytime: Long = 5,
+        kickReferChannel: String = "<INSERT-CHANNEL-NAME-HERE>"
 ) {
 
     @Setting(comment = "Discord Bot Token")
@@ -55,5 +56,9 @@ class DiscordLinkConfig(
 
     @Setting("kick-max-playtime")
     var kickPlaytime: Long = kickPlaytime
+        private set
+
+    @Setting("kick-refer-channel")
+    var kickReferChannel = kickReferChannel
         private set
 }
