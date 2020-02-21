@@ -37,7 +37,7 @@ data class DiscordLinkConfig(
         private val _kickPlaytime: Long = 5 * 60,
 
         @Setting("kick-refer-channel")
-        private val kickReferChannel: String = "<INSERT-CHANNEL-NAME-HERE>"
+        val kickReferChannel: String = "<INSERT-CHANNEL-NAME-HERE>"
 ) {
         val kickInterval get() = _kickInterval.coerceAtLeast(60)
         val kickPlaytime get() = _kickPlaytime.coerceAtLeast(60)
