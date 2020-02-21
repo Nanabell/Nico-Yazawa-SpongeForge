@@ -20,8 +20,11 @@ class LinkService {
     private val discordService by lazy { Sponge.getServiceManager().provideUnchecked(DiscordService::class.java) }
     private val eventManager = Sponge.getEventManager()
 
-
     private val pendingLinks = HashBiMap.create<Long, UUID>()
+
+    fun init() {
+        Sponge.getEventManager().registerListeners(this, LinkListener())
+    }
 
     fun isPending(user: DiscordUser): Boolean {
         return pendingLinks.containsKey(user.idLong)

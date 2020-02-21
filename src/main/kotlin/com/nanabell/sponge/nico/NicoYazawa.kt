@@ -9,7 +9,6 @@ import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.economy.NicoEconomyService
-import com.nanabell.sponge.nico.link.LinkListener
 import com.nanabell.sponge.nico.link.LinkService
 import com.nanabell.sponge.nico.link.UserLinkWatchdog
 import dev.morphia.Datastore
@@ -55,7 +54,7 @@ class NicoYazawa {
         val serviceManager = Sponge.getServiceManager()
         serviceManager.setProvider(this, Datastore::class.java, dataStore)
         serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService(this))
-        serviceManager.setProvider(this, LinkService::class.java, LinkService())
+        serviceManager.setProvider(this, LinkService::class.java, LinkService(this))
         serviceManager.setProvider(this, DiscordService::class.java, DiscordService(this))
         serviceManager.setProvider(this, CommandRegistar::class.java, CommandRegistar(this))
         serviceManager.setProvider(this, ActivityService::class.java, ActivityService(this))
@@ -70,8 +69,9 @@ class NicoYazawa {
 
     @Listener
     fun onGameAboutToStartServer(event: GameAboutToStartServerEvent) {
-        Sponge.getEventManager().registerListeners(this, LinkListener())
         val serviceManager = Sponge.getServiceManager()
+
+        serviceManager.provideUnchecked(LinkService::class.java).init()
 
         if (configManager.get().activityConfig.enabled)
             serviceManager.provideUnchecked(ActivityService::class.java).init()
