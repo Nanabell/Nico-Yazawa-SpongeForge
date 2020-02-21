@@ -1,12 +1,10 @@
 package com.nanabell.sponge.nico.economy
 
 import com.nanabell.sponge.nico.extensions.bold
-import com.nanabell.sponge.nico.extensions.darkAqua
+import com.nanabell.sponge.nico.extensions.lightPurple
 import com.nanabell.sponge.nico.extensions.toText
 import org.spongepowered.api.service.economy.Currency
 import org.spongepowered.api.text.Text
-import org.spongepowered.api.text.format.TextColors
-import org.spongepowered.api.text.format.TextStyles
 import java.math.BigDecimal
 import java.text.NumberFormat
 
@@ -21,7 +19,7 @@ class NicoCurrency : Currency {
     }
 
     override fun getSymbol(): Text {
-        return "￥".toText()
+        return Text.EMPTY
     }
 
     override fun format(amount: BigDecimal, numFractionDigits: Int): Text {
@@ -29,10 +27,10 @@ class NicoCurrency : Currency {
         formatter.minimumFractionDigits = numFractionDigits
         formatter.maximumFractionDigits = numFractionDigits
 
-        return formatter.format(amount).darkAqua()
+        return formatter.format(amount).lightPurple()
                 .concat(symbol.bold())
                 .concat(" ".toText())
-                .concat(if (amount > BigDecimal.ZERO) pluralDisplayName else displayName)
+                .concat(if (amount > BigDecimal.ONE) pluralDisplayName else displayName)
     }
 
     override fun getDefaultFractionDigits(): Int {
