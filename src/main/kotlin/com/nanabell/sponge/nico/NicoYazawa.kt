@@ -3,13 +3,12 @@ package com.nanabell.sponge.nico
 import com.google.inject.Inject
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientURI
-import com.nanabell.sponge.nico.activity.ActivityTracker
+import com.nanabell.sponge.nico.activity.ActivityService
 import com.nanabell.sponge.nico.command.CommandRegistar
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.economy.NicoEconomyService
-import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.link.LinkService
 import com.nanabell.sponge.nico.link.LinkListener
 import dev.morphia.Datastore
@@ -57,14 +56,16 @@ class NicoYazawa {
         serviceManager.setProvider(this, LinkService::class.java, LinkService())
         serviceManager.setProvider(this, DiscordService::class.java, DiscordService(this))
         serviceManager.setProvider(this, CommandRegistar::class.java, CommandRegistar(this))
-        serviceManager.setProvider(this, ActivityTracker::class.java, ActivityTracker(this))
+        serviceManager.setProvider(this, ActivityService::class.java, ActivityService(this))
     }
 
     @Listener
     fun onGameAboutToStartServer(event: GameAboutToStartServerEvent) {
         Sponge.getEventManager().registerListeners(this, LinkListener())
+        val serviceManager = Sponge.getServiceManager()
+
         if (configManager.get().activityConfig.enabled)
-            Sponge.getServiceManager().provideUnchecked(ActivityTracker::class.java).init()
+            serviceManager.provideUnchecked(ActivityService::class.java).init()
     }
 
     @Listener
