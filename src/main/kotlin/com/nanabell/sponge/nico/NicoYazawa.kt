@@ -48,8 +48,6 @@ class NicoYazawa {
         configManager = Config(MainConfig::class.java, "nicos-yazawa.conf", configDir)
 
         val morphia = Morphia()
-        morphia.mapPackage("com.nanabell.sponge.nico.database.entity")
-
         val dataStore = morphia.createDatastore(MongoClient(MongoClientURI(configManager.get().databaseUrl)), "dummy-nico")
         dataStore.ensureIndexes()
 
