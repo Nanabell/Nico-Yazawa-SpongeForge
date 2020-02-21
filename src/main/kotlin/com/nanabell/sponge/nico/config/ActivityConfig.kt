@@ -9,7 +9,7 @@ class ActivityConfig(
         @Setting("enabled")
         val enabled: Boolean = true,
 
-        @Setting(value = "disabled_worlds", comment = "List of Worlds where payments are disabled")
+        @Setting(value = "disabled-worlds", comment = "List of Worlds where payments are disabled")
         val disabledWorlds: List<String> = listOf("creative_world"),
 
         @Setting(value = "afkTimeout", comment = "After how many seconds is a user considered AFK? [default: 180 (2min), 0 <= no timeout]")

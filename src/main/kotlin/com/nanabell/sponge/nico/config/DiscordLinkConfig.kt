@@ -22,27 +22,27 @@ class DiscordLinkConfig(
     var token = token
         private set
 
-    @Setting(value = "link_guild_id", comment = "Snowflake Id of the Discord Guild")
+    @Setting(value = "link-guild", comment = "Snowflake Id of the Discord Guild")
     var guildId = guildId
         private set
 
-    @Setting(value = "link_channel_id", comment = "Snowflake Id of the Discord Channel")
+    @Setting(value = "link-channel", comment = "Snowflake Id of the Discord Channel")
     var channelId = channelId
         private set
 
-    @Setting(value = "link_message_id", comment = "Snowflake ID of the Discord Message")
+    @Setting(value = "link-message", comment = "Snowflake ID of the Discord Message")
     var messageId = messageId
         private set
 
-    @Setting(value = "reaction_emote", comment = "Reaction Emote which will be used to link Accounts")
+    @Setting(value = "reaction-emote", comment = "Reaction Emote which will be used to link Accounts")
     var reactionEmote = reactionEmote
         private set
 
-    @Setting(value = "link_role", comment = "The Discord Role that should be given if an account was linked successfully (-1 to disable)")
+    @Setting(value = "link-role", comment = "The Discord Role that should be given if an account was linked successfully (-1 to disable)")
     var linkRole = linkRole
         private set
 
-    @Setting(value = "link_group", comment = "The Minecraft Permission Group that should be awarded upon successful linking (empty to disable)")
+    @Setting(value = "link-group", comment = "The Minecraft Permission Group that should be awarded upon successful linking (empty to disable)")
     var linkGroup: String = linkGroup
         private set
 
