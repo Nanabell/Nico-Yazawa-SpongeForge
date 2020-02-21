@@ -45,9 +45,7 @@ class CommandRegistar(private val plugin: NicoYazawa) {
     }
 
     private fun registerCommands() {
-        val nicoCommand = nicoCommandBuilder.description(Text.of("Nico Nico Ni!"))
-                .permission("nico")
-                .build()
+        val nicoCommand = nicoCommandBuilder.description(Text.of("Nico Nico Ni!")).build()
 
         commandManager.register(plugin, nicoCommand, "nico", "n")
     }
