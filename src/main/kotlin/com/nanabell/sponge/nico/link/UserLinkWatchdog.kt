@@ -23,8 +23,8 @@ class UserLinkWatchdog(private val plugin: NicoYazawa) {
             Sponge.getScheduler().createTaskBuilder()
                     .name("NicoYazawa-A-LinkWatchdog")
                     .async()
-                    .delay(config.get().discordLinkConfig.kickInterval * 2, TimeUnit.MINUTES)
-                    .interval(config.get().discordLinkConfig.kickInterval, TimeUnit.MINUTES)
+                    .delay(config.get().discordLinkConfig.kickInterval * 2, TimeUnit.SECONDS)
+                    .interval(config.get().discordLinkConfig.kickInterval, TimeUnit.SECONDS)
                     .execute(runWatchdog())
                     .submit(plugin)
     }
@@ -44,7 +44,7 @@ class UserLinkWatchdog(private val plugin: NicoYazawa) {
                 }
 
                 val seconds = (System.currentTimeMillis() - joinTimes[player.uniqueId]!!) / 1000
-                if (seconds > config.get().discordLinkConfig.kickPlaytime * 60) {
+                if (seconds > config.get().discordLinkConfig.kickPlaytime) {
                     player.kick("You need to Link your Minecraft Account to your Discord Account. Please read the Instructions at ${config.get().discordLinkConfig.kickReferChannel} and rejoin.".toText())
                     logger.info("${player.name} has been kicked after being on the server for $seconds seconds and not having their Account linked to Discord")
                 }
