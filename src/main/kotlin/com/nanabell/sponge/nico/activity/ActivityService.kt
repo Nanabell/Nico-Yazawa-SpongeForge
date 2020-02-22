@@ -2,11 +2,13 @@ package com.nanabell.sponge.nico.activity
 
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.activity.event.ActivityContextKeys
+import com.nanabell.sponge.nico.config.PaymentConfig
 import com.nanabell.sponge.nico.extensions.gold
 import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.extensions.toText
 import com.nanabell.sponge.nico.extensions.yellow
 import org.spongepowered.api.Sponge
+import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.living.player.User
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
@@ -109,9 +111,7 @@ class ActivityService(private val plugin: NicoYazawa) {
 
 
                 payout@ for (paymentConfig in configManager.get().activityConfig.paymentConfigs) {
-                    if (paymentConfig.requiredPermission.isNotEmpty() && !mcPlayer.hasPermission(paymentConfig.requiredPermission)) continue
-                    if (paymentConfig.dailyPaymentLimit > 0 && player.totalPayment >= paymentConfig.dailyPaymentLimit) continue
-                    if (paymentConfig.paymentChance == 0 || (paymentConfig.paymentChance != 100 && RANDOM.nextInt(101) > paymentConfig.paymentChance)) continue
+                    if (checkPayout(paymentConfig, mcPlayer, player)) continue
 
                     val account = economy.getOrCreateAccount(player.uuid).orNull()
                     if (account != null) {
@@ -133,6 +133,35 @@ class ActivityService(private val plugin: NicoYazawa) {
                 }
             }
         }
+    }
+
+    private fun checkPayout(paymentConfig: PaymentConfig, player: Player, activityPlayer: ActivityPlayer): Boolean {
+        if (paymentConfig.requiredPermission.isNotEmpty() && !player.hasPermission(paymentConfig.requiredPermission)) {
+            logger.debug("Skipping payment for ${player.name}. Player does not have the required Permission ${paymentConfig.requiredPermission}")
+            return false
+        }
+
+        if (paymentConfig.dailyPaymentLimit > 0 && activityPlayer.totalPayment >= paymentConfig.dailyPaymentLimit) {
+            logger.debug("Skipping payment for ${player.name}. Player reached daily payout limit ${paymentConfig.dailyPaymentLimit}")
+            return false
+        }
+
+        if (paymentConfig.paymentChance == 0) {
+            logger.debug("Skipping payment for ${player.name}. Payout chance is 0")
+            return false
+        }
+
+        if (paymentConfig.paymentChance == 100) {
+            return true
+        }
+
+        val rnd = RANDOM.nextInt(101)
+        if (rnd > paymentConfig.paymentChance) {
+            logger.debug("Skipping payment for ${player.name}. Random $rnd > ${paymentConfig.paymentChance}")
+            return false
+        }
+
+        return true
     }
 
     private fun calculateInitialDelay(): Long {
