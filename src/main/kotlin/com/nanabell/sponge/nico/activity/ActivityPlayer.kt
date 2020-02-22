@@ -16,6 +16,7 @@ class ActivityPlayer(val uuid: UUID) {
     var isAFK = false
     var afkSince = -1L
 
+    var lastCooldown = -1L
     var totalPayment = 0L
 
     fun startAFK(cause: Cause) {

@@ -56,6 +56,8 @@ class ActivityService(private val plugin: NicoYazawa) {
 
     private fun activityTask(): Runnable {
         return Runnable {
+            val config = configManager.get()
+
             logger.debug("Running main activity task")
             for ((_, player) in activityPlayers) {
                 val mcPlayer = Sponge.getServer().getPlayer(player.uuid).orNull() ?: continue
@@ -64,12 +66,18 @@ class ActivityService(private val plugin: NicoYazawa) {
                 if (!player.isAFK) {
                     val inactiveSince = (System.currentTimeMillis() - player.lastInteract) / 1000
 
-                    val afkTimeout = configManager.get().activityConfig.afkTimeout
-                    if (afkTimeout <= 0) continue
+                    val afkTimeout = config.activityConfig.afkTimeout
+                    if (afkTimeout < 1) {
+                        logger.debug("Skipping AFK detection as afkTimeout is less than 1")
+                        continue
+                    }
 
                     if (inactiveSince >= afkTimeout) {
-                        if (mcPlayer.hasPermission("nico.activity.afk-immunity"))
+                        if (mcPlayer.hasPermission("nico.activity.afk-immunity")){
+                            logger.debug("Skip setting AFK on user ${mcPlayer.name} because of 'nico.activity.afk-immunity' permission")
                             continue
+                        }
+
 
                         player.startAFK(Cause.of(EventContext.of(mapOf(ActivityContextKeys.INACTIVE to inactiveSince)), this))
                         logger.info("Changed ${mcPlayer.name}'s status to AFK")
@@ -77,12 +85,28 @@ class ActivityService(private val plugin: NicoYazawa) {
                 }
 
                 // Handle Nico Points
-                if (player.isAFK)
+                val cooldownTimer = config.activityConfig.cooldownTimer
+                if (cooldownTimer > 0) {
+                    val elapsedCooldown = (System.currentTimeMillis() - player.lastCooldown) / 1000
+
+                    if (cooldownTimer > elapsedCooldown) {
+                        logger.debug("Skipping player ${mcPlayer.name}. Still on cooldown for ${cooldownTimer - elapsedCooldown} seconds")
+                        continue
+                    }
+                }
+
+                if (player.isAFK) {
+                    logger.debug("Skipping player ${mcPlayer.name}. Player is AFK")
                     continue // no points for AFKs ヽ༼ ಠ益ಠ ༽ﾉ
+                }
 
 
-                if (configManager.get().activityConfig.disabledWorlds.contains(mcPlayer.world.name))
+
+                if (configManager.get().activityConfig.disabledWorlds.contains(mcPlayer.world.name)) {
+                    logger.debug("Skipping player ${mcPlayer.name}. Player is in disabled world ${mcPlayer.world.name}")
                     continue // Your Nico points are in another Castle (World)
+                }
+
 
                 payout@ for (paymentConfig in configManager.get().activityConfig.paymentConfigs) {
                     if (paymentConfig.requiredPermission.isNotEmpty() && !mcPlayer.hasPermission(paymentConfig.requiredPermission)) continue
@@ -91,6 +115,8 @@ class ActivityService(private val plugin: NicoYazawa) {
 
                     val account = economy.getOrCreateAccount(player.uuid).orNull()
                     if (account != null) {
+                        player.lastCooldown = System.currentTimeMillis()
+
                         val cause = Cause.of(EventContext.of(mapOf(ActivityContextKeys.PLAYER to player)), this)
                         val result = account.deposit(economy.defaultCurrency, BigDecimal(paymentConfig.paymentAmount), cause)
 
