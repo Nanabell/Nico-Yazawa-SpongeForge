@@ -4,6 +4,7 @@ import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.config.DiscordLinkConfig
 import com.nanabell.sponge.nico.discord.DiscordService
+import com.nanabell.sponge.nico.discord.event.UserAcceptedEvent
 import com.nanabell.sponge.nico.extensions.*
 import com.nanabell.sponge.nico.link.event.LinkRequestEvent
 import com.nanabell.sponge.nico.link.event.LinkStateChangeEvent
@@ -66,7 +67,7 @@ class LinkListener {
             return
         }
 
-        discordService.removePending(user.idLong)
+        eventManager.post(UserAcceptedEvent(user.idLong, Cause.of(EventContext.empty(), this)))
         linkService.addPending(user, player)
 
         val msg: Text = Text.builder("Incoming Discord link request: ").color(TextColors.BLUE)
