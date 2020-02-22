@@ -3,7 +3,10 @@ package com.nanabell.sponge.nico.command
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.command.economy.NicoGetCommand
 import com.nanabell.sponge.nico.command.economy.NicoSetCommand
+import com.nanabell.sponge.nico.command.link.LinkAcceptCommand
 import com.nanabell.sponge.nico.command.link.LinkCommand
+import com.nanabell.sponge.nico.command.link.LinkDenyCommand
+import com.nanabell.sponge.nico.command.link.UnlinkCommand
 import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.extensions.toText
 import org.spongepowered.api.Sponge
@@ -27,11 +30,17 @@ class CommandRegistar(private val plugin: NicoYazawa) {
         loadCommands()
     }
 
-    fun loadCommands() { // Currency
+    fun loadCommands() {
+        // Currency
         addCommand(NicoGetCommand())
         addCommand(NicoSetCommand())
+
         // Discord-Link
+        addCommand(LinkAcceptCommand())
+        addCommand(LinkDenyCommand())
         addCommand(LinkCommand())
+        addCommand(UnlinkCommand())
+
         // Finally register the commands to Sponge
         registerCommands()
     }

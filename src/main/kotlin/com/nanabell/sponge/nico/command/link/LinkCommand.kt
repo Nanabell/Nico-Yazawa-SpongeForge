@@ -41,22 +41,14 @@ class LinkCommand : CommandExecutor, SelfSpecCommand {
                 .executor(this)
                 .arguments(Args.optional(Args.seq(
                         Args.playerOrSource("player".toText()),
-                        Args.requiringPermission(NicoConstants.discordUser("target".toText()), "nico.command.link.discord")
+                        Args.requiringPermission(NicoConstants.discordUser("target".toText()), "nico.command.link")
                 )))
-                .child(acceptCommand.spec(), *acceptCommand.aliases())
-                .child(denyCommand.spec(), *denyCommand.aliases())
-                .child(unlinkCommand.spec(), *unlinkCommand.aliases())
                 .build()
     }
 
     override fun permissionDescriptions(builder: PermissionDescription.Builder) {
         builder.id("nico.command.link.view").register()
-        builder.id("nico.command.link.discord").register()
-        builder.id("nico.command.link.others").register()
-
-        acceptCommand.permissionDescriptions(builder)
-        denyCommand.permissionDescriptions(builder)
-        unlinkCommand.permissionDescriptions(builder)
+        builder.id("nico.command.link").register()
     }
 
     @Throws(CommandException::class)
