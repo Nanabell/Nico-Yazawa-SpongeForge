@@ -1,6 +1,7 @@
 package com.nanabell.sponge.nico
 
 import com.nanabell.sponge.nico.activity.ActivityPlayer
+import com.nanabell.sponge.nico.command.DiscordUserElement
 import com.nanabell.sponge.nico.economy.CurrencyElement
 import com.nanabell.sponge.nico.extensions.DiscordUser
 import net.dv8tion.jda.api.entities.MessageChannel
@@ -14,6 +15,7 @@ object NicoConstants {
 
     // CommandElement
     fun currency(currency: Text): CommandElement = CurrencyElement(currency)
+    fun discordUser(user: Text): CommandElement = DiscordUserElement(user)
 
     // EventContextKeys
 
