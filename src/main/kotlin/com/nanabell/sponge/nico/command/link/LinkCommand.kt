@@ -1,7 +1,7 @@
 package com.nanabell.sponge.nico.command.link
 
+import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.command.DiscordUserElement
-import com.nanabell.sponge.nico.command.GenArg
 import com.nanabell.sponge.nico.command.SelfSpecCommand
 import com.nanabell.sponge.nico.command.requirePlayerOrArg
 import com.nanabell.sponge.nico.discord.DiscordService
@@ -39,12 +39,12 @@ class LinkCommand : CommandExecutor, SelfSpecCommand {
                 .description(Text.of("Commands to View / Accept / Deny pending & existing Discord-Links"))
                 .permission("nico.command.link.view")
                 .executor(this)
-                .arguments(GenArg.optional(
-                        GenArg.firstParsing(
-                                GenArg.seq(
-                                        GenArg.requiringPermission(DiscordUserElement("target".toText()), "nico.command.link.discord"),
-                                        GenArg.requiringPermission(GenArg.playerOrSource("player".toText()), "nico.command.link.discord")),
-                                GenArg.requiringPermission(GenArg.playerOrSource("player".toText()), "nico.command.link.others")
+                .arguments(Args.optional(
+                        Args.firstParsing(
+                                Args.seq(
+                                        Args.requiringPermission(DiscordUserElement("target".toText()), "nico.command.link.discord"),
+                                        Args.requiringPermission(Args.playerOrSource("player".toText()), "nico.command.link.discord")),
+                                Args.requiringPermission(Args.playerOrSource("player".toText()), "nico.command.link.others")
                         )))
                 .child(acceptCommand.spec(), *acceptCommand.aliases())
                 .child(denyCommand.spec(), *denyCommand.aliases())

@@ -1,8 +1,9 @@
 package com.nanabell.sponge.nico.activity
 
+import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.activity.event.ActivityContextKeys
 import com.nanabell.sponge.nico.config.PaymentConfig
+import com.nanabell.sponge.nico.economy.currency.NicoCurrency
 import com.nanabell.sponge.nico.extensions.gold
 import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.extensions.toText
@@ -81,7 +82,7 @@ class ActivityService(private val plugin: NicoYazawa) {
                         }
 
 
-                        player.startAFK(Cause.of(EventContext.of(mapOf(ActivityContextKeys.INACTIVE to inactiveSince)), this))
+                        player.startAFK(Cause.of(EventContext.of(mapOf(NicoConstants.INACTIVE to inactiveSince)), this))
                         logger.info("Changed ${mcPlayer.name}'s status to AFK")
                     }
                 }
@@ -114,17 +115,20 @@ class ActivityService(private val plugin: NicoYazawa) {
                     if (checkPayout(paymentConfig, mcPlayer, player)) continue
 
                     val account = economy.getOrCreateAccount(player.uuid).orNull()
-                    if (account != null) {
+                    val currency = NicoCurrency.instance
+
+                    if (account != null && account.hasBalance(currency)) {
                         player.lastCooldown = System.currentTimeMillis()
 
-                        val cause = Cause.of(EventContext.of(mapOf(ActivityContextKeys.PLAYER to player)), this)
-                        val result = account.deposit(economy.defaultCurrency, BigDecimal(paymentConfig.paymentAmount), cause)
+                        val amount = BigDecimal(paymentConfig.paymentAmount)
+                        val cause = Cause.of(EventContext.of(mapOf(NicoConstants.ACTIVITY_PLAYER to player)), this)
+                        account.deposit(currency, amount, cause)
 
                         mcPlayer.sendMessage(ChatTypes.ACTION_BAR, "You have earned ".toText().gold()
-                                .concat(economy.defaultCurrency.format(result.amount).yellow())
+                                .concat(currency.format(amount).yellow())
                                 .concat(" for being active".toText().gold()))
 
-                        logger.info("Awarded ${mcPlayer.name} with ${result.amount} ${economy.defaultCurrency.pluralDisplayName.toPlain()}")
+                        logger.info("Awarded ${mcPlayer.name} with $amount ${currency.pluralDisplayName.toPlain()}")
                     } else {
                         logger.warn("Unable to award ${mcPlayer.name} with ${paymentConfig.paymentAmount} due to missing EconomyAccount")
                     }

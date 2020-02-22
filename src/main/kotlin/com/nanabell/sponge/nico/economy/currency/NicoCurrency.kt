@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.economy
+package com.nanabell.sponge.nico.economy.currency
 
 import com.nanabell.sponge.nico.extensions.bold
 import com.nanabell.sponge.nico.extensions.lightPurple
@@ -50,6 +50,6 @@ class NicoCurrency : Currency {
     }
 
     companion object {
-        val currency = NicoCurrency()
+        val instance = NicoCurrency()
     }
 }

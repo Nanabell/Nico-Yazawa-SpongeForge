@@ -1,11 +1,11 @@
 package com.nanabell.sponge.nico.link
 
 import com.google.common.collect.HashBiMap
+import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.extensions.DiscordUser
 import com.nanabell.sponge.nico.extensions.MinecraftUser
-import com.nanabell.sponge.nico.link.event.LinkEventContextKeys
 import com.nanabell.sponge.nico.link.event.LinkStateChangeEvent
 import com.nanabell.sponge.nico.store.Link
 import dev.morphia.Datastore
@@ -13,6 +13,7 @@ import dev.morphia.query.Query
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
+import org.spongepowered.api.event.cause.EventContextKeys
 import java.util.*
 
 class LinkService(private val plugin: NicoYazawa) {
@@ -58,7 +59,7 @@ class LinkService(private val plugin: NicoYazawa) {
 
         dataSource.save(Link(discordId, user.uniqueId))
 
-        val cause = Cause.of(EventContext.of(mapOf(LinkEventContextKeys.DISCORD_USER to dUser, LinkEventContextKeys.MINECRAFT_USER to user)), this)
+        val cause = Cause.of(EventContext.of(mapOf(NicoConstants.DISCORD_USER to dUser, EventContextKeys.OWNER to user)), this)
         eventManager.post(LinkStateChangeEvent(LinkState.LINKED, cause))
 
         return LinkResult.success(discordId, user.uniqueId)
@@ -75,7 +76,7 @@ class LinkService(private val plugin: NicoYazawa) {
         val link = dataSource.findAndDelete(getQuery(user.uniqueId)) ?: return LinkResult.error(LinkState.NOT_LINKED)
         val dUser =  link.fetchUser(discordService.jda)
 
-        eventManager.post(LinkStateChangeEvent(LinkState.UNLINKED, Cause.of(EventContext.of(mapOf(LinkEventContextKeys.DISCORD_USER to dUser, LinkEventContextKeys.MINECRAFT_USER to user)), this)))
+        eventManager.post(LinkStateChangeEvent(LinkState.UNLINKED, Cause.of(EventContext.of(mapOf(NicoConstants.DISCORD_USER to dUser, EventContextKeys.OWNER to user)), this)))
         return LinkResult(LinkState.UNLINKED, null)
     }
 

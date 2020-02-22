@@ -53,7 +53,7 @@ class NicoYazawa {
 
         val serviceManager = Sponge.getServiceManager()
         serviceManager.setProvider(this, Datastore::class.java, dataStore)
-        serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService(this))
+        serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService())
         serviceManager.setProvider(this, LinkService::class.java, LinkService(this))
         serviceManager.setProvider(this, DiscordService::class.java, DiscordService(this))
         serviceManager.setProvider(this, CommandRegistar::class.java, CommandRegistar(this))
@@ -81,7 +81,17 @@ class NicoYazawa {
 
     @Listener
     fun onGameReload(event: GameReloadEvent) {
-        configManager.reload()
+        // Reload Config
+        configManager.reload().also { logger.info("Reloaded Config") }
+
+        // Reload Commands
+        val commandRegistar = Sponge.getServiceManager().provideUnchecked(CommandRegistar::class.java)
+        val commandManager = Sponge.getCommandManager()
+
+        commandManager.getOwnedBy(this).forEach {
+            commandManager.removeMapping(it)
+        }
+        commandRegistar.loadCommands().also { logger.info("Reloaded Commands") }
     }
 
     companion object {

@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.command.link
 
-import com.nanabell.sponge.nico.command.GenArg
+import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.command.SelfSpecCommand
 import com.nanabell.sponge.nico.command.requirePlayerOrArg
 import com.nanabell.sponge.nico.extensions.darkRed
@@ -26,9 +26,9 @@ class UnlinkCommand : CommandExecutor, SelfSpecCommand {
     override fun spec(): CommandSpec = CommandSpec.builder()
             .description("Unlink a already Linked Discord Account".toText())
             .permission("nico.command.link.unlink.self")
-            .arguments(GenArg.optional(
-                    GenArg.requiringPermission(
-                            GenArg.player("player".toText()),
+            .arguments(Args.optional(
+                    Args.requiringPermission(
+                            Args.player("player".toText()),
                             "nico.command.link.unlink.others")))
             .executor(this)
             .build()

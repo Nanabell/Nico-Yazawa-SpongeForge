@@ -1,10 +1,10 @@
 package com.nanabell.sponge.nico.discord
 
+import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.link.LinkService
-import com.nanabell.sponge.nico.link.event.LinkEventContextKeys
 import com.nanabell.sponge.nico.link.event.LinkRequestEvent
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -44,10 +44,8 @@ class DiscordService(plugin: NicoYazawa) : ListenerAdapter() {
         setInitialReaction()
     }
 
-    fun getUserById(userId: Long?): User? = if (userId == null) null else jda.getUserById(userId)
-    fun getUserById(userId: String?): User? = if (userId == null) null else jda.getUserById(userId)
-    fun getUserTagById(userId: Long?): String? = if (userId == null) null else jda.getUserById(userId)?.asTag
-    fun getUserTagById(userId: String?): String? = if (userId == null) null else jda.getUserById(userId)?.asTag
+    fun getUserById(userId: Long): User? = jda.getUserById(userId)
+    fun getUserById(userId: String): User? = jda.getUserById(userId)
 
     fun removePending(userId: Long) {
         pendingUsername.remove(userId)
@@ -79,8 +77,8 @@ class DiscordService(plugin: NicoYazawa) : ListenerAdapter() {
         pendingUsername.remove(user.idLong)
         val username = event.message.contentRaw.split(" ").toTypedArray()[0]
         val eventContext = EventContext.builder()
-                .add(LinkEventContextKeys.MESSAGE_CHANNEL, event.channel)
-                .add(LinkEventContextKeys.DISCORD_USER, event.author)
+                .add(NicoConstants.DISCORD_CHANNEL, event.channel)
+                .add(NicoConstants.DISCORD_USER, event.author)
                 .build()
         Sponge.getEventManager().post(LinkRequestEvent(username, Cause.of(eventContext, this)))
     }

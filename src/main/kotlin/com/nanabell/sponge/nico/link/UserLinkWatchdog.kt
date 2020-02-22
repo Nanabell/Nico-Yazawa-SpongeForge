@@ -37,7 +37,6 @@ class UserLinkWatchdog(private val plugin: NicoYazawa) {
 
     private fun runWatchdog(): Runnable {
         return Runnable {
-            logger.debug("Starting UserLinkWatchdog...")
             for (player in Sponge.getServer().onlinePlayers) {
                 if (linkService.isLinked(player)) { // TODO: Possibly in the future retrieve all links at once
                     continue
@@ -49,7 +48,7 @@ class UserLinkWatchdog(private val plugin: NicoYazawa) {
                     logger.info("${player.name} has been kicked after being on the server for $seconds seconds and not having their Account linked to Discord")
                 }
             }
-            logger.info("Finished UserLinkWatchdog")
+            logger.debug("Finished UserLinkWatchdog")
         }
     }
 }

@@ -1,9 +1,9 @@
 package com.nanabell.sponge.nico.command.economy
 
+import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.command.SelfSpecCommand
-import com.nanabell.sponge.nico.economy.NicoCurrency
+import com.nanabell.sponge.nico.command.requirePlayerOrArg
 import com.nanabell.sponge.nico.extensions.orNull
-import com.nanabell.sponge.nico.extensions.red
 import com.nanabell.sponge.nico.extensions.toText
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandException
@@ -12,14 +12,13 @@ import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.args.CommandContext
 import org.spongepowered.api.command.spec.CommandExecutor
 import org.spongepowered.api.command.spec.CommandSpec
-import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.service.economy.EconomyService
 import org.spongepowered.api.service.permission.PermissionDescription
 import org.spongepowered.api.text.Text
 
 class NicoGetCommand : CommandExecutor, SelfSpecCommand {
 
-    private val serviceManager = Sponge.getServiceManager()
+    private val economy = Sponge.getServiceManager().provideUnchecked(EconomyService::class.java)
 
     override fun aliases(): Array<String> {
         return arrayOf("get")
@@ -27,30 +26,33 @@ class NicoGetCommand : CommandExecutor, SelfSpecCommand {
 
     override fun spec(): CommandSpec {
         return CommandSpec.builder()
-                .permission("nico.command.points.get.execute")
+                .permission("nico.command.points.get.base")
                 .description(Text.of("View your current Nico Points"))
+                .arguments(Args.optional(
+                        Args.requiringPermission(Args.playerOrSource("player".toText()), "nico.command.points.get")))
                 .executor(this)
                 .build()
     }
 
     override fun permissionDescriptions(builder: PermissionDescription.Builder) {
-        builder.id("nico.command.points.get.self").register()
+        builder.id("nico.command.points.get.base").register()
+        builder.id("nico.command.points.get").register()
     }
 
     @Throws(CommandException::class)
     override fun execute(src: CommandSource, args: CommandContext): CommandResult {
-        if (src !is Player) {
-            throw CommandException(Text.of("This Command can only be used by players!"))
+        val player = src.requirePlayerOrArg(args, "player")
+        val account = economy.getOrCreateAccount(player.uniqueId).orNull()
+                ?: throw CommandException("Unable to get EconomyAccount. Wrong user?".toText())
+
+        val message = "Your Currency Report:".toText().concat(Text.NEW_LINE).toBuilder()
+        economy.currencies.forEach {
+            if (account.hasBalance(it)) {
+                message.append(it.format(account.getBalance(it))).append(Text.NEW_LINE)
+            }
         }
 
-        val service = serviceManager.provideUnchecked(EconomyService::class.java)
-        val account = service.getOrCreateAccount(src.uniqueId).orNull()
-        if (account == null) {
-            src.sendMessage("You need to Link your Discord Account to be able to use Nico Points!".toText().red())
-            return CommandResult.success()
-        }
-
-        src.sendMessage("You currently have ".toText().concat(NicoCurrency.currency.format(account.getBalance(NicoCurrency.currency))))
+        src.sendMessage(message.build())
         return CommandResult.success()
     }
 }

@@ -1,9 +1,11 @@
 package com.nanabell.sponge.nico.economy
 
-import com.nanabell.sponge.nico.NicoYazawa
+import com.nanabell.sponge.nico.economy.account.DelegatingAccount
+import com.nanabell.sponge.nico.economy.currency.MakiCurrency
+import com.nanabell.sponge.nico.economy.currency.NicoCurrency
+import com.nanabell.sponge.nico.extensions.toMinecraftUser
 import com.nanabell.sponge.nico.extensions.toOptional
 import com.nanabell.sponge.nico.store.Link
-import com.nanabell.sponge.nico.store.UserData
 import dev.morphia.Datastore
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.service.context.ContextCalculator
@@ -13,61 +15,52 @@ import org.spongepowered.api.service.economy.account.Account
 import org.spongepowered.api.service.economy.account.UniqueAccount
 import java.util.*
 
-class NicoEconomyService(plugin: NicoYazawa) : EconomyService {
+class NicoEconomyService : EconomyService {
 
     private val dataStore = Sponge.getServiceManager().provideUnchecked(Datastore::class.java)
-    private val configManager = plugin.configManager
 
     override fun getDefaultCurrency(): Currency {
-        return NicoCurrency.currency
+        return MakiCurrency.instance
     }
 
     override fun getCurrencies(): Set<Currency> {
-        return setOf(defaultCurrency)
+        return setOf(defaultCurrency, NicoCurrency.instance)
     }
 
     override fun hasAccount(uuid: UUID): Boolean {
-        val link = dataStore.createQuery(Link::class.java).field("minecraftId").equal(uuid).first() ?: return false
-
-        return hasAccount(link.discordId.toString())
+        return uuid.toMinecraftUser() != null
     }
 
     override fun hasAccount(identifier: String): Boolean {
-        return dataStore.createQuery(UserData::class.java).field("userId").equal(identifier).first() != null
+        return identifier.toMinecraftUser() != null
     }
 
-    @Suppress("DuplicatedCode")
     override fun getOrCreateAccount(uuid: UUID): Optional<UniqueAccount> {
-        val link = dataStore.createQuery(Link::class.java).field("minecraftId").equal(uuid).first() ?: return Optional.empty()
-        val identifier = link.discordId.toString()
-        if (hasAccount(identifier))
-            return NicoAccount(identifier).toOptional()
+        val user = uuid.toMinecraftUser() ?: return Optional.empty()
+        val builder = DelegatingAccount.builder()
 
-        if (configManager.get().economyConfig.createAccounts) {
-            val userData = UserData(identifier, 0, 0)
-            dataStore.save(userData)
+        val link = getLink(user.uniqueId)
+        if (link != null)
+            builder.addNicoCurrency(link.discordId)
 
-            return NicoAccount(identifier).toOptional()
-        }
-
-
-        return Optional.empty()
+        return builder.build(user).toOptional()
     }
 
-    @Suppress("DuplicatedCode")
     override fun getOrCreateAccount(identifier: String): Optional<Account> {
-        if (hasAccount(identifier))
-            return NicoAccount(identifier).toOptional()
+        val user = identifier.toMinecraftUser() ?: return Optional.empty()
+        val builder = DelegatingAccount.builder()
 
-        if (configManager.get().economyConfig.createAccounts) {
-            val userData = UserData(identifier, 0, 0)
-            dataStore.save(userData)
+        val link = getLink(user.uniqueId)
+        if (link != null)
+            builder.addNicoCurrency(link.discordId)
 
-            return NicoAccount(identifier).toOptional()
-        }
-
-        return Optional.empty()
+        return builder.build(user).toOptional()
     }
 
-    override fun registerContextCalculator(calculator: ContextCalculator<Account>) {}
+    override fun registerContextCalculator(calculator: ContextCalculator<Account>) {
+    }
+
+    private fun getLink(uuid: UUID): Link? {
+        return dataStore.createQuery(Link::class.java).field("minecraftId").equal(uuid).first()
+    }
 }

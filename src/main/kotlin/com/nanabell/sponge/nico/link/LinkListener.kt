@@ -1,10 +1,10 @@
 package com.nanabell.sponge.nico.link
 
+import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.config.DiscordLinkConfig
 import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.extensions.*
-import com.nanabell.sponge.nico.link.event.LinkEventContextKeys
 import com.nanabell.sponge.nico.link.event.LinkRequestEvent
 import com.nanabell.sponge.nico.link.event.LinkStateChangeEvent
 import net.dv8tion.jda.api.JDA
@@ -18,6 +18,7 @@ import org.spongepowered.api.event.EventManager
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
+import org.spongepowered.api.event.cause.EventContextKeys
 import org.spongepowered.api.service.permission.PermissionService
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.action.TextActions
@@ -37,7 +38,7 @@ class LinkListener {
     @Listener
     fun onLinkRequest(event: LinkRequestEvent) {
         val context = event.cause.context
-        val user = context.get(LinkEventContextKeys.DISCORD_USER).orNull()
+        val user = context.get(NicoConstants.DISCORD_USER).orNull()
         if (user == null) {
             logger.error("OnLinkRequest did not include a context User. $event")
             return
@@ -52,14 +53,14 @@ class LinkListener {
         if (player == null) {
             eventManager.post(LinkStateChangeEvent(LinkState.USER_NOT_FOUND, Cause.of(EventContext.empty(), this)))
 
-            context.get(LinkEventContextKeys.MESSAGE_CHANNEL).ifPresent { messageChannel: MessageChannel ->
+            context.get(NicoConstants.DISCORD_CHANNEL).ifPresent { messageChannel: MessageChannel ->
                 messageChannel.sendMessage(event.target + " is not online.\nProvide the name of an online player.").queue()
             }
             return
         }
 
         if (linkService.isLinked(player)) {
-            context.get(LinkEventContextKeys.MESSAGE_CHANNEL).ifPresent {
+            context.get(NicoConstants.DISCORD_CHANNEL).ifPresent {
                 it.sendMessage("${event.target} is already Linked.\nProvide the name of an online player.").queue()
             }
             return
@@ -89,13 +90,13 @@ class LinkListener {
             return
 
         val discordConfig = config.get().discordLinkConfig
-        val mUser = event.context[LinkEventContextKeys.MINECRAFT_USER].orNull()
+        val mUser = event.context[EventContextKeys.OWNER].orNull()
         if (mUser == null) {
             logger.error("Missing LinkEventContextKeys#MINECRAFT_USER on LinkStateChangeEvent with LinkState#LINKED")
             return
         }
 
-        val dUser = event.context[LinkEventContextKeys.DISCORD_USER].orNull()
+        val dUser = event.context[NicoConstants.DISCORD_USER].orNull()
         if (dUser == null) {
             logger.error("Missing LinkEventContextKeys#DISCORD_USER on LinkStateChangeEvent with LinkState#LINKED")
             return

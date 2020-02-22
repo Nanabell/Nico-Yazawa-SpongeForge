@@ -10,7 +10,6 @@ import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandException
 import org.spongepowered.api.command.CommandManager
 import org.spongepowered.api.command.CommandSource
-import org.spongepowered.api.command.args.CommandArgs
 import org.spongepowered.api.command.args.CommandContext
 import org.spongepowered.api.command.args.GenericArguments
 import org.spongepowered.api.command.spec.CommandSpec
@@ -28,7 +27,7 @@ class CommandRegistar(private val plugin: NicoYazawa) {
         loadCommands()
     }
 
-    private fun loadCommands() { // Currency
+    fun loadCommands() { // Currency
         addCommand(NicoGetCommand())
         addCommand(NicoSetCommand())
         // Discord-Link
@@ -58,4 +57,4 @@ fun CommandSource.requirePlayerOrArg(args: CommandContext, playerArg: String): P
     return if (this is Player) this else args.requireOne(playerArg)
 }
 
-typealias GenArg = GenericArguments
+typealias Args = GenericArguments

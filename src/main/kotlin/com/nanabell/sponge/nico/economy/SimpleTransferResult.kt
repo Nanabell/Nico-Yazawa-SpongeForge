@@ -1,5 +1,6 @@
 package com.nanabell.sponge.nico.economy
 
+import com.nanabell.sponge.nico.economy.currency.NicoCurrency
 import org.spongepowered.api.service.context.Context
 import org.spongepowered.api.service.economy.Currency
 import org.spongepowered.api.service.economy.account.Account
@@ -9,7 +10,7 @@ import org.spongepowered.api.service.economy.transaction.TransferResult
 import java.math.BigDecimal
 import java.util.*
 
-data class NicoTransferResult(
+data class SimpleTransferResult(
         private val account: Account,
         private val to: Account,
         private val amount: BigDecimal,
@@ -26,7 +27,7 @@ data class NicoTransferResult(
     }
 
     override fun getCurrency(): Currency {
-        return NicoCurrency.currency
+        return NicoCurrency.instance
     }
 
     override fun getAmount(): BigDecimal {
