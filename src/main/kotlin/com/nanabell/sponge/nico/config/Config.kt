@@ -29,9 +29,7 @@ class Config<T>(clazz: Class<T>, name: String, configDir: Path) {
         this.loader = HoconConfigurationLoader.builder().setPath(file).build()
         this.config = load()
 
-        if (Files.size(file) == 0L) {
-            save()
-        }
+        save()
     }
 
     private fun load(): T {
