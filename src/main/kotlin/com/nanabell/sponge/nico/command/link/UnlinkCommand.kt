@@ -25,17 +25,14 @@ class UnlinkCommand : CommandExecutor, SelfSpecCommand {
 
     override fun spec(): CommandSpec = CommandSpec.builder()
             .description("Unlink a already Linked Discord Account".toText())
-            .permission("nico.command.link.unlink.self")
-            .arguments(Args.optional(
-                    Args.requiringPermission(
-                            Args.player("player".toText()),
-                            "nico.command.link.unlink.others")))
+            .permission("nico.command.unlink.base")
+            .arguments(Args.optional(Args.requiringPermission(Args.playerOrSource("player".toText()), "nico.command.unlink")))
             .executor(this)
             .build()
 
     override fun permissionDescriptions(builder: PermissionDescription.Builder) {
-        builder.id("nico.command.link.unlink.self").register()
-        builder.id("nico.command.link.unlink.others").register()
+        builder.id("nico.command.unlink.base").register()
+        builder.id("nico.command.unlink").register()
     }
 
     override fun execute(src: CommandSource, args: CommandContext): CommandResult {

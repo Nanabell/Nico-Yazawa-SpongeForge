@@ -1,5 +1,6 @@
 package com.nanabell.sponge.nico.command.link
 
+import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.command.SelfSpecCommand
 import com.nanabell.sponge.nico.command.requirePlayerOrArg
 import com.nanabell.sponge.nico.extensions.gold
@@ -11,10 +12,8 @@ import org.spongepowered.api.command.CommandException
 import org.spongepowered.api.command.CommandResult
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.args.CommandContext
-import org.spongepowered.api.command.args.GenericArguments
 import org.spongepowered.api.command.spec.CommandExecutor
 import org.spongepowered.api.command.spec.CommandSpec
-import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.service.permission.PermissionDescription
 import org.spongepowered.api.text.Text
 
@@ -30,17 +29,15 @@ class LinkDenyCommand : CommandExecutor, SelfSpecCommand {
     override fun spec(): CommandSpec {
         return CommandSpec.builder()
                 .description(Text.of("Deny a pending Discord-Link request"))
-                .permission("nico.command.link.deny.self")
-                .arguments(GenericArguments.optional(
-                        GenericArguments.requiringPermission(
-                                GenericArguments.player(Text.of("target")), "nico.command.link.deny.others")))
+                .permission("nico.command.deny.base")
+                .arguments(Args.optional(Args.requiringPermission(Args.player(Text.of("target")), "nico.command.deny")))
                 .executor(this)
                 .build()
     }
 
     override fun permissionDescriptions(builder: PermissionDescription.Builder) {
-        builder.id("nico.command.link.deny.self").register()
-        builder.id("nico.command.link.deny.others").register()
+        builder.id("nico.command.deny.base").register()
+        builder.id("nico.command.deny").register()
     }
 
     @Throws(CommandException::class)

@@ -1,5 +1,6 @@
 package com.nanabell.sponge.nico.command.link
 
+import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.command.SelfSpecCommand
 import com.nanabell.sponge.nico.command.requirePlayerOrArg
 import com.nanabell.sponge.nico.extensions.darkRed
@@ -13,10 +14,8 @@ import org.spongepowered.api.command.CommandException
 import org.spongepowered.api.command.CommandResult
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.args.CommandContext
-import org.spongepowered.api.command.args.GenericArguments
 import org.spongepowered.api.command.spec.CommandExecutor
 import org.spongepowered.api.command.spec.CommandSpec
-import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.service.permission.PermissionDescription
 import org.spongepowered.api.text.Text
 
@@ -31,17 +30,15 @@ class LinkAcceptCommand : CommandExecutor, SelfSpecCommand {
     override fun spec(): CommandSpec {
         return CommandSpec.builder()
                 .description(Text.of("Accept a pending Discord-Link Request"))
-                .permission("nico.command.link.accept.self")
-                .arguments(GenericArguments.optional(
-                        GenericArguments.requiringPermission(
-                                GenericArguments.player(Text.of("target")), "nico.link.accept.others")))
+                .permission("nico.command.accept.base")
+                .arguments(Args.optional(Args.requiringPermission(Args.playerOrSource(Text.of("target")), "nico.command.accept")))
                 .executor(this)
                 .build()
     }
 
     override fun permissionDescriptions(builder: PermissionDescription.Builder) {
-        builder.id("nico.command.link.accept.self").register()
-        builder.id("nico.command.link.accept.others").register()
+        builder.id("nico.command.accept.base").register()
+        builder.id("nico.command.accept").register()
     }
 
     @Throws(CommandException::class)

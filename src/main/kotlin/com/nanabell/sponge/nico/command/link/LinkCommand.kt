@@ -37,17 +37,17 @@ class LinkCommand : CommandExecutor, SelfSpecCommand {
 
         return CommandSpec.builder()
                 .description(Text.of("Commands to View / Accept / Deny pending & existing Discord-Links"))
-                .permission("nico.command.link.view")
-                .executor(this)
+                .permission("nico.command.link.base")
                 .arguments(Args.optional(Args.seq(
                         Args.playerOrSource("player".toText()),
                         Args.requiringPermission(NicoConstants.discordUser("target".toText()), "nico.command.link")
                 )))
+                .executor(this)
                 .build()
     }
 
     override fun permissionDescriptions(builder: PermissionDescription.Builder) {
-        builder.id("nico.command.link.view").register()
+        builder.id("nico.command.link.base").register()
         builder.id("nico.command.link").register()
     }
 

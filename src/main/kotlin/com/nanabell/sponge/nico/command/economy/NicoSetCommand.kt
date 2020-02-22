@@ -34,25 +34,18 @@ class NicoSetCommand : CommandExecutor, SelfSpecCommand {
     override fun spec(): CommandSpec {
         return CommandSpec.builder()
                 .description(Text.of("Set your Balance to a specified amount"))
-                .permission("nico.command.points.set.base")
-                .arguments(Args.firstParsing(
-                        Args.requiringPermission(Args.seq(
-                                Args.playerOrSource("player".toText()),
-                                NicoConstants.currency("currency".toText()),
-                                Args.bigDecimal("amount".toText())
-                        ), "nico.command.points.set")/*,
-                        Args.seq(
-                                Args.bigDecimal("amount".toText()),
-                                NicoConstants.currency("currency".toText())
-                        )*/
+                .permission("nico.command.set.base")
+                .arguments(Args.seq(
+                        Args.playerOrSource("player".toText()),
+                        NicoConstants.currency("currency".toText()),
+                        Args.bigDecimal("amount".toText())
                 ))
                 .executor(this)
                 .build()
     }
 
     override fun permissionDescriptions(builder: PermissionDescription.Builder) {
-        builder.id("nico.command.points.set.base").register()
-        builder.id("nico.command.points.set").register()
+        builder.id("nico.command.set.base").register()
     }
 
     @Throws(CommandException::class)

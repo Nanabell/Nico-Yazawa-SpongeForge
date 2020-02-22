@@ -26,17 +26,16 @@ class NicoGetCommand : CommandExecutor, SelfSpecCommand {
 
     override fun spec(): CommandSpec {
         return CommandSpec.builder()
-                .permission("nico.command.points.get.base")
+                .permission("nico.command.get.base")
                 .description(Text.of("View your current Nico Points"))
-                .arguments(Args.optional(
-                        Args.requiringPermission(Args.playerOrSource("player".toText()), "nico.command.points.get")))
+                .arguments(Args.optional(Args.requiringPermission(Args.playerOrSource("player".toText()), "nico.command.get")))
                 .executor(this)
                 .build()
     }
 
     override fun permissionDescriptions(builder: PermissionDescription.Builder) {
-        builder.id("nico.command.points.get.base").register()
-        builder.id("nico.command.points.get").register()
+        builder.id("nico.command.get.base").register()
+        builder.id("nico.command.get").register()
     }
 
     @Throws(CommandException::class)
