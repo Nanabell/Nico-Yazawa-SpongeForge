@@ -23,7 +23,7 @@ class LinkDenyCommand : CommandExecutor, SelfSpecCommand {
 
 
     override fun aliases(): Array<String> {
-        return arrayOf("deny", "d")
+        return arrayOf("deny")
     }
 
     override fun spec(): CommandSpec {

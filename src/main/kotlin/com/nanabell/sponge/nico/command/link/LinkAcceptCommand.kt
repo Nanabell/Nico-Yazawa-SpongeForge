@@ -24,7 +24,7 @@ class LinkAcceptCommand : CommandExecutor, SelfSpecCommand {
     private val linkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
 
     override fun aliases(): Array<String> {
-        return arrayOf("accept", "a")
+        return arrayOf("accept")
     }
 
     override fun spec(): CommandSpec {
