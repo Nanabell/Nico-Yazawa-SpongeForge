@@ -73,7 +73,7 @@ class NicoYazawa @Inject constructor(@ConfigDir(sharedRoot = false) private val 
     @Listener
     fun onGameReload(event: GameReloadEvent) {
         // Reload Config
-        configManager.reload().also { logger.info("Reloaded Config") }
+        config.reload().also { logger.info("Reloaded Config") }
 
         // Reload Commands
         val commandRegistar = Sponge.getServiceManager().provideUnchecked(CommandRegistar::class.java)
@@ -99,7 +99,7 @@ class NicoYazawa @Inject constructor(@ConfigDir(sharedRoot = false) private val 
 
         @JvmStatic
         fun getConfig(): Config<MainConfig> {
-            return instance.configManager
+            return instance.config
         }
     }
 }

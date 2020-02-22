@@ -16,7 +16,13 @@ data class PaymentConfig(
         private val _paymentChance: Int = 100,
 
         @Setting(value = "required-permission", comment = "Required Permission to be eligible for this Payment [Empty for no requirement]")
-        val requiredPermission: String = ""
+        val requiredPermission: String = "",
+
+        @Setting("premium-group")
+        val premiumGroup: String = "",
+
+        @Setting("premium-bonus")
+        val premiumBonus: Long = 0
 
       ) {
         val paymentAmount get() = _paymentAmount.coerceAtLeast(0)

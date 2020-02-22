@@ -4,10 +4,7 @@ import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.config.PaymentConfig
 import com.nanabell.sponge.nico.economy.currency.NicoCurrency
-import com.nanabell.sponge.nico.extensions.gold
-import com.nanabell.sponge.nico.extensions.orNull
-import com.nanabell.sponge.nico.extensions.toText
-import com.nanabell.sponge.nico.extensions.yellow
+import com.nanabell.sponge.nico.extensions.*
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.living.player.User
@@ -24,15 +21,14 @@ import java.util.concurrent.TimeUnit
 
 class ActivityService(private val plugin: NicoYazawa) {
 
-    private val economy = Sponge.getServiceManager().provideUnchecked(EconomyService::class.java)
-    private val activityPlayers = ConcurrentHashMap<UUID, ActivityPlayer>()
-    private val configManager = plugin.configManager
     private val logger = NicoYazawa.getLogger()
+    private val config = NicoYazawa.getConfig()
+    private val economy = Sponge.getServiceManager().provideUnchecked(EconomyService::class.java)
 
-    private lateinit var listener: ActivityListener
+    private val activityPlayers = ConcurrentHashMap<UUID, ActivityPlayer>()
 
     fun init() {
-        listener = ActivityListener(plugin, this)
+        Sponge.getEventManager().registerListeners(plugin, ActivityListener(this))
 
         // Main Activity Tracker Task
         Sponge.getScheduler().createTaskBuilder()
@@ -59,7 +55,7 @@ class ActivityService(private val plugin: NicoYazawa) {
 
     private fun activityTask(): Runnable {
         return Runnable {
-            val config = configManager.get()
+            val config = config.get()
 
             logger.debug("Running main activity task")
             for ((_, player) in activityPlayers) {
@@ -76,7 +72,7 @@ class ActivityService(private val plugin: NicoYazawa) {
                     }
 
                     if (inactiveSince >= afkTimeout) {
-                        if (mcPlayer.hasPermission("nico.activity.afk-immunity")){
+                        if (mcPlayer.hasPermission("nico.activity.afk-immunity")) {
                             logger.debug("Skip setting AFK on user ${mcPlayer.name} because of 'nico.activity.afk-immunity' permission")
                             continue
                         }
@@ -105,13 +101,13 @@ class ActivityService(private val plugin: NicoYazawa) {
 
 
 
-                if (configManager.get().activityConfig.disabledWorlds.contains(mcPlayer.world.name)) {
+                if (this.config.get().activityConfig.disabledWorlds.contains(mcPlayer.world.name)) {
                     logger.debug("Skipping player ${mcPlayer.name}. Player is in disabled world ${mcPlayer.world.name}")
                     continue // Your Nico points are in another Castle (World)
                 }
 
 
-                payout@ for (paymentConfig in configManager.get().activityConfig.paymentConfigs) {
+                payout@ for (paymentConfig in this.config.get().activityConfig.paymentConfigs) {
                     if (checkPayout(paymentConfig, mcPlayer, player)) continue
 
                     val account = economy.getOrCreateAccount(player.uuid).orNull()
@@ -120,7 +116,10 @@ class ActivityService(private val plugin: NicoYazawa) {
                     if (account != null && account.hasBalance(currency)) {
                         player.lastCooldown = System.currentTimeMillis()
 
-                        val amount = BigDecimal(paymentConfig.paymentAmount)
+                        var amount = BigDecimal(paymentConfig.paymentAmount)
+                        if (mcPlayer.subjectData.hasParent(paymentConfig.premiumGroup))
+                            amount = amount.add(BigDecimal(paymentConfig.premiumBonus))
+
                         val cause = Cause.of(EventContext.of(mapOf(NicoConstants.ACTIVITY_PLAYER to player)), this)
                         account.deposit(currency, amount, cause)
 

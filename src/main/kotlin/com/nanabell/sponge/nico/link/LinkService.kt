@@ -16,32 +16,28 @@ import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.event.cause.EventContextKeys
 import java.util.*
 
-class LinkService(private val plugin: NicoYazawa) {
+class LinkService {
 
     private val dataSource = Sponge.getServiceManager().provideUnchecked(Datastore::class.java)
     private val discordService by lazy { Sponge.getServiceManager().provideUnchecked(DiscordService::class.java) }
     private val eventManager = Sponge.getEventManager()
 
-    private val pendingLinks = HashBiMap.create<Long, UUID>()
+    private val pendingLinks = HashBiMap.create<MinecraftUser, DiscordUser>()
 
     fun init() {
-        Sponge.getEventManager().registerListeners(plugin, LinkListener())
+        Sponge.getEventManager().registerListeners(NicoYazawa.getPlugin(), LinkListener())
     }
 
     fun isPending(user: DiscordUser): Boolean {
-        return pendingLinks.containsKey(user.idLong)
-    }
-
-    fun isPending(user: MinecraftUser): Boolean {
-        return pendingLinks.containsValue(user.uniqueId)
+        return pendingLinks.containsValue(user)
     }
 
     fun addPending(discordUser: DiscordUser, minecraftUser: MinecraftUser): Boolean {
-        return pendingLinks.putIfAbsent(discordUser.idLong, minecraftUser.uniqueId) == null
+        return pendingLinks.putIfAbsent(minecraftUser, discordUser) == null
     }
 
     fun removePending(user: MinecraftUser): Boolean {
-        return pendingLinks.inverse().remove(user.uniqueId) != null
+        return pendingLinks.remove(user) != null
     }
 
     fun isLinked(user: MinecraftUser): Boolean {
@@ -54,15 +50,14 @@ class LinkService(private val plugin: NicoYazawa) {
 
     fun confirmLink(user: MinecraftUser): LinkResult {
         if (isLinked(user)) return LinkResult.error(LinkState.ALREADY_LINKED)
-        val discordId = pendingLinks.inverse().remove(user.uniqueId) ?: return LinkResult.error(LinkState.NO_LINK_REQUEST)
-        val dUser = discordService.getUserById(discordId) ?: return LinkResult.error(LinkState.USER_NOT_FOUND)
+        val discordUser = pendingLinks.remove(user) ?: return LinkResult.error(LinkState.NO_LINK_REQUEST)
 
-        dataSource.save(Link(discordId, user.uniqueId))
+        dataSource.save(Link(discordUser.idLong, user.uniqueId))
 
-        val cause = Cause.of(EventContext.of(mapOf(NicoConstants.DISCORD_USER to dUser, EventContextKeys.OWNER to user)), this)
+        val cause = Cause.of(EventContext.of(mapOf(NicoConstants.DISCORD_USER to discordUser, EventContextKeys.OWNER to user)), this)
         eventManager.post(LinkStateChangeEvent(LinkState.LINKED, cause))
 
-        return LinkResult.success(discordId, user.uniqueId)
+        return LinkResult.success(discordUser.idLong, user.uniqueId)
     }
 
     fun link(dUser: DiscordUser, mUser: MinecraftUser): LinkResult {

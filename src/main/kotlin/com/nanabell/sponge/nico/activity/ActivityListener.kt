@@ -1,8 +1,6 @@
 package com.nanabell.sponge.nico.activity
 
-import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.extensions.orNull
-import org.spongepowered.api.Sponge
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.action.InteractEvent
 import org.spongepowered.api.event.cause.EventContextKeys
@@ -11,11 +9,7 @@ import org.spongepowered.api.event.entity.MoveEntityEvent
 import org.spongepowered.api.event.message.MessageChannelEvent
 import org.spongepowered.api.event.network.ClientConnectionEvent
 
-class ActivityListener(plugin: NicoYazawa, private val service: ActivityService) {
-
-    init {
-        Sponge.getEventManager().registerListeners(plugin, this)
-    }
+class ActivityListener(private val service: ActivityService) {
 
     @Listener
     fun onPlayerJoin(event: ClientConnectionEvent.Join) {
