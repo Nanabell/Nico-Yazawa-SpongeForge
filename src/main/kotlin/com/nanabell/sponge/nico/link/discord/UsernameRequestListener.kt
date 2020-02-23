@@ -1,9 +1,9 @@
-package com.nanabell.sponge.nico.discord
+package com.nanabell.sponge.nico.link.discord
 
 import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.discord.event.UserAcceptedEvent
 import com.nanabell.sponge.nico.link.LinkService
+import com.nanabell.sponge.nico.link.discord.event.UserAcceptedEvent
 import com.nanabell.sponge.nico.link.event.LinkRequestEvent
 import net.dv8tion.jda.api.entities.PrivateChannel
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
@@ -18,8 +18,8 @@ import javax.annotation.Nonnull
 
 class UsernameRequestListener : ListenerAdapter() {
 
-    private val logger = NicoYazawa.getLogger()
-    private val config = NicoYazawa.getConfig()
+    private val logger = NicoYazawa.getPlugin().getLogger("UsernameRequestListener")
+    private val config = NicoYazawa.getPlugin().getConfig()
     private val pending: MutableSet<Long> = HashSet()
     private val linkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
 

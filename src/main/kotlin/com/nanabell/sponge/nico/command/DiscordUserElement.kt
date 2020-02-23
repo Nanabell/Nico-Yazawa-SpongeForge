@@ -1,8 +1,8 @@
 package com.nanabell.sponge.nico.command
 
-import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.extensions.toText
+import com.nanabell.sponge.nico.link.discord.DiscordService
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.args.CommandArgs

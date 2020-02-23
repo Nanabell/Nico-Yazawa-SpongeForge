@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.discord.event
+package com.nanabell.sponge.nico.link.discord.event
 
 import org.spongepowered.api.event.Event
 import org.spongepowered.api.event.cause.Cause
