@@ -58,16 +58,14 @@ data class DiscordLinkConfig(
             val minecraftSync: Boolean = true,
 
             @Setting("troops", comment = "Troops which define Syncing rules. Look at examples for Pattern")
-            private val _troops: List<String> = listOf()
+            var _troops: List<String> = listOf()
     ) {
 
-        private val troops: Map<TroopSource, List<Troop>>
-
-        init {
-            troops = _troops.mapNotNull {
+        val troops: Map<TroopSource, List<Troop>> by lazy {
+            _troops.mapNotNull {
                 val split = when {
-                    it.contains("==>") -> Pair(TroopSource.MINECRAFT, it.split("==>"))
-                    it.contains("<==") -> Pair(TroopSource.DISCORD, it.split("<=="))
+                    it.contains("==>") -> Pair(TroopSource.DISCORD, it.split("==>"))
+                    it.contains("<==") -> Pair(TroopSource.MINECRAFT, it.split("<=="))
                     else -> return@mapNotNull null
                 }
 
