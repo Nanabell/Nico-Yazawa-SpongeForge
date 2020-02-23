@@ -31,6 +31,9 @@ class CommandRegistar(private val plugin: NicoYazawa) {
     }
 
     fun loadCommands() {
+        // Admin
+        addCommand(DummyCommand())
+
         // Currency
         addCommand(NicoGetCommand())
         addCommand(NicoSetCommand())
