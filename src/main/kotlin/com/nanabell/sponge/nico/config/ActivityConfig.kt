@@ -4,7 +4,7 @@ import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
 @ConfigSerializable
-class ActivityConfig(
+data class ActivityConfig(
 
         @Setting("enabled")
         val enabled: Boolean = true,
