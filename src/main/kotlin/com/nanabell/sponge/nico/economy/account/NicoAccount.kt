@@ -14,7 +14,7 @@ import java.math.BigDecimal
 
 class NicoAccount(private val userId: Long) : DatabaseAccount(), CurrencyAccount {
 
-    private val config = NicoYazawa.getConfig()
+    private val config = NicoYazawa.getPlugin().getConfig()
     private val event = Sponge.getEventManager()
 
     private lateinit var parent: Account

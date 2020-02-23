@@ -19,16 +19,20 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
-class ActivityService(private val plugin: NicoYazawa) {
+class ActivityService {
 
-    private val logger = NicoYazawa.getLogger()
-    private val config = NicoYazawa.getConfig()
+    private val logger = NicoYazawa.getPlugin().getLogger(javaClass.simpleName)
+    private val config = NicoYazawa.getPlugin().getConfig()
     private val economy = Sponge.getServiceManager().provideUnchecked(EconomyService::class.java)
 
     private val activityPlayers = ConcurrentHashMap<UUID, ActivityPlayer>()
 
     fun init() {
-        Sponge.getEventManager().registerListeners(plugin, ActivityListener(this))
+        if (!config.get().activityConfig.enabled) {
+            return
+        }
+
+        Sponge.getEventManager().registerListeners(NicoYazawa.getPlugin(), ActivityListener(this))
 
         // Main Activity Tracker Task
         Sponge.getScheduler().createTaskBuilder()
@@ -37,11 +41,11 @@ class ActivityService(private val plugin: NicoYazawa) {
                 .delay(2, TimeUnit.MINUTES)
                 .interval(2, TimeUnit.MINUTES)
                 .execute(activityTask())
-                .submit(plugin)
+                .submit(NicoYazawa.getPlugin())
 
 
         // reset Daily Max payouts at 00:15:00 every day
-        Sponge.getScheduler().createAsyncExecutor(plugin).scheduleAtFixedRate(
+        Sponge.getScheduler().createAsyncExecutor(NicoYazawa.getPlugin()).scheduleAtFixedRate(
                 dailyReset(),
                 calculateInitialDelay(),
                 TimeUnit.DAYS.toSeconds(1),

@@ -3,9 +3,9 @@ package com.nanabell.sponge.nico.link
 import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.config.DiscordLinkConfig
-import com.nanabell.sponge.nico.discord.DiscordService
-import com.nanabell.sponge.nico.discord.event.UserAcceptedEvent
 import com.nanabell.sponge.nico.extensions.*
+import com.nanabell.sponge.nico.link.discord.DiscordService
+import com.nanabell.sponge.nico.link.discord.event.UserAcceptedEvent
 import com.nanabell.sponge.nico.link.event.LinkRequestEvent
 import com.nanabell.sponge.nico.link.event.LinkStateChangeEvent
 import net.dv8tion.jda.api.JDA
@@ -27,8 +27,8 @@ import org.spongepowered.api.text.format.TextColors
 
 class LinkListener {
 
-    private val logger = NicoYazawa.getLogger()
-    private val config = NicoYazawa.getConfig()
+    private val logger = NicoYazawa.getPlugin().getLogger("LinkListener")
+    private val config = NicoYazawa.getPlugin().getConfig()
 
     private val discordService = Sponge.getServiceManager().provideUnchecked(DiscordService::class.java)
     private val linkService: LinkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)

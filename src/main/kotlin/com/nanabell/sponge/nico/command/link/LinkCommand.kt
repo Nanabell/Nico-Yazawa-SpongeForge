@@ -4,7 +4,6 @@ import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.command.SelfSpecCommand
 import com.nanabell.sponge.nico.command.requirePlayerOrArg
-import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.extensions.*
 import com.nanabell.sponge.nico.link.LinkService
 import com.nanabell.sponge.nico.link.LinkState
@@ -17,7 +16,6 @@ import org.spongepowered.api.command.args.CommandContext
 import org.spongepowered.api.command.spec.CommandExecutor
 import org.spongepowered.api.command.spec.CommandSpec
 import org.spongepowered.api.service.permission.PermissionDescription
-import org.spongepowered.api.service.user.UserStorageService
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.format.TextColors
 
@@ -74,8 +72,8 @@ class LinkCommand : CommandExecutor, SelfSpecCommand {
             return CommandResult.success()
         }
 
-        val discordUser = link.fetchUser(Sponge.getServiceManager().provideUnchecked(DiscordService::class.java).jda)
-        val minecraftUser = link.fetchUser(Sponge.getServiceManager().provideUnchecked(UserStorageService::class.java))
+        val discordUser = link.fetchDiscordUser()
+        val minecraftUser = link.fetchDiscordUser()
         val msg = Text.builder("Account Linking Status:")
                 .color(TextColors.GOLD)
                 .append(Text.NEW_LINE)

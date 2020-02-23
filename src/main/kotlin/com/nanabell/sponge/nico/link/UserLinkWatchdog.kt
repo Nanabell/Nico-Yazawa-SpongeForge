@@ -8,16 +8,16 @@ import org.spongepowered.api.event.network.ClientConnectionEvent
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class UserLinkWatchdog(private val plugin: NicoYazawa) {
+class UserLinkWatchdog {
 
-    private val logger = NicoYazawa.getLogger()
-    private val config = NicoYazawa.getConfig()
+    private val logger = NicoYazawa.getPlugin().getLogger(javaClass.simpleName)
+    private val config = NicoYazawa.getPlugin().getConfig()
     private val linkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
 
     private val joinTimes: MutableMap<UUID, Long> = mutableMapOf()
 
     fun init() {
-        Sponge.getEventManager().registerListeners(plugin, this)
+        Sponge.getEventManager().registerListeners(NicoYazawa.getPlugin(), this)
 
         if (config.get().discordLinkConfig.kickUnlinked)
             Sponge.getScheduler().createTaskBuilder()
@@ -26,7 +26,7 @@ class UserLinkWatchdog(private val plugin: NicoYazawa) {
                     .delay(config.get().discordLinkConfig.kickInterval * 2, TimeUnit.SECONDS)
                     .interval(config.get().discordLinkConfig.kickInterval, TimeUnit.SECONDS)
                     .execute(runWatchdog())
-                    .submit(plugin)
+                    .submit(NicoYazawa.getPlugin())
     }
 
     @Listener

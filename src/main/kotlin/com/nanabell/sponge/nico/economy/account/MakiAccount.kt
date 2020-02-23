@@ -15,7 +15,7 @@ import java.util.*
 
 class MakiAccount(private val uuid: UUID) : DatabaseAccount(), CurrencyAccount {
 
-    private val config = NicoYazawa.getConfig()
+    private val config = NicoYazawa.getPlugin().getConfig()
     private val event = Sponge.getEventManager()
 
     private lateinit var parent: Account

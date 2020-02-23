@@ -1,6 +1,7 @@
 package com.nanabell.sponge.nico.command
 
 import com.nanabell.sponge.nico.NicoYazawa
+import com.nanabell.sponge.nico.command.admin.DummyCommand
 import com.nanabell.sponge.nico.command.economy.NicoGetCommand
 import com.nanabell.sponge.nico.command.economy.NicoSetCommand
 import com.nanabell.sponge.nico.command.link.LinkAcceptCommand
@@ -20,7 +21,7 @@ import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.service.permission.PermissionService
 import org.spongepowered.api.text.Text
 
-class CommandRegistar(private val plugin: NicoYazawa) {
+class CommandRegistar {
 
     private val commandManager: CommandManager = Sponge.getCommandManager()
     private val permissionService = Sponge.getServiceManager().provide(PermissionService::class.java).orNull()
@@ -52,13 +53,13 @@ class CommandRegistar(private val plugin: NicoYazawa) {
         nicoCommandBuilder.child(command.spec(), *command.aliases())
 
         if (permissionService != null)
-            command.permissionDescriptions(permissionService.newDescriptionBuilder(plugin))
+            command.permissionDescriptions(permissionService.newDescriptionBuilder(NicoYazawa.getPlugin()))
     }
 
     private fun registerCommands() {
         val nicoCommand = nicoCommandBuilder.description(Text.of("Nico Nico Ni!")).build()
 
-        commandManager.register(plugin, nicoCommand, "nico", "n")
+        commandManager.register(NicoYazawa.getPlugin(), nicoCommand, "nico", "n")
     }
 }
 

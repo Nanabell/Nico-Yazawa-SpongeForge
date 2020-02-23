@@ -52,5 +52,4 @@ class Config<T>(clazz: Class<T>, name: String, configDir: Path) {
         loader.save(node)
     }
 
-
 }

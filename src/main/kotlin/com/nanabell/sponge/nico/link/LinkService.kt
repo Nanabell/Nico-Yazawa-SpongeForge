@@ -1,9 +1,9 @@
 package com.nanabell.sponge.nico.link
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.HashBiMap
 import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.discord.DiscordService
 import com.nanabell.sponge.nico.extensions.DiscordUser
 import com.nanabell.sponge.nico.extensions.MinecraftUser
 import com.nanabell.sponge.nico.link.event.LinkStateChangeEvent
@@ -19,10 +19,10 @@ import java.util.*
 class LinkService {
 
     private val dataSource = Sponge.getServiceManager().provideUnchecked(Datastore::class.java)
-    private val discordService by lazy { Sponge.getServiceManager().provideUnchecked(DiscordService::class.java) }
     private val eventManager = Sponge.getEventManager()
 
     private val pendingLinks = HashBiMap.create<MinecraftUser, DiscordUser>()
+    private val cacheLinks = Caffeine.newBuilder().build<UUID, Link> { getQuery(it).first() }
 
     fun init() {
         Sponge.getEventManager().registerListeners(NicoYazawa.getPlugin(), LinkListener())
@@ -41,18 +41,19 @@ class LinkService {
     }
 
     fun isLinked(user: MinecraftUser): Boolean {
-        return getLink(user) != null
+        return cacheLinks[user.uniqueId] != null
     }
 
     fun getLink(user: MinecraftUser): Link? {
-        return getQuery(user.uniqueId).first()
+        return cacheLinks[user.uniqueId]
     }
 
     fun confirmLink(user: MinecraftUser): LinkResult {
         if (isLinked(user)) return LinkResult.error(LinkState.ALREADY_LINKED)
         val discordUser = pendingLinks.remove(user) ?: return LinkResult.error(LinkState.NO_LINK_REQUEST)
 
-        dataSource.save(Link(discordUser.idLong, user.uniqueId))
+        val link = Link(discordUser.idLong, user.uniqueId)
+        dataSource.save(link).also { cacheLinks.put(user.uniqueId, link) }
 
         val cause = Cause.of(EventContext.of(mapOf(NicoConstants.DISCORD_USER to discordUser, EventContextKeys.OWNER to user)), this)
         eventManager.post(LinkStateChangeEvent(LinkState.LINKED, cause))
@@ -69,8 +70,9 @@ class LinkService {
 
     fun unlink(user: MinecraftUser): LinkResult {
         val link = dataSource.findAndDelete(getQuery(user.uniqueId)) ?: return LinkResult.error(LinkState.NOT_LINKED)
-        val dUser =  link.fetchUser(discordService.jda)
+        cacheLinks.invalidate(user.uniqueId)
 
+        val dUser = link.fetchDiscordUser()
         eventManager.post(LinkStateChangeEvent(LinkState.UNLINKED, Cause.of(EventContext.of(mapOf(NicoConstants.DISCORD_USER to dUser, EventContextKeys.OWNER to user)), this)))
         return LinkResult(LinkState.UNLINKED, null)
     }
