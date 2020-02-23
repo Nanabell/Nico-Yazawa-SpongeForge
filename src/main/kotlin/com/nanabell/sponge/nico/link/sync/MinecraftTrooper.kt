@@ -38,10 +38,10 @@ class MinecraftTrooper : ITrooper {
 
                 if (it) {
                     player.player.orNull()?.sendMessage("+ Added Permission '${troop.permission}' because you have the Discord role ${troop.getRoleName()}".toText().green())
-                    logger.info("Added Permission {} to Player {}", troop, player.name)
+                    logger.info("Added Permission {} to Player {}. {}", troop.permission, player.name, troop)
 
                 } else {
-                    logger.warn("Failed to Add Permission {} to Player {}", troop, player.name)
+                    logger.warn("Failed to Add Permission {} to Player {}, {}", troop.permission, player.name, troop)
                 }
             }
         }
@@ -53,12 +53,16 @@ class MinecraftTrooper : ITrooper {
 
                 if (it) {
                     player.player.orNull()?.sendMessage("- Removed Permission '${troop.permission}' because you do not have the required Discord role ${troop.getRoleName()}".toText().red())
-                    logger.info("Removed Permission $troop from Player ${player.name}")
+                    logger.info("Removed Permission {} from Player {}. {}", troop.permission, player.name, troop)
 
                 } else {
-                    logger.warn("Failed to Remove Permission {} from Player {}", troop, player.name)
+                    logger.warn("Failed to Remove Permission {} from Player {}, {}", troop.permission, player.name, troop)
                 }
             }
         }
+    }
+
+    override fun toString(): String {
+        return javaClass.simpleName
     }
 }

@@ -70,4 +70,8 @@ class DiscordTrooper : ITrooper {
 
         return discordService.getMember(link.discordId)
     }
+
+    override fun toString(): String {
+        return javaClass.simpleName
+    }
 }

@@ -1,5 +1,6 @@
 package com.nanabell.sponge.nico.command.admin
 
+import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.command.SelfSpecCommand
 import com.nanabell.sponge.nico.extensions.toText
 import org.spongepowered.api.command.CommandResult
@@ -26,7 +27,10 @@ class DummyCommand : CommandExecutor, SelfSpecCommand {
     }
 
     override fun execute(src: CommandSource, args: CommandContext): CommandResult {
-        println(src.subjectData.allPermissions)
+
+        NicoYazawa.getPlugin().getConfig().get().discordLinkConfig.syncConfig.troops.forEach {
+            src.sendMessage("${it.key}  = ${it.value.joinToString(", ")}".toText())
+        }
 
         return CommandResult.success()
     }
