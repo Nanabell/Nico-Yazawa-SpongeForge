@@ -46,7 +46,7 @@ class TroopSyncService : Runnable {
     }
 
     private fun sync(user: MinecraftUser, sourceTroop: TroopSource) {
-        logger.debug("Syncing {} for player {}", sourceTroop, user.name)
+        logger.debug("Started Syncing {} for player {}", sourceTroop, user.name)
 
         val source = if (sourceTroop == TroopSource.MINECRAFT) minecraft else discord
         val target = if (sourceTroop == TroopSource.MINECRAFT) discord else minecraft
@@ -54,7 +54,7 @@ class TroopSyncService : Runnable {
 
         // Does the user exist in the source System?
         if (source.exists(user)) {
-            logger.trace("User {} exists in source Trooper", user.name)
+            logger.trace("User {} exists in source Trooper {}", user.name, source)
 
             // Get the users Source Troops and map them to the Target variant.
             // This is a list of Troops the user wants to have on the other side
@@ -63,13 +63,13 @@ class TroopSyncService : Runnable {
 
             // Does our user exist in he Target System?
             if (target.exists(user)) {
-                logger.trace("User {} exists in target Trooper")
+                logger.trace("User {} exists in target Trooper {}", user.name, target)
 
                 // Get all Troops for the Source and iterate over the Targets for that
                 config.getTroopsFrom(sourceTroop).forEach {
                     val troop = it.getFromSource(targetTroop)
 
-                    logger.trace("User {}, running troop check for: {}", user.name, it)
+                    logger.trace("User {} running troop check for {}", user.name, it)
 
                     // Does the user want to have this Troop?
                     if (destinationTroops.contains(troop)) {
@@ -79,6 +79,9 @@ class TroopSyncService : Runnable {
                         if (!target.hasTroop(user, troop)) {
                             logger.trace("User {} does not yet have target troop {}. Adding...", user.name, it)
                             target.addTroop(user, it) // Add it
+
+                        } else  {
+                            logger.trace("User {} already has target troop {}", user.name, it)
                         }
 
                     } else {
@@ -88,6 +91,9 @@ class TroopSyncService : Runnable {
                         if (target.hasTroop(user, troop)) {
                             logger.trace("User {} still has target troop {}. Removing...", user.name, it)
                             target.removeTroop(user, it) // Remove it
+
+                        } else  {
+                            logger.trace("User {} does not have target troop {}", user.name, it)
                         }
                     }
                 }
