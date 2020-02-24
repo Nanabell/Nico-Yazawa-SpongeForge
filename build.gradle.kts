@@ -9,12 +9,16 @@ group = "com.nanabell.nico"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    maven("http://repo.drnaylor.co.uk/artifactory/list/minecraft")
     mavenCentral()
     jcenter()
 }
 
 dependencies {
     shadow(kotlin("stdlib-jdk8"))
+    shadow(kotlin("reflect"))
+
+    shadow("uk.co.drnaylor:quickstart-moduleloader:0.11.0")
     shadow("dev.morphia.morphia:core:1.5.8")
     shadow("net.dv8tion:JDA:4.ALPHA.0_76") {
         exclude("opus-java")
@@ -23,11 +27,6 @@ dependencies {
     compileOnly("org.jetbrains:annotations:16.0.2")
     compileOnly("org.spongepowered:spongeapi:7.1.0")
     annotationProcessor("org.spongepowered:spongeapi:7.1.0")
-}
-
-configure<JavaPluginConvention>() {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 configurations {
@@ -68,6 +67,13 @@ tasks {
         dependsOn(shadowJar)
         if (hasProperty("server"))
             dependsOn("copy-result")
+    }
+
+    compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "1.8"
     }
 }
 

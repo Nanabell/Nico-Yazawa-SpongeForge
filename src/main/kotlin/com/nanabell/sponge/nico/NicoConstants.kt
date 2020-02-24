@@ -13,6 +13,15 @@ import org.spongepowered.api.util.generator.dummy.DummyObjectProvider
 
 object NicoConstants {
 
+    const val ID = "nico-yazawa"
+    const val NAME = "@name@"
+    const val VERSION = "@version@"
+    const val DESCRIPTION = "@description@"
+    const val PERMISSION_PREFIX = "nico."
+
+    val SPACE: Text = Text.of(" ")
+
+
     // CommandElement
     fun currency(currency: Text): CommandElement = CurrencyElement(currency)
     fun discordUser(user: Text): CommandElement = DiscordUserElement(user)

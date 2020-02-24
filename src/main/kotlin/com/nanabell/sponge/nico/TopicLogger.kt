@@ -2,10 +2,11 @@ package com.nanabell.sponge.nico
 
 import org.slf4j.Logger
 import org.slf4j.Marker
+import uk.co.drnaylor.quickstart.LoggerProxy
 
-class TopicLogger(private val wrapped: Logger, vararg topics: String) : Logger {
+class TopicLogger(private val wrapped: Logger, vararg topics: String) : Logger, LoggerProxy {
 
-    private val topic = topics.joinToString(" ", "[", "]") + " "
+    private val topic = topics.joinToString("] [", "[", "] ")
 
     override fun getName(): String = wrapped.name + topic
 

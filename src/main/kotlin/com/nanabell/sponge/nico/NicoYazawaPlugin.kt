@@ -8,12 +8,16 @@ import com.nanabell.sponge.nico.command.CommandRegistar
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.economy.NicoEconomyService
+import com.nanabell.sponge.nico.internal.PermissionRegistry
 import com.nanabell.sponge.nico.link.LinkService
 import com.nanabell.sponge.nico.link.UserLinkWatchdog
 import com.nanabell.sponge.nico.link.discord.DiscordService
 import com.nanabell.sponge.nico.link.sync.TroopSyncService
+import com.nanabell.sponge.nico.module.core.config.CoreConfigAdapter
 import dev.morphia.Datastore
 import dev.morphia.Morphia
+import ninja.leaping.configurate.ConfigurationOptions
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader
 import org.slf4j.Logger
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.config.ConfigDir
@@ -22,8 +26,12 @@ import org.spongepowered.api.event.game.GameReloadEvent
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent
 import org.spongepowered.api.event.game.state.GameInitializationEvent
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent
 import org.spongepowered.api.plugin.Plugin
 import org.spongepowered.api.service.economy.EconomyService
+import uk.co.drnaylor.quickstart.loaders.SimpleModuleConstructor
+import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer
+import uk.co.drnaylor.quickstart.modulecontainers.discoverystrategies.Strategy
 import java.nio.file.Path
 
 
@@ -33,13 +41,53 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
     private val logger = getLogger("Main")
     private val config = Config(MainConfig::class.java, "nicos-yazawa.conf", configDir)
 
+    private val permissionRegistry: PermissionRegistry = PermissionRegistry()
+
+    private lateinit var moduleContainer: DiscoveryModuleContainer
+
     init {
         setPlugin(this)
         logger.info("Hello World!")
     }
 
     @Listener
+    fun preInit(event: GamePreInitializationEvent) {
+        try {
+            val moduleConfig = HoconConfigurationLoader.builder()
+                    .setPath(configDir.resolve("modules.conf"))
+                    .setDefaultOptions(ConfigurationOptions.defaults())
+                    .build()
+
+            moduleContainer = DiscoveryModuleContainer.builder()
+                    .setConfigurationLoader(moduleConfig)
+                    .setModuleConfigSectionName("-modules")
+                    .setConstructor(SimpleModuleConstructor.INSTANCE)
+                    .setStrategy(Strategy.DEFAULT)
+                    .setPackageToScan(javaClass.`package`.name + ".module")
+                    .setRequireModuleDataAnnotation(true)
+                    .setLoggerProxy(getLogger("Module Discovery"))
+                    .build(true)
+        } catch (e: Exception) {
+            logger.error("Plugin PreInitialization failed!", e)
+            disable()
+        }
+    }
+
+    @Listener
     fun onInit(event: GameInitializationEvent) {
+        try {
+            moduleContainer.loadModules(true)
+            val coreConfig = moduleContainer.getConfigAdapterForModule("core", CoreConfigAdapter::class.java).nodeOrDefault
+
+            if (coreConfig.startupError) throw IllegalStateException("Error on Startup is Enabled!")
+
+        } catch (e: Exception) {
+            logger.error("Plugin Initialization failed!", e)
+            disable()
+        }
+
+        permissionRegistry.registerPermissions()
+
         val morphia = Morphia()
         val dataStore = morphia.createDatastore(MongoClient(MongoClientURI(config.get().databaseUrl)), "dummy-nico")
         dataStore.ensureIndexes()
@@ -87,6 +135,15 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
         commandRegistar.loadCommands().also { _logger.info("Reloaded Commands") }
     }
 
+    private fun disable() {
+        Sponge.getEventManager().unregisterPluginListeners(this)
+        Sponge.getCommandManager().getOwnedBy(this).forEach { Sponge.getCommandManager().removeMapping(it) }
+        Sponge.getScheduler().getScheduledTasks(this).forEach { it.cancel() }
+
+        logger.error("Plugin Initialization has failed. Unable to continue")
+        Sponge.getServer().shutdown()
+    }
+
     override fun getLogger(vararg topics: String): TopicLogger {
         if (topics.isEmpty())
             return logger
@@ -96,5 +153,13 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
 
     override fun getConfig(): Config<MainConfig> {
         return config
+    }
+
+    override fun getPermissionRegistry(): PermissionRegistry {
+        return permissionRegistry
+    }
+
+    override fun getModuleContainer(): DiscoveryModuleContainer {
+        return moduleContainer
     }
 }

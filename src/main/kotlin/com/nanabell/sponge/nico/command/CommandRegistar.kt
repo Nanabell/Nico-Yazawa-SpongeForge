@@ -1,7 +1,6 @@
 package com.nanabell.sponge.nico.command
 
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.command.admin.DummyCommand
 import com.nanabell.sponge.nico.command.economy.NicoGetCommand
 import com.nanabell.sponge.nico.command.economy.NicoSetCommand
 import com.nanabell.sponge.nico.command.link.LinkAcceptCommand
@@ -32,9 +31,6 @@ class CommandRegistar {
     }
 
     fun loadCommands() {
-        // Admin
-        addCommand(DummyCommand())
-
         // Currency
         addCommand(NicoGetCommand())
         addCommand(NicoSetCommand())
