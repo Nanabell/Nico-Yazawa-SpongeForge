@@ -37,8 +37,8 @@ import java.util.stream.Collectors
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
-@Suppress("UNCHECKED_CAST", "MemberVisibilityCanBePrivate")
-abstract class AbstractCommand<T : CommandSource> : CommandCallable {
+@Suppress("UNCHECKED_CAST")
+abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*>> : CommandCallable {
 
     private val sourceType: Class<T>
     private val sourceTypePredicate: (CommandSource) -> Boolean
@@ -57,7 +57,7 @@ abstract class AbstractCommand<T : CommandSource> : CommandCallable {
     private val usageCommand by lazy { UsageCommand(this) }
     private val dispatcher: SimpleDispatcher = SimpleDispatcher(SimpleDispatcher.FIRST_DISAMBIGUATOR)
 
-    private lateinit var moduleCommands: Set<KClass<out AbstractCommand<*>>>
+    private lateinit var moduleCommands: Set<KClass<out AbstractCommand<*, *>>>
     private lateinit var commandBuilder: CommandBuilder
     private lateinit var module: StandardModule
 
@@ -93,7 +93,7 @@ abstract class AbstractCommand<T : CommandSource> : CommandCallable {
         return builder.toString()
     }
 
-    private fun getNextSubCommandPath(clazz: KClass<out AbstractCommand<*>>, builder: StringBuilder, appendPeriod: Boolean) {
+    private fun getNextSubCommandPath(clazz: KClass<out AbstractCommand<*, *>>, builder: StringBuilder, appendPeriod: Boolean) {
         val co = clazz.findAnnotation<RegisterCommand>() ?: throw IllegalCommandClassException(javaClass)
         if (!co.subCommandOf.isAbstract && co.subCommandOf.java != this::class)
             getNextSubCommandPath(co.subCommandOf, builder, true)
@@ -147,7 +147,7 @@ abstract class AbstractCommand<T : CommandSource> : CommandCallable {
 
                 try {
                     val callable = this.dispatcher.get(next.toLowerCase()).orNull()?.callable
-                    if (callable is AbstractCommand<*>)
+                    if (callable is AbstractCommand<*, *>)
                         return callable.process(source, "$command $next", arguments, args)
 
                     if (callable != null)
@@ -336,23 +336,55 @@ abstract class AbstractCommand<T : CommandSource> : CommandCallable {
         this.dispatcher.register(usageCommand, "?", "help")
     }
 
-    fun setModuleCommands(commandSet: Set<KClass<out AbstractCommand<*>>>) {
-        this.moduleCommands = commandSet
+    /**
+     * Set the reference to the rest of the command in this module.
+     *
+     * Command Implementations or their Consumers should not try to set this value
+     * This method can only be called once! Any subsequent calls will be ignored
+     *
+     * @param commandSet The Set of AbstractCommand Classes
+     */
+    fun setModuleCommands(commandSet: Set<KClass<out AbstractCommand<*, *>>>) {
+        if (!::moduleCommands.isInitialized)
+            this.moduleCommands = commandSet
     }
 
+    /**
+     * Set the [CommandBuilder] used by the Module. Necessary for Root Command to construct their children.
+     *
+     * Command Implementations or their Consumers should not try to set this value
+     * This method can only be called once! Any subsequent calls will be ignored
+     *
+     * @param builder The CommandBuilder for the current Module
+     */
     fun setCommandBuilder(builder: CommandBuilder) {
-        this.commandBuilder = builder
+        if (!::commandBuilder.isInitialized)
+            this.commandBuilder = builder
     }
 
+    /**
+     * Set the reference to the constructing parent Module
+     *
+     * Command Implementations or their Consumers should not try to set this value
+     * This method can only be called once! Any subsequent calls will be ignored
+     *
+     * @param module The parent Module
+     */
     fun setModule(module: StandardModule) {
-        this.module = module
+        if (!this::module.isInitialized)
+            this.module = module
     }
 
-    fun <A : ConfigurableModule<*>> getConfig(): A {
-        return module.configAdapter.orNull() as A
+    /**
+     * Get the Module for the current Command. This should never be null can can be used safely.
+     *
+     * @return The Module casted to the Module Command Type Parameter
+     */
+    fun getModule(): M {
+        return module as M
     }
 
-    private class UsageCommand(private val parentCommand: AbstractCommand<*>) : CommandCallable, CommandExecutor {
+    private class UsageCommand(private val parentCommand: AbstractCommand<*, *>) : CommandCallable, CommandExecutor {
         override fun execute(src: CommandSource, args: CommandContext): CommandResult {
             return process(src, "")
         }
@@ -463,6 +495,6 @@ abstract class AbstractCommand<T : CommandSource> : CommandCallable {
     }
 
     companion object {
-        val tokenizer: InputTokenizer = InputTokenizer.quotedStrings(false)
+        private val tokenizer: InputTokenizer = InputTokenizer.quotedStrings(false)
     }
 }

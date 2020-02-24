@@ -8,14 +8,14 @@ import kotlin.reflect.full.createInstance
 
 class CommandBuilder(
         private val plugin: NicoYazawa,
-        private val commandSet: Set<KClass<out AbstractCommand<*>>>,
+        private val commandSet: Set<KClass<out AbstractCommand<*, *>>>,
         private val module: StandardModule
 ) {
-    fun <T : AbstractCommand<*>> buildCommand(clazz: KClass<out T>): T {
+    fun <T : AbstractCommand<*, *>> buildCommand(clazz: KClass<out T>): T {
         return buildCommand(clazz, true)
     }
 
-    fun <T : AbstractCommand<*>> buildCommand(clazz: KClass<out T>, isRoot: Boolean): T {
+    fun <T : AbstractCommand<*, *>> buildCommand(clazz: KClass<out T>, isRoot: Boolean): T {
         val command = clazz.createInstance()
 
         command.setModule(module)

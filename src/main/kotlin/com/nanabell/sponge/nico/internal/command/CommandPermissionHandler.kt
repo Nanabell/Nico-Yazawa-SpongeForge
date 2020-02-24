@@ -7,7 +7,7 @@ import org.spongepowered.api.service.permission.Subject
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
-class CommandPermissionHandler(clazz: KClass<out AbstractCommand<*>>) {
+class CommandPermissionHandler(clazz: KClass<out AbstractCommand<*, *>>) {
 
     private val isIgnored: Boolean
 

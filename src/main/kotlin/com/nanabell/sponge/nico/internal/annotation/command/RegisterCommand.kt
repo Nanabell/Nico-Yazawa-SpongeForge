@@ -7,6 +7,6 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RegisterCommand(
         val value: Array<String>,
-        val subCommandOf: KClass<out AbstractCommand<*>> = AbstractCommand::class,
+        val subCommandOf: KClass<out AbstractCommand<*, *>> = AbstractCommand::class,
         val hasExecutor: Boolean = true
 )

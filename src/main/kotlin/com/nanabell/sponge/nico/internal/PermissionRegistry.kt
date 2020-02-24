@@ -11,9 +11,9 @@ import kotlin.reflect.KClass
 class PermissionRegistry {
 
     private var initialized = false
-    private val commandPermissionRegistry: MutableMap<KClass<out AbstractCommand<*>>, CommandPermissionHandler> = HashMap()
+    private val commandPermissionRegistry: MutableMap<KClass<out AbstractCommand<*, *>>, CommandPermissionHandler> = HashMap()
 
-    fun getHandler(clazz: KClass<out AbstractCommand<*>>): CommandPermissionHandler {
+    fun getHandler(clazz: KClass<out AbstractCommand<*, *>>): CommandPermissionHandler {
         if (commandPermissionRegistry.containsKey(clazz)) {
             return commandPermissionRegistry[clazz]!!
         }
