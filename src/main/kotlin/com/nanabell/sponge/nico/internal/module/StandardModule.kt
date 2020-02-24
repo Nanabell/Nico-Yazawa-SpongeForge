@@ -54,7 +54,6 @@ abstract class StandardModule : Module {
         this.packageName = this.javaClass.getPackage().name + "."
 
         loadCommands()
-        loadServices()
         loadRunnables()
         performEnable()
         logger.info("Finished Enable")
