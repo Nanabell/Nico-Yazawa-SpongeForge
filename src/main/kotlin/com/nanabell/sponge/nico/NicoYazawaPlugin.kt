@@ -8,6 +8,7 @@ import com.nanabell.sponge.nico.command.CommandRegistar
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.economy.NicoEconomyService
+import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
 import com.nanabell.sponge.nico.link.LinkService
 import com.nanabell.sponge.nico.link.UserLinkWatchdog
@@ -42,6 +43,7 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
     private val config = Config(MainConfig::class.java, "nicos-yazawa.conf", configDir)
 
     private val permissionRegistry: PermissionRegistry = PermissionRegistry()
+    private val serviceRegistry: InternalServiceRegistry = InternalServiceRegistry()
 
     private lateinit var moduleContainer: DiscoveryModuleContainer
 
@@ -161,5 +163,9 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
 
     override fun getModuleContainer(): DiscoveryModuleContainer {
         return moduleContainer
+    }
+
+    override fun getServiceRegistry(): InternalServiceRegistry {
+        return serviceRegistry
     }
 }

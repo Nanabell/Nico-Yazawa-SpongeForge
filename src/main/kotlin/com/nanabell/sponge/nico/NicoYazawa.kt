@@ -2,6 +2,7 @@ package com.nanabell.sponge.nico
 
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
+import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer
 
@@ -15,6 +16,8 @@ abstract class NicoYazawa {
     abstract fun getPermissionRegistry(): PermissionRegistry
 
     abstract fun getModuleContainer(): DiscoveryModuleContainer
+
+    abstract fun getServiceRegistry(): InternalServiceRegistry
 
     companion object {
         private lateinit var nicoYazawa: NicoYazawa
