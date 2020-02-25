@@ -1,5 +1,5 @@
 package com.nanabell.sponge.nico.internal.annotation
 
-@Target(AnnotationTarget.ANNOTATION_CLASS)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ApiService
