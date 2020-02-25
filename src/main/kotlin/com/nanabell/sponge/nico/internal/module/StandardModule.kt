@@ -37,6 +37,8 @@ abstract class StandardModule : Module {
 
     final override fun preEnable() {
         logger.info("Starting PreEnable")
+        this.packageName = this.javaClass.getPackage().name + "."
+
         loadServices()
         performPreEnable()
         logger.info("Finished PreEnable")
@@ -60,8 +62,6 @@ abstract class StandardModule : Module {
 
     final override fun onEnable() {
         logger.info("Starting Enable")
-        this.packageName = this.javaClass.getPackage().name + "."
-
         loadCommands()
         loadEvents()
         loadRunnables()
