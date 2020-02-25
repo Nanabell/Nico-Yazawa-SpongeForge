@@ -1,9 +1,11 @@
 package com.nanabell.sponge.nico.internal.module
 
 import com.nanabell.sponge.nico.NicoYazawa
+import com.nanabell.sponge.nico.internal.annotation.RegisterService
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.command.AbstractCommand
 import com.nanabell.sponge.nico.internal.command.CommandBuilder
+import com.nanabell.sponge.nico.internal.service.AbstractService
 import org.slf4j.Logger
 import uk.co.drnaylor.quickstart.Module
 import uk.co.drnaylor.quickstart.annotations.ModuleData
@@ -43,6 +45,8 @@ abstract class StandardModule : Module {
 
     private fun loadServices() {
         logger.info("Loading Services")
+
+        val services = getStreamForModule(AbstractService::class).filter { it.findAnnotation<RegisterService>() != null }.toSet()
     }
 
     @Throws(Exception::class)
