@@ -6,11 +6,11 @@ class InternalServiceRegistry {
 
     private val services: MutableMap<KClass<*>, Any> = HashMap()
 
-    fun <C : Any, S : C> register(clazz: KClass<C>, service: S) {
+    fun <C : Any, S : C> register(clazz: KClass<in C>, service: S) {
         register(clazz, service, false)
     }
 
-    fun <C : Any, S : C> register(clazz: KClass<C>, service: S, override: Boolean) {
+    fun <C : Any, S : C> register(clazz: KClass<in C>, service: S, override: Boolean) {
         if (!override && services.containsKey(clazz)) return
 
         services[clazz] = service
