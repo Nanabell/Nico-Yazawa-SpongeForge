@@ -16,11 +16,11 @@ import kotlin.reflect.full.isSubclassOf
 
 abstract class StandardModule : Module {
 
+    val plugin: NicoYazawa
+    val logger: Logger
+
     val moduleId: String
     val moduleName: String
-    private val plugin: NicoYazawa
-
-    protected val logger: Logger
 
     private lateinit var packageName: String
 
