@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientURI
 import com.nanabell.sponge.nico.activity.ActivityService
-import com.nanabell.sponge.nico.command.CommandRegistar
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.economy.NicoEconomyService
@@ -99,7 +98,7 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
         serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService())
         serviceManager.setProvider(this, LinkService::class.java, LinkService())
         serviceManager.setProvider(this, DiscordService::class.java, DiscordService())
-        serviceManager.setProvider(this, CommandRegistar::class.java, CommandRegistar())
+        // serviceManager.setProvider(this, CommandRegistar::class.java, CommandRegistar()) //TODO: Remove do not Migrate!
         serviceManager.setProvider(this, ActivityService::class.java, ActivityService())
         serviceManager.setProvider(this, TroopSyncService::class.java, TroopSyncService())
     }
@@ -128,13 +127,14 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
         config.reload().also { _logger.info("Reloaded Config") }
 
         // Reload Commands
-        val commandRegistar = Sponge.getServiceManager().provideUnchecked(CommandRegistar::class.java)
+/*        val commandRegistar = Sponge.getServiceManager().provideUnchecked(CommandRegistar::class.java)
         val commandManager = Sponge.getCommandManager()
 
         commandManager.getOwnedBy(this).forEach {
             commandManager.removeMapping(it)
         }
-        commandRegistar.loadCommands().also { _logger.info("Reloaded Commands") }
+        commandRegistar.loadCommands().also { _logger.info("Reloaded Commands") }*/
+        // TODO: Remove once all commands have been moved
     }
 
     private fun disable() {
