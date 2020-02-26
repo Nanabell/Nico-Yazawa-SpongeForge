@@ -14,8 +14,7 @@ import org.spongepowered.api.event.cause.Cause
 class DummyCommand : AbstractCommand<CommandSource, CoreModule>() {
 
     override fun executeCommand(source: CommandSource, args: CommandContext, cause: Cause): CommandResult {
-
-
+        logger.info("Hello World!")
         return CommandResult.success()
     }
 
