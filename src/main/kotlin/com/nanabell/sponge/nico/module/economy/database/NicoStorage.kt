@@ -1,5 +1,6 @@
-package com.nanabell.sponge.nico.economy.storage
+package com.nanabell.sponge.nico.module.economy.database
 
+import com.nanabell.sponge.nico.internal.database.DataEntry
 import dev.morphia.annotations.Entity
 import dev.morphia.annotations.Indexed
 import java.math.BigDecimal
@@ -13,7 +14,7 @@ data class NicoStorage(
         private var score: Int,
 
         private var rank: Int = 0
-) {
+) : DataEntry {
 
     @Suppress("unused")
     private constructor() : this("", -1, -1)

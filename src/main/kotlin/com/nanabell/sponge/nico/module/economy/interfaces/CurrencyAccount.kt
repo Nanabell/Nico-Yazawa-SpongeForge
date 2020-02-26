@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.economy.account
+package com.nanabell.sponge.nico.module.economy.interfaces
 
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.service.context.Context

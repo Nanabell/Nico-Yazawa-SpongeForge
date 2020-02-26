@@ -1,10 +1,12 @@
-package com.nanabell.sponge.nico.economy.account
+package com.nanabell.sponge.nico.module.economy.data.account
 
-import com.nanabell.sponge.nico.economy.SimpleTransferResult
-import com.nanabell.sponge.nico.economy.currency.MakiCurrency
-import com.nanabell.sponge.nico.economy.currency.NicoCurrency
 import com.nanabell.sponge.nico.extensions.MinecraftUser
 import com.nanabell.sponge.nico.extensions.toText
+import com.nanabell.sponge.nico.module.economy.config.EconomyConfig
+import com.nanabell.sponge.nico.module.economy.data.SimpleTransferResult
+import com.nanabell.sponge.nico.module.economy.data.currency.MakiCurrency
+import com.nanabell.sponge.nico.module.economy.data.currency.NicoCurrency
+import com.nanabell.sponge.nico.module.economy.interfaces.CurrencyAccount
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.service.context.Context
 import org.spongepowered.api.service.economy.Currency
@@ -18,34 +20,26 @@ import org.spongepowered.api.text.Text
 import java.math.BigDecimal
 import java.util.*
 import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 class DelegatingAccount(
         private val user: MinecraftUser,
-        private val currencyHolders: Map<Currency, CurrencyAccount>,
-        private val activeContexts: Set<Context>
+        private val currencyHolders: Map<Currency, CurrencyAccount>
 ) : UniqueAccount {
 
-    class Builder {
+    class Builder(private val config: EconomyConfig) {
 
         private val _holders: MutableMap<Currency, CurrencyAccount> = HashMap()
-        private var contexts: Set<Context> = HashSet()
-
-        fun setContexts(contexts: Set<Context>): Builder {
-            this.contexts = contexts
-            return this
-        }
 
         fun addNicoCurrency(userId: Long): Builder {
-            _holders[NicoCurrency.instance] = NicoAccount(userId)
+            _holders[NicoCurrency.instance] = NicoAccount(userId, config)
 
             return this
         }
 
         fun build(user: MinecraftUser): DelegatingAccount {
-            _holders[MakiCurrency.instance] = MakiAccount(user.uniqueId)
+            _holders[MakiCurrency.instance] = MakiAccount(user.uniqueId, config)
 
-            return DelegatingAccount(user, _holders, contexts)
+            return DelegatingAccount(user, _holders)
         }
     }
 
@@ -56,7 +50,7 @@ class DelegatingAccount(
     override fun getUniqueId(): UUID = user.uniqueId
     override fun getIdentifier(): String = user.identifier
     override fun getDisplayName(): Text = user.name.toText()
-    override fun getActiveContexts(): Set<Context> = activeContexts
+    override fun getActiveContexts(): Set<Context> = user.activeContexts
 
     override fun hasBalance(currency: Currency, contexts: Set<Context>): Boolean {
         return currencyHolders.containsKey(currency) && getCurrencyHolder(currency).hasBalance(contexts)
@@ -125,6 +119,6 @@ class DelegatingAccount(
     }
 
     companion object {
-        fun builder(): Builder = Builder()
+        fun builder(config: EconomyConfig): Builder = Builder(config)
     }
 }

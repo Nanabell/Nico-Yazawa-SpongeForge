@@ -3,8 +3,8 @@ package com.nanabell.sponge.nico.activity
 import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.config.PaymentConfig
-import com.nanabell.sponge.nico.economy.currency.NicoCurrency
 import com.nanabell.sponge.nico.extensions.*
+import com.nanabell.sponge.nico.module.economy.data.currency.NicoCurrency
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.living.player.User

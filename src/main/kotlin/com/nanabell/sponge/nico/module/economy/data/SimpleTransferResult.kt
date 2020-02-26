@@ -1,6 +1,6 @@
-package com.nanabell.sponge.nico.economy
+package com.nanabell.sponge.nico.module.economy.data
 
-import com.nanabell.sponge.nico.economy.currency.NicoCurrency
+import com.nanabell.sponge.nico.module.economy.data.currency.NicoCurrency
 import org.spongepowered.api.service.context.Context
 import org.spongepowered.api.service.economy.Currency
 import org.spongepowered.api.service.economy.account.Account

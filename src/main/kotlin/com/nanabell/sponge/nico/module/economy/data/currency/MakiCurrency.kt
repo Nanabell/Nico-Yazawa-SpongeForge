@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.economy.currency
+package com.nanabell.sponge.nico.module.economy.data.currency
 
 import com.nanabell.sponge.nico.extensions.bold
 import com.nanabell.sponge.nico.extensions.red
@@ -10,7 +10,7 @@ import java.text.NumberFormat
 
 class MakiCurrency : Currency {
 
-    override fun getId(): String = "Nico-Yazawa:Maki Points"
+    override fun getId(): String = "Nico-Yazawa:Maki_Points"
 
     override fun getName(): String = "Maki Points"
 
@@ -30,7 +30,7 @@ class MakiCurrency : Currency {
         return formatter.format(amount).red()
                 .concat(symbol.bold())
                 .concat(" ".toText())
-                .concat(if (amount > BigDecimal.ONE) pluralDisplayName else displayName)
+                .concat(if (amount == BigDecimal.ONE) pluralDisplayName else displayName)
     }
 
     companion object {

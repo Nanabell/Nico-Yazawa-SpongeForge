@@ -1,5 +1,6 @@
-package com.nanabell.sponge.nico.economy.storage
+package com.nanabell.sponge.nico.module.economy.database
 
+import com.nanabell.sponge.nico.internal.database.DataEntry
 import dev.morphia.annotations.Embedded
 import dev.morphia.annotations.Entity
 import dev.morphia.annotations.Indexed
@@ -18,7 +19,7 @@ data class MakiStorage(
 
         @Embedded(concreteClass = HashSet::class)
         val contexts: Set<Context>
-) {
+) : DataEntry {
         @Suppress("unused")
         private constructor() : this(UUID.randomUUID(), BigDecimal.ZERO, emptySet())
 }

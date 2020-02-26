@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import com.nanabell.sponge.nico.activity.ActivityService
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
-import com.nanabell.sponge.nico.economy.NicoEconomyService
 import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
 import com.nanabell.sponge.nico.module.core.config.CoreConfigAdapter
@@ -19,7 +18,6 @@ import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent
 import org.spongepowered.api.event.game.state.GameInitializationEvent
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent
 import org.spongepowered.api.plugin.Plugin
-import org.spongepowered.api.service.economy.EconomyService
 import uk.co.drnaylor.quickstart.loaders.SimpleModuleConstructor
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer
 import uk.co.drnaylor.quickstart.modulecontainers.discoverystrategies.Strategy
@@ -81,7 +79,6 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
         permissionRegistry.registerPermissions()
 
         val serviceManager = Sponge.getServiceManager()
-        serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService())
         serviceManager.setProvider(this, ActivityService::class.java, ActivityService())
     }
 
