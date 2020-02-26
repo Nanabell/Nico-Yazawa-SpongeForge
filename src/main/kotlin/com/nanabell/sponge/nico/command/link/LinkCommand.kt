@@ -5,8 +5,8 @@ import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.command.SelfSpecCommand
 import com.nanabell.sponge.nico.command.requirePlayerOrArg
 import com.nanabell.sponge.nico.extensions.*
-import com.nanabell.sponge.nico.link.LinkService
-import com.nanabell.sponge.nico.link.LinkState
+import com.nanabell.sponge.nico.module.link.LinkResult
+import com.nanabell.sponge.nico.module.link.service.LinkService
 import net.dv8tion.jda.api.entities.User
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandException
@@ -55,10 +55,9 @@ class LinkCommand : CommandExecutor, SelfSpecCommand {
         if (user != null) {
             val target = src.requirePlayerOrArg(args, "player")
 
-            val result = linkService.link(user, target)
-            val message = when (result.state) {
-                LinkState.LINKED -> "Successfully Linked ${target.name} to ${user.asTag}".toText().gold()
-                LinkState.ALREADY_LINKED -> "This Account is already Linked!".toText().red()
+            val message = when (val result = linkService.link(user, target)) {
+                LinkResult.LINKED -> "Successfully Linked ${target.name} to ${user.asTag}".toText().gold()
+                LinkResult.ALREADY_LINKED -> "This Account is already Linked!".toText().red()
                 else -> "Unknown failure! Contact Administrators! $result".toText().darkRed()
             }
 

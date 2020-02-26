@@ -9,11 +9,11 @@ import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.economy.NicoEconomyService
 import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
-import com.nanabell.sponge.nico.link.LinkService
-import com.nanabell.sponge.nico.link.UserLinkWatchdog
-import com.nanabell.sponge.nico.link.discord.DiscordService
 import com.nanabell.sponge.nico.link.sync.TroopSyncService
 import com.nanabell.sponge.nico.module.core.config.CoreConfigAdapter
+import com.nanabell.sponge.nico.module.discord.service.DiscordService
+import com.nanabell.sponge.nico.module.link.runnables.UserLinkWatchdog
+import com.nanabell.sponge.nico.module.link.service.LinkService
 import dev.morphia.Datastore
 import dev.morphia.Morphia
 import ninja.leaping.configurate.ConfigurationOptions
@@ -114,7 +114,6 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
     fun onGameAboutToStartServer(event: GameAboutToStartServerEvent) {
         val serviceManager = Sponge.getServiceManager()
 
-        serviceManager.provideUnchecked(LinkService::class.java).init()
         serviceManager.provideUnchecked(DiscordService::class.java).init()
         serviceManager.provideUnchecked(ActivityService::class.java).init()
         serviceManager.provideUnchecked(TroopSyncService::class.java).init()
@@ -125,16 +124,6 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
     fun onGameReload(event: GameReloadEvent) {
         // Reload Config
         config.reload().also { _logger.info("Reloaded Config") }
-
-        // Reload Commands
-/*        val commandRegistar = Sponge.getServiceManager().provideUnchecked(CommandRegistar::class.java)
-        val commandManager = Sponge.getCommandManager()
-
-        commandManager.getOwnedBy(this).forEach {
-            commandManager.removeMapping(it)
-        }
-        commandRegistar.loadCommands().also { _logger.info("Reloaded Commands") }*/
-        // TODO: Remove once all commands have been moved
     }
 
     private fun disable() {

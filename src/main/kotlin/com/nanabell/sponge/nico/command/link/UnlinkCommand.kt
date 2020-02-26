@@ -7,8 +7,8 @@ import com.nanabell.sponge.nico.extensions.darkRed
 import com.nanabell.sponge.nico.extensions.gold
 import com.nanabell.sponge.nico.extensions.red
 import com.nanabell.sponge.nico.extensions.toText
-import com.nanabell.sponge.nico.link.LinkService
-import com.nanabell.sponge.nico.link.LinkState
+import com.nanabell.sponge.nico.module.link.LinkResult
+import com.nanabell.sponge.nico.module.link.service.LinkService
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandResult
 import org.spongepowered.api.command.CommandSource
@@ -38,11 +38,9 @@ class UnlinkCommand : CommandExecutor, SelfSpecCommand {
     override fun execute(src: CommandSource, args: CommandContext): CommandResult {
         val target = src.requirePlayerOrArg(args, "player")
 
-        val result = linkService.unlink(target)
-
-        val message = when (result.state) {
-            LinkState.UNLINKED -> "Successfully unlinked ${target.name}'s Discord Link".toText().gold()
-            LinkState.NOT_LINKED -> "This Account is not Linked!".toText().red()
+        val message = when (linkService.unlink(target)) {
+            LinkResult.UNLINKED -> "Successfully unlinked ${target.name}'s Discord Link".toText().gold()
+            LinkResult.NOT_LINKED -> "This Account is not Linked!".toText().red()
             else -> "Unknown failure! Contact Administrators!".toText().darkRed()
         }
 

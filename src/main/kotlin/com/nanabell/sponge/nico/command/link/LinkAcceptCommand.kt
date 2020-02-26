@@ -7,8 +7,8 @@ import com.nanabell.sponge.nico.extensions.darkRed
 import com.nanabell.sponge.nico.extensions.gold
 import com.nanabell.sponge.nico.extensions.red
 import com.nanabell.sponge.nico.extensions.toText
-import com.nanabell.sponge.nico.link.LinkService
-import com.nanabell.sponge.nico.link.LinkState
+import com.nanabell.sponge.nico.module.link.LinkResult
+import com.nanabell.sponge.nico.module.link.service.LinkService
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandException
 import org.spongepowered.api.command.CommandResult
@@ -45,11 +45,10 @@ class LinkAcceptCommand : CommandExecutor, SelfSpecCommand {
     override fun execute(src: CommandSource, args: CommandContext): CommandResult {
         val target = src.requirePlayerOrArg(args, "target")
 
-        val result = linkService.confirmLink(target)
-        val message: Text = when (result.state) {
-            LinkState.LINKED -> "Successfully Linked Discord Account".toText().gold()
-            LinkState.NO_LINK_REQUEST -> "There are no pending Link Requests!".toText().red()
-            LinkState.ALREADY_LINKED -> "Your Account is already Linked".toText().red()
+        val message: Text = when (linkService.confirmLink(target)) {
+            LinkResult.LINKED -> "Successfully Linked Discord Account".toText().gold()
+            LinkResult.NO_LINK_REQUEST -> "There are no pending Link Requests!".toText().red()
+            LinkResult.ALREADY_LINKED -> "Your Account is already Linked".toText().red()
             else -> "Unknown Failure! Contact Administrator to take a look at the Logs!".toText().darkRed()
         }
 

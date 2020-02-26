@@ -5,7 +5,7 @@ import com.nanabell.sponge.nico.economy.currency.MakiCurrency
 import com.nanabell.sponge.nico.economy.currency.NicoCurrency
 import com.nanabell.sponge.nico.extensions.toMinecraftUser
 import com.nanabell.sponge.nico.extensions.toOptional
-import com.nanabell.sponge.nico.store.Link
+import com.nanabell.sponge.nico.module.link.database.Link
 import dev.morphia.Datastore
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.service.context.ContextCalculator

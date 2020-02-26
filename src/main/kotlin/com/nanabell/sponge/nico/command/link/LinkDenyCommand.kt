@@ -6,7 +6,7 @@ import com.nanabell.sponge.nico.command.requirePlayerOrArg
 import com.nanabell.sponge.nico.extensions.gold
 import com.nanabell.sponge.nico.extensions.red
 import com.nanabell.sponge.nico.extensions.toText
-import com.nanabell.sponge.nico.link.LinkService
+import com.nanabell.sponge.nico.module.link.service.LinkService
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandException
 import org.spongepowered.api.command.CommandResult
