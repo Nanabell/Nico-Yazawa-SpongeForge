@@ -36,17 +36,17 @@ abstract class StandardModule : Module {
     }
 
     final override fun preEnable() {
-        logger.info("Starting PreEnable")
+        logger.debug("Starting PreEnable")
         this.packageName = this.javaClass.getPackage().name + "."
 
         loadServices()
         performPreEnable()
-        logger.info("Finished PreEnable")
+        logger.debug("Finished PreEnable")
     }
 
 
     private fun loadServices() {
-        logger.debug("Loading Services")
+        logger.info("Loading Services")
 
         val services = getStreamForModule(AbstractService::class).toSet()
 
@@ -61,16 +61,16 @@ abstract class StandardModule : Module {
     }
 
     final override fun onEnable() {
-        logger.info("Starting Enable")
+        logger.debug("Starting Enable")
         loadCommands()
         loadEvents()
         loadRunnables()
         performEnable()
-        logger.info("Finished Enable")
+        logger.debug("Finished Enable")
     }
 
     private fun loadCommands() {
-        logger.debug("Loading Commands")
+        logger.info("Loading Commands")
 
         val commands = getStreamForModule(AbstractCommand::class).filter { it.findAnnotation<RegisterCommand>() != null }.toSet()
         val baseCommands = commands.filter { it.findAnnotation<RegisterCommand>()?.subCommandOf == AbstractCommand::class }
@@ -104,9 +104,9 @@ abstract class StandardModule : Module {
     }
 
     final override fun postEnable() {
-        logger.info("Starting PostEnable")
+        logger.debug("Starting PostEnable")
         performPostEnable()
-        logger.info("Finished PostEnable")
+        logger.debug("Finished PostEnable")
     }
 
     @Throws(Exception::class)
