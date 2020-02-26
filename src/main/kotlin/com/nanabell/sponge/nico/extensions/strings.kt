@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.nanabell.sponge.nico.extensions
 
 import org.spongepowered.api.text.Text
