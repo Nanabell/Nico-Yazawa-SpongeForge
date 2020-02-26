@@ -8,10 +8,10 @@ import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.core.service.DatabaseService
 import com.nanabell.sponge.nico.module.link.LinkModule
-import com.nanabell.sponge.nico.module.link.LinkResult
 import com.nanabell.sponge.nico.module.link.database.Link
 import com.nanabell.sponge.nico.module.link.event.LinkedEvent
 import com.nanabell.sponge.nico.module.link.event.UnlinkedEvent
+import com.nanabell.sponge.nico.module.link.misc.LinkResult
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext

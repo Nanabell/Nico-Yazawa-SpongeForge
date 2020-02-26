@@ -7,7 +7,7 @@ import com.nanabell.sponge.nico.extensions.darkRed
 import com.nanabell.sponge.nico.extensions.gold
 import com.nanabell.sponge.nico.extensions.red
 import com.nanabell.sponge.nico.extensions.toText
-import com.nanabell.sponge.nico.module.link.LinkResult
+import com.nanabell.sponge.nico.module.link.misc.LinkResult
 import com.nanabell.sponge.nico.module.link.service.LinkService
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandResult

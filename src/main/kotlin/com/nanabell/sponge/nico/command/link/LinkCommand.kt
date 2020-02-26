@@ -5,7 +5,7 @@ import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.command.SelfSpecCommand
 import com.nanabell.sponge.nico.command.requirePlayerOrArg
 import com.nanabell.sponge.nico.extensions.*
-import com.nanabell.sponge.nico.module.link.LinkResult
+import com.nanabell.sponge.nico.module.link.misc.LinkResult
 import com.nanabell.sponge.nico.module.link.service.LinkService
 import net.dv8tion.jda.api.entities.User
 import org.spongepowered.api.Sponge

@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.module.link
+package com.nanabell.sponge.nico.module.link.misc
 
 enum class LinkResult {
     NO_LINK_REQUEST,
