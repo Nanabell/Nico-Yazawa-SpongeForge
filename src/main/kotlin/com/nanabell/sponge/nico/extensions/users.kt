@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.extensions
 
-import com.nanabell.sponge.nico.link.discord.DiscordService
+import com.nanabell.sponge.nico.module.discord.service.DiscordService
 import net.dv8tion.jda.api.entities.Member
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.service.user.UserStorageService

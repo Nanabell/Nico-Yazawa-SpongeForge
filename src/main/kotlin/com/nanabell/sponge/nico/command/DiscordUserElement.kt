@@ -1,8 +1,7 @@
 package com.nanabell.sponge.nico.command
 
-import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.extensions.toText
-import com.nanabell.sponge.nico.link.discord.DiscordService
+import com.nanabell.sponge.nico.module.discord.service.DiscordService
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.args.CommandArgs
@@ -22,26 +21,23 @@ class DiscordUserElement(key: Text) : CommandElement(key) {
 
         val name = args.next()
         return when {
-            tagPattern.matcher(name).find() -> discordService.jda.getUserByTag(name)
-            name.toLongOrNull() != null -> discordService.jda.getUserById(name)
+            tagPattern.matcher(name).find() -> discordService.getUser(name)
+            name.toLongOrNull() != null -> discordService.getUser(name.toLong())
             else -> null
         }
     }
 
     override fun complete(src: CommandSource, args: CommandArgs, context: CommandContext): MutableList<String> {
-        val state = args.snapshot
-        val nextArg = args.nextIfPresent().orNull()
-        args.applySnapshot(state)
-
-        if (nextArg == null)
+        if (!args.hasNext())
             return mutableListOf()
 
+        val arg = args.peek()
         val choices = mutableListOf<String>()
-        for (user in discordService.jda.userCache) {
-            if (user.asTag.startsWith(nextArg))
+        for (user in discordService.getUserCache()) {
+            if (user.asTag.startsWith(arg))
                 choices.add(user.asTag)
 
-            if (user.id.startsWith(nextArg))
+            if (user.id.startsWith(arg))
                 choices.add(user.id)
         }
 

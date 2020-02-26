@@ -2,8 +2,8 @@ package com.nanabell.sponge.nico.link.sync
 
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.extensions.*
-import com.nanabell.sponge.nico.link.LinkService
-import com.nanabell.sponge.nico.link.discord.DiscordService
+import com.nanabell.sponge.nico.module.discord.service.DiscordService
+import com.nanabell.sponge.nico.module.link.service.LinkService
 import net.dv8tion.jda.api.entities.Member
 import org.spongepowered.api.Sponge
 
@@ -45,7 +45,7 @@ class DiscordTrooper : ITrooper {
 
     override fun addTroop(player: MinecraftUser, troop: Troop) {
         val member = getMember(player) ?: return
-        val role = discordService.jda.getRoleById(troop.role) ?: return
+        val role = discordService.getRole(troop.role.toLongOrNull() ?: -1) ?: return
 
         if (!member.roles.contains(role)) {
             if (discordService.addRole(member, role)) {
@@ -56,7 +56,7 @@ class DiscordTrooper : ITrooper {
 
     override fun removeTroop(player: MinecraftUser, troop: Troop) {
         val member = getMember(player) ?: return
-        val role = discordService.jda.getRoleById(troop.role) ?: return
+        val role = discordService.getRole(troop.role.toLongOrNull() ?: -1) ?: return
 
         if (!member.roles.contains(role)) {
             if (discordService.removeRole(member, role)) {
