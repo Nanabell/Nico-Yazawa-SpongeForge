@@ -42,6 +42,10 @@ class DatabaseService : AbstractService<CoreModule>() {
         return dataStore.findAndModify(findQuery<T>(field, uniqueId), operations)
     }
 
+    fun <T : DataEntry> update(query: Query<T>, operations: UpdateOperations<T>) {
+        dataStore.update(query, operations)
+    }
+
     fun <T : DataEntry> save(entity: T) {
         dataStore.save(entity)
     }
