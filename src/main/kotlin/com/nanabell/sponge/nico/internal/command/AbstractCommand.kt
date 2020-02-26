@@ -6,6 +6,10 @@ import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.extensions.*
+import com.nanabell.sponge.nico.internal.IllegalCommandException
+import com.nanabell.sponge.nico.internal.MissingAnnotationException
+import com.nanabell.sponge.nico.internal.NicoArgumentParseException
+import com.nanabell.sponge.nico.internal.NicoCommandException
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.annotation.command.RunAsync
 import com.nanabell.sponge.nico.internal.extension.getActualTypeArguments
@@ -64,8 +68,8 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*>> : C
     private lateinit var argumentParser: CommandElement
 
     init {
-        val co = javaClass.getAnnotation(RegisterCommand::class.java) ?: throw IllegalCommandClassException(javaClass)
-        if (co.value.isEmpty()) throw IllegalCommandClassException("value Element of @RegisterCommand Annotation in Implementation Class $javaClass cannot be empty")
+        val co = javaClass.getAnnotation(RegisterCommand::class.java) ?: throw MissingAnnotationException(this::class, RegisterCommand::class)
+        if (co.value.isEmpty()) throw IllegalCommandException("value Element of @${RegisterCommand::class} at $javaClass cannot be empty")
 
         val types = this::class.getActualTypeArguments(AbstractCommand::class)
         this.sourceType = if (types.isEmpty()) CommandSource::class.java as Class<T> else types[0] as Class<T>
@@ -94,7 +98,7 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*>> : C
     }
 
     private fun getNextSubCommandPath(clazz: KClass<out AbstractCommand<*, *>>, builder: StringBuilder, appendPeriod: Boolean) {
-        val co = clazz.findAnnotation<RegisterCommand>() ?: throw IllegalCommandClassException(javaClass)
+        val co = clazz.findAnnotation<RegisterCommand>() ?: throw MissingAnnotationException(clazz, RegisterCommand::class)
         if (!co.subCommandOf.isAbstract && co.subCommandOf.java != this::class)
             getNextSubCommandPath(co.subCommandOf, builder, true)
 

@@ -1,19 +1,61 @@
-package com.nanabell.sponge.nico.internal.command
+package com.nanabell.sponge.nico.internal
 
 import com.nanabell.sponge.nico.extensions.toText
 import org.spongepowered.api.command.CommandException
 import org.spongepowered.api.command.CommandPermissionException
+import org.spongepowered.api.command.args.ArgumentParseException
+import org.spongepowered.api.event.Listener
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.format.TextColors
 import java.util.function.Consumer
 import java.util.stream.Collectors
+import kotlin.reflect.KClass
 
-class NicoCommandException(
-        private val exceptions: List<Pair<String, CommandException>>,
-        val allowFallback: Boolean
-) : CommandException(Text.EMPTY) {
+// Generic
+open class MissingAnnotationException : Exception {
+    constructor(clazz: KClass<*>, annotation: KClass<*>): super("'$clazz' is missing the Annotation @${annotation.simpleName}")
+    constructor(message: String): super(message)
+}
 
-    constructor(exceptions: List<Pair<String, CommandException>>): this(exceptions, true)
+// Service
+class InvalidSubClassException(clazz: KClass<*>, parent: KClass<*>) : Exception("Service '$clazz' is not a SubClass of '$parent'")
+
+// Event
+class MissingEventListenersException(clazz: KClass<*>) : MissingAnnotationException("Event Listener '$clazz' does not contain any @${Listener::class.simpleName}")
+
+// Command
+class IllegalCommandException(message: String) : Exception(message)
+
+class NicoArgumentParseException(
+        message: Text,
+        source: String,
+        position: Int,
+        private val usage: Text?,
+        private val subcommands: Text?,
+        val isEnd: Boolean
+) : ArgumentParseException(message, source, position) {
+
+    override fun getText(): Text? {
+        val t = super.getText()
+        return if (this.usage == null && subcommands == null) {
+            t
+        } else Text.join(t, Text.NEW_LINE, getUsage())
+    }
+
+    private fun getUsage(): Text? {
+        val builder = Text.builder()
+        if (usage != null) {
+            builder.append(Text.NEW_LINE).append("Usage: ".toText()).append(usage)
+        }
+        if (subcommands != null) {
+            builder.append(Text.NEW_LINE).append("SubCommands: ".toText()).append(subcommands)
+        }
+
+        return builder.build()
+    }
+}
+
+class NicoCommandException(private val exceptions: List<Pair<String, CommandException>>) : CommandException(Text.EMPTY) {
 
     override fun getText(): Text? {
         if (exceptions.isEmpty()) { // Unable to get the error.

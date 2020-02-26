@@ -20,18 +20,11 @@ class ServiceBuilder(
 
     @Suppress("UNCHECKED_CAST")
     fun <T : AbstractService<out ConfigurableModule<*>>> register(clazz: KClass<T>) {
-        val rs = clazz.findAnnotation<RegisterService>()
-        if (rs == null) {
-            logger.warn("Service Class {} is not Annotated with required Annotation @RegisterService", clazz)
-            return
-        }
+        val rs = clazz.findAnnotation<RegisterService>() ?: throw MissingAnnotationException(clazz, RegisterService::class)
         val key = if (rs.value == AbstractService::class) clazz else rs.value
 
         val service: T = clazz.createInstance()
-        if (!service::class.isSubclassOf(rs.value)) {
-            logger.error("Service {} is not a subclass of {}", service::class, rs.value)
-            return
-        }
+        if (!service::class.isSubclassOf(rs.value)) throw InvalidSubClassException(clazz, rs.value)
 
         if (clazz.findAnnotation<ApiService>() != null) {
             if (Sponge.getServiceManager().isRegistered(key.java as Class<Any>) && !rs.override) {
