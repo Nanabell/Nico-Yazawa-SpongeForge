@@ -3,8 +3,8 @@ package com.nanabell.sponge.nico.internal.service
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.InvalidSubClassException
 import com.nanabell.sponge.nico.internal.MissingAnnotationException
-import com.nanabell.sponge.nico.internal.annotation.ApiService
-import com.nanabell.sponge.nico.internal.annotation.RegisterService
+import com.nanabell.sponge.nico.internal.annotation.service.ApiService
+import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
 import com.nanabell.sponge.nico.internal.module.ConfigurableModule
 import com.nanabell.sponge.nico.internal.module.StandardModule
 import org.spongepowered.api.Sponge

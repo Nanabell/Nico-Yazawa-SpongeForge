@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.internal.annotation
+package com.nanabell.sponge.nico.internal.annotation.service
 
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import kotlin.reflect.KClass
