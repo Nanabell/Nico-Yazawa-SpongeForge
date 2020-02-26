@@ -502,3 +502,5 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*>> : C
         private val tokenizer: InputTokenizer = InputTokenizer.quotedStrings(false)
     }
 }
+
+abstract class StandardCommand<M : ConfigurableModule<*>> : AbstractCommand<CommandSource, M>()
