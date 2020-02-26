@@ -117,7 +117,6 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
         serviceManager.provideUnchecked(DiscordService::class.java).init()
         serviceManager.provideUnchecked(ActivityService::class.java).init()
         serviceManager.provideUnchecked(TroopSyncService::class.java).init()
-        serviceManager.provideUnchecked(UserLinkWatchdog::class.java).init()
     }
 
     @Listener
