@@ -331,7 +331,7 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*>> : C
 
         children.forEach {
             try {
-                this.commandBuilder.buildCommand(it, false).run { this.dispatcher.register(this, *this.aliases) }
+                this.commandBuilder.buildCommand(it, false).also { sub -> this.dispatcher.register(sub, *sub.aliases) }
             } catch (e: Exception) {
                 logger.error("Failed to construct Child Command for Class $it", e)
             }
