@@ -1,21 +1,13 @@
 package com.nanabell.sponge.nico
 
 import com.google.inject.Inject
-import com.mongodb.MongoClient
-import com.mongodb.MongoClientURI
 import com.nanabell.sponge.nico.activity.ActivityService
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.economy.NicoEconomyService
 import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
-import com.nanabell.sponge.nico.link.sync.TroopSyncService
 import com.nanabell.sponge.nico.module.core.config.CoreConfigAdapter
-import com.nanabell.sponge.nico.module.discord.service.DiscordService
-import com.nanabell.sponge.nico.module.link.runnables.UserLinkWatchdog
-import com.nanabell.sponge.nico.module.link.service.LinkService
-import dev.morphia.Datastore
-import dev.morphia.Morphia
 import ninja.leaping.configurate.ConfigurationOptions
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader
 import org.slf4j.Logger
@@ -25,7 +17,6 @@ import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.game.GameReloadEvent
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent
 import org.spongepowered.api.event.game.state.GameInitializationEvent
-import org.spongepowered.api.event.game.state.GamePostInitializationEvent
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent
 import org.spongepowered.api.plugin.Plugin
 import org.spongepowered.api.service.economy.EconomyService
@@ -89,40 +80,22 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
 
         permissionRegistry.registerPermissions()
 
-        val morphia = Morphia()
-        val dataStore = morphia.createDatastore(MongoClient(MongoClientURI(config.get().databaseUrl)), "dummy-nico")
-        dataStore.ensureIndexes()
-
         val serviceManager = Sponge.getServiceManager()
-        serviceManager.setProvider(this, Datastore::class.java, dataStore)
         serviceManager.setProvider(this, EconomyService::class.java, NicoEconomyService())
-        serviceManager.setProvider(this, LinkService::class.java, LinkService())
-        serviceManager.setProvider(this, DiscordService::class.java, DiscordService())
-        // serviceManager.setProvider(this, CommandRegistar::class.java, CommandRegistar()) //TODO: Remove do not Migrate!
         serviceManager.setProvider(this, ActivityService::class.java, ActivityService())
-        serviceManager.setProvider(this, TroopSyncService::class.java, TroopSyncService())
-    }
-
-    @Listener
-    fun onPostInit(event: GamePostInitializationEvent) {
-        val serviceManager = Sponge.getServiceManager()
-
-        serviceManager.setProvider(this, UserLinkWatchdog::class.java, UserLinkWatchdog())
     }
 
     @Listener
     fun onGameAboutToStartServer(event: GameAboutToStartServerEvent) {
         val serviceManager = Sponge.getServiceManager()
 
-        serviceManager.provideUnchecked(DiscordService::class.java).init()
         serviceManager.provideUnchecked(ActivityService::class.java).init()
-        serviceManager.provideUnchecked(TroopSyncService::class.java).init()
     }
 
     @Listener
     fun onGameReload(event: GameReloadEvent) {
         // Reload Config
-        config.reload().also { _logger.info("Reloaded Config") }
+        config.reload().also { _logger.info("Reloaded Config") } // TODO: Redo if possible
     }
 
     private fun disable() {

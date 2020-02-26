@@ -1,7 +1,5 @@
 package com.nanabell.sponge.nico.config
 
-import com.nanabell.sponge.nico.link.sync.Troop
-import com.nanabell.sponge.nico.link.sync.TroopSource
 import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
@@ -39,50 +37,8 @@ data class DiscordLinkConfig(
         private val _kickPlaytime: Long = 5 * 60,
 
         @Setting("kick-refer-channel")
-        val kickReferChannel: String = "<INSERT-CHANNEL-NAME-HERE>",
-
-        @Setting("sync")
-        val syncConfig: SyncConfig = SyncConfig()
-
+        val kickReferChannel: String = "<INSERT-CHANNEL-NAME-HERE>"
 ) {
     val kickInterval get() = _kickInterval.coerceAtLeast(60)
     val kickPlaytime get() = _kickPlaytime.coerceAtLeast(60)
-
-    @ConfigSerializable
-    data class SyncConfig(
-
-            @Setting("sync-discord", comment = "Sync Discord Roles to Minecraft Permission?")
-            val discordSync: Boolean = true,
-
-            @Setting("sync-minecraft", comment = "Sync Minecraft Permissions to Discord Roles?")
-            val minecraftSync: Boolean = true,
-
-            @Setting("troops", comment = "Troops which define Syncing rules. Look at examples for Pattern")
-            var _troops: List<String> = listOf()
-    ) {
-
-        val troops: Map<TroopSource, List<Troop>> by lazy {
-            _troops.mapNotNull {
-                val split = when {
-                    it.contains("==>") -> Pair(TroopSource.DISCORD, it.split("==>"))
-                    it.contains("<==") -> Pair(TroopSource.MINECRAFT, it.split("<=="))
-                    else -> return@mapNotNull null
-                }
-
-                Troop(split.second[0], split.second[1], split.first)
-            }.groupBy { it.source }
-        }
-
-        fun getMinecraftTroops(): List<Troop> {
-            return troops[TroopSource.MINECRAFT] ?: emptyList()
-        }
-
-        fun getDiscordTroops(): List<Troop> {
-            return troops[TroopSource.DISCORD] ?: emptyList()
-        }
-
-        fun getTroopsFrom(source: TroopSource): List<Troop> {
-            return troops[source] ?: emptyList()
-        }
-    }
 }

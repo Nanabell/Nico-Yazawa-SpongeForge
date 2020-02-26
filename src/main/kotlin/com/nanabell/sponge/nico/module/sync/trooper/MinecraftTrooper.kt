@@ -1,18 +1,22 @@
-package com.nanabell.sponge.nico.link.sync
+package com.nanabell.sponge.nico.module.sync.trooper
 
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.extensions.*
+import com.nanabell.sponge.nico.module.discord.service.DiscordService
+import com.nanabell.sponge.nico.module.sync.config.SyncConfig
+import com.nanabell.sponge.nico.module.sync.data.Troop
+import com.nanabell.sponge.nico.module.sync.interfaces.ITrooper
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.service.permission.PermissionService
 import org.spongepowered.api.service.permission.SubjectData
 import org.spongepowered.api.util.Tristate
 
-class MinecraftTrooper : ITrooper {
+class MinecraftTrooper(private val config: SyncConfig) : ITrooper {
 
     private val logger = NicoYazawa.getPlugin().getLogger(javaClass.simpleName)
 
-    private val config get() = NicoYazawa.getPlugin().getConfig().get().discordLinkConfig.syncConfig
     private val serviceAvailable = Sponge.getServiceManager().isRegistered(PermissionService::class.java)
+    private val discordService = NicoYazawa.getServiceRegistry().provideUnchecked(DiscordService::class)
 
     override fun exists(player: MinecraftUser): Boolean {
         return serviceAvailable
@@ -37,7 +41,7 @@ class MinecraftTrooper : ITrooper {
             player.subjectData.setPermission(SubjectData.GLOBAL_CONTEXT, troop.permission, Tristate.TRUE).thenApply {
 
                 if (it) {
-                    player.player.orNull()?.sendMessage("+ Added Permission '${troop.permission}' because you have the Discord role ${troop.getRoleName()}".toText().green())
+                    player.player.orNull()?.sendMessage("+ Added Permission '${troop.permission}' because you have the Discord role ${getRoleName(troop.role)}".toText().green())
                     logger.info("Added Permission {} to Player {}. {}", troop.permission, player.name, troop)
 
                 } else {
@@ -52,7 +56,7 @@ class MinecraftTrooper : ITrooper {
             player.subjectData.setPermission(SubjectData.GLOBAL_CONTEXT, troop.permission, Tristate.UNDEFINED).thenApply {
 
                 if (it) {
-                    player.player.orNull()?.sendMessage("- Removed Permission '${troop.permission}' because you do not have the required Discord role ${troop.getRoleName()}".toText().red())
+                    player.player.orNull()?.sendMessage("- Removed Permission '${troop.permission}' because you do not have the required Discord role ${getRoleName(troop.role)}".toText().red())
                     logger.info("Removed Permission {} from Player {}. {}", troop.permission, player.name, troop)
 
                 } else {
@@ -60,6 +64,10 @@ class MinecraftTrooper : ITrooper {
                 }
             }
         }
+    }
+
+    private fun getRoleName(longId: Long): String {
+        return discordService.getRole(longId)?.name ?: "Unable to retrieve role name!"
     }
 
     override fun toString(): String {

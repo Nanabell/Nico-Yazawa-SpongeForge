@@ -1,20 +1,18 @@
-package com.nanabell.sponge.nico.link.sync
+package com.nanabell.sponge.nico.module.sync.trooper
 
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.extensions.*
 import com.nanabell.sponge.nico.module.discord.service.DiscordService
 import com.nanabell.sponge.nico.module.link.service.LinkService
+import com.nanabell.sponge.nico.module.sync.config.SyncConfig
+import com.nanabell.sponge.nico.module.sync.data.Troop
+import com.nanabell.sponge.nico.module.sync.interfaces.ITrooper
 import net.dv8tion.jda.api.entities.Member
-import org.spongepowered.api.Sponge
 
-class DiscordTrooper : ITrooper {
+class DiscordTrooper(private val config: SyncConfig) : ITrooper {
 
-    private val logger = NicoYazawa.getPlugin().getLogger(javaClass.simpleName)
-
-    private val discordService = Sponge.getServiceManager().provideUnchecked(DiscordService::class.java)
-    private val linkService = Sponge.getServiceManager().provideUnchecked(LinkService::class.java)
-
-    private val config get() = NicoYazawa.getPlugin().getConfig().get().discordLinkConfig.syncConfig
+    private val discordService = NicoYazawa.getServiceRegistry().provideUnchecked(DiscordService::class)
+    private val linkService = NicoYazawa.getServiceRegistry().provideUnchecked(LinkService::class)
 
     override fun exists(player: MinecraftUser): Boolean {
         return getMember(player) != null
@@ -32,7 +30,7 @@ class DiscordTrooper : ITrooper {
 
     override fun getTroops(player: MinecraftUser): List<Troop> {
         val member = getMember(player) ?: return emptyList()
-        val roleIds = member.roles.map { it.id }
+        val roleIds = member.roles.map { it.idLong }
 
         val result = mutableListOf<Troop>()
         config.getDiscordTroops().forEach {
@@ -45,7 +43,7 @@ class DiscordTrooper : ITrooper {
 
     override fun addTroop(player: MinecraftUser, troop: Troop) {
         val member = getMember(player) ?: return
-        val role = discordService.getRole(troop.role.toLongOrNull() ?: -1) ?: return
+        val role = discordService.getRole(troop.role) ?: return
 
         if (!member.roles.contains(role)) {
             if (discordService.addRole(member, role)) {
@@ -56,7 +54,7 @@ class DiscordTrooper : ITrooper {
 
     override fun removeTroop(player: MinecraftUser, troop: Troop) {
         val member = getMember(player) ?: return
-        val role = discordService.getRole(troop.role.toLongOrNull() ?: -1) ?: return
+        val role = discordService.getRole(troop.role) ?: return
 
         if (!member.roles.contains(role)) {
             if (discordService.removeRole(member, role)) {

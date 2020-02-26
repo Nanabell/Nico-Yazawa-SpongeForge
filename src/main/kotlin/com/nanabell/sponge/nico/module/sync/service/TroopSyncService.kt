@@ -1,51 +1,31 @@
-package com.nanabell.sponge.nico.link.sync
+package com.nanabell.sponge.nico.module.sync.service
 
-import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.extensions.MinecraftUser
-import org.spongepowered.api.Sponge
-import java.util.concurrent.TimeUnit
+import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
+import com.nanabell.sponge.nico.internal.service.AbstractService
+import com.nanabell.sponge.nico.module.sync.SyncModule
+import com.nanabell.sponge.nico.module.sync.config.SyncConfig
+import com.nanabell.sponge.nico.module.sync.interfaces.ITrooper
+import com.nanabell.sponge.nico.module.sync.misc.TroopSource
+import com.nanabell.sponge.nico.module.sync.trooper.DiscordTrooper
+import com.nanabell.sponge.nico.module.sync.trooper.MinecraftTrooper
 
-class TroopSyncService : Runnable {
+@RegisterService
+class TroopSyncService : AbstractService<SyncModule>() {
 
-    private val logger = NicoYazawa.getPlugin().getLogger(javaClass.simpleName)
+    private lateinit var config: SyncConfig
 
-    private val minecraft = MinecraftTrooper()
-    private val discord = DiscordTrooper()
+    private lateinit var minecraft: ITrooper
+    private lateinit var discord: ITrooper
 
-    private val config get() = NicoYazawa.getPlugin().getConfig().get().discordLinkConfig.syncConfig
+    override fun onPreEnable() {
+        this.config = module.getConfigOrDefault()
 
-    fun init() {
-        if (!config.discordSync && !config.minecraftSync) {
-            logger.info("Neither Syncing Discord -> Minecraft or Minecraft -> Discord. Disabling TroopSyncService.")
-            return
-        }
-
-        Sponge.getScheduler().createTaskBuilder()
-                .name("NicoYazawa-A-SyncService")
-                .async()
-                .delay(5, TimeUnit.MINUTES)
-                .interval(5, TimeUnit.MINUTES)
-                .execute(this)
-                .submit(NicoYazawa.getPlugin())
-
-        logger.info("Enabled TroopSyncService. DiscordSync: {}, MinecraftSync: {}", config.discordSync, config.minecraftSync)
+        this.minecraft = MinecraftTrooper(config)
+        this.discord = DiscordTrooper(config)
     }
 
-    override fun run() {
-        logger.debug("Starting Sync run")
-        for (player in Sponge.getServer().onlinePlayers) {
-
-            if (config.discordSync)
-                sync(player, TroopSource.DISCORD)
-
-            if (config.minecraftSync)
-                sync(player, TroopSource.MINECRAFT)
-
-        }
-        logger.debug("Finished Sync run")
-    }
-
-    private fun sync(user: MinecraftUser, sourceTroop: TroopSource) {
+    fun sync(user: MinecraftUser, sourceTroop: TroopSource) {
         logger.debug("Started Syncing {} for player {}", sourceTroop, user.name)
 
         val source = if (sourceTroop == TroopSource.MINECRAFT) minecraft else discord
@@ -80,7 +60,7 @@ class TroopSyncService : Runnable {
                             logger.trace("User {} does not yet have target troop {}. Adding...", user.name, it)
                             target.addTroop(user, it) // Add it
 
-                        } else  {
+                        } else {
                             logger.trace("User {} already has target troop {}", user.name, it)
                         }
 
@@ -92,7 +72,7 @@ class TroopSyncService : Runnable {
                             logger.trace("User {} still has target troop {}. Removing...", user.name, it)
                             target.removeTroop(user, it) // Remove it
 
-                        } else  {
+                        } else {
                             logger.trace("User {} does not have target troop {}", user.name, it)
                         }
                     }
@@ -102,4 +82,5 @@ class TroopSyncService : Runnable {
 
         logger.debug("Finished Syncing {} for player {}", sourceTroop, user.name)
     }
+
 }

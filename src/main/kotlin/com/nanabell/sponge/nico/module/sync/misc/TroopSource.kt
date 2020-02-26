@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.link.sync
+package com.nanabell.sponge.nico.module.sync.misc
 
 enum class TroopSource {
     MINECRAFT,
