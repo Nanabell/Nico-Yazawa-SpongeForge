@@ -13,6 +13,8 @@ abstract class AbstractListener<M : ConfigurableModule<*, *>> {
     protected lateinit var module: M
         private set
 
+    open fun onReady() {}
+
     @Suppress("UNCHECKED_CAST")
     fun setModule(module: StandardModule) {
         this.module = module as M

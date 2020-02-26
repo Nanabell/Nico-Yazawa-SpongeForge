@@ -15,14 +15,16 @@ class ListenerBuilder (
 ) {
 
     fun <E : AbstractListener<*>> registerListener(clazz: KClass<out E>) {
-        val event = clazz.createInstance()
+        val listener = clazz.createInstance()
 
         if (clazz.members.all { it.findAnnotation<Listener>() == null })
             throw MissingEventListenersException(clazz)
 
         module.logger.info("Registered Listener: ${clazz.simpleName}") // TODO: change back to debug
-        event.setModule(module)
-        Sponge.getEventManager().registerListeners(plugin, event)
+        listener.setModule(module)
+        listener.onReady()
+
+        Sponge.getEventManager().registerListeners(plugin, listener)
     }
 
 }
