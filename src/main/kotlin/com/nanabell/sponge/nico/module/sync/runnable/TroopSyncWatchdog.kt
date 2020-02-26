@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 @RegisterRunnable("NicoYazawa-A-SyncService", delay = 5, delayUnit = TimeUnit.MINUTES, interval = 5, intervalUnit = TimeUnit.MINUTES, isAsync = true)
 class TroopSyncWatchdog : AbstractRunnable<SyncModule>() {
 
-    private val service: TroopSyncService = NicoYazawa.getServiceRegistry().provideUnchecked(TroopSyncService::class)
+    private val service: TroopSyncService = NicoYazawa.getServiceRegistry().provideUnchecked()
 
     private lateinit var config: SyncConfig
 

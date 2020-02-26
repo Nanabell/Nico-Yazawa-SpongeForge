@@ -21,12 +21,12 @@ import javax.annotation.Nonnull
 @RegisterListener
 class UsernameRequestListener : AbstractListener<LinkModule>() {
 
-    private val linkService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked(LinkService::class)
+    private val linkService: LinkService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked()
     private val pending: MutableSet<Long> = HashSet()
 
     override fun onReady() {
         val config = module.getConfigOrDefault()
-        val discordService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked(DiscordService::class)
+        val discordService: DiscordService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked()
         discordService.registerListener(this)
 
         val channel = discordService.getTextChannel(config.channelId) ?: return

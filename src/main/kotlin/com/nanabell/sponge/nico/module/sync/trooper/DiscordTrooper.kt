@@ -11,8 +11,8 @@ import net.dv8tion.jda.api.entities.Member
 
 class DiscordTrooper(private val config: SyncConfig) : ITrooper {
 
-    private val discordService = NicoYazawa.getServiceRegistry().provideUnchecked(DiscordService::class)
-    private val linkService = NicoYazawa.getServiceRegistry().provideUnchecked(LinkService::class)
+    private val discordService: DiscordService = NicoYazawa.getServiceRegistry().provideUnchecked()
+    private val linkService: LinkService = NicoYazawa.getServiceRegistry().provideUnchecked()
 
     override fun exists(player: MinecraftUser): Boolean {
         return getMember(player) != null

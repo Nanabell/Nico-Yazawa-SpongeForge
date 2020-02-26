@@ -22,7 +22,7 @@ import java.util.*
 @RegisterService(EconomyService::class, true)
 class NicoEconomyService : AbstractService<EconomyModule>(), EconomyService {
 
-    private val linkService = NicoYazawa.getServiceRegistry().provideUnchecked(LinkService::class)
+    private val linkService: LinkService = NicoYazawa.getServiceRegistry().provideUnchecked()
 
     override fun onPreEnable() {
     }

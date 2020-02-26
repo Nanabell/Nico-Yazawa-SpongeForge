@@ -12,7 +12,7 @@ import java.time.Instant
 @RegisterListener
 class PlaytimeListener : AbstractListener<CoreModule>() {
 
-    private val playtimeService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked(PlaytimeService::class)
+    private val playtimeService: PlaytimeService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked()
 
     @Listener
     private fun onPlayerJoin(event: ClientConnectionEvent.Join) {

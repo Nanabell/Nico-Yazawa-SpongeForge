@@ -16,7 +16,7 @@ class MinecraftTrooper(private val config: SyncConfig) : ITrooper {
     private val logger = NicoYazawa.getPlugin().getLogger(javaClass.simpleName)
 
     private val serviceAvailable = Sponge.getServiceManager().isRegistered(PermissionService::class.java)
-    private val discordService = NicoYazawa.getServiceRegistry().provideUnchecked(DiscordService::class)
+    private val discordService: DiscordService = NicoYazawa.getServiceRegistry().provideUnchecked()
 
     override fun exists(player: MinecraftUser): Boolean {
         return serviceAvailable

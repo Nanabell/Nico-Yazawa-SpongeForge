@@ -22,7 +22,7 @@ import kotlin.collections.HashMap
 class LinkService : AbstractService<LinkModule>() {
 
     private val eventManager = Sponge.getEventManager()
-    private val databaseService = NicoYazawa.getServiceRegistry().provideUnchecked(DatabaseService::class)
+    private val databaseService: DatabaseService = NicoYazawa.getServiceRegistry().provideUnchecked()
 
     private val pendingLinks = HashMap<MinecraftUser, DiscordUser>()
     private val cacheLinks = Caffeine.newBuilder().build<UUID, Link> { databaseService.findById("minecraftId", it) }

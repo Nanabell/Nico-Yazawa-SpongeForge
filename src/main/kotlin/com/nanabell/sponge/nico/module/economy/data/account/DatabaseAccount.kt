@@ -15,7 +15,7 @@ import java.math.BigDecimal
 
 abstract class DatabaseAccount : CurrencyAccount {
 
-    protected val service: DatabaseService = NicoYazawa.getServiceRegistry().provideUnchecked(DatabaseService::class)
+    protected val service: DatabaseService = NicoYazawa.getServiceRegistry().provideUnchecked()
 
     protected inline fun <reified T : DataEntry> getQuery(field: String, value: Any): Query<T> = service.findQuery<T>(field, value).field(field).equal(value)
     protected inline fun <reified T : DataEntry> getIncrement(field: String, value: Number): UpdateOperations<T> = service.newUpdateOperations<T>().inc(field, value)

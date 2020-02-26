@@ -20,7 +20,7 @@ import org.spongepowered.api.text.format.TextColors
 class LinkRequestListener : AbstractListener<LinkModule>() {
 
     private val eventManager = Sponge.getEventManager()
-    private val linkService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked(LinkService::class)
+    private val linkService: LinkService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked()
 
     @Listener
     fun onLinkRequest(event: LinkRequestEvent) {

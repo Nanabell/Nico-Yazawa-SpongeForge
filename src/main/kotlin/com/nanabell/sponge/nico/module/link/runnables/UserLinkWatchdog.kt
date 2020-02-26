@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit
 @RegisterRunnable("NicoYazawa-A-LinkWatchdog", isAsync = true)
 class UserLinkWatchdog : AbstractRunnable<LinkModule>() {
 
-    private val linkService = NicoYazawa.getServiceRegistry().provideUnchecked(LinkService::class)
-    private val playtimeService = NicoYazawa.getServiceRegistry().provideUnchecked(PlaytimeService::class)
+    private val linkService: LinkService = NicoYazawa.getServiceRegistry().provideUnchecked()
+    private val playtimeService: PlaytimeService = NicoYazawa.getServiceRegistry().provideUnchecked()
 
     private lateinit var config: KickConfig
 

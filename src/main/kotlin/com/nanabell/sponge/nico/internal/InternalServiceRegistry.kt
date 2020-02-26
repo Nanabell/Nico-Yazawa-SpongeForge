@@ -2,6 +2,7 @@ package com.nanabell.sponge.nico.internal
 
 import kotlin.reflect.KClass
 
+@Suppress("UNCHECKED_CAST")
 class InternalServiceRegistry {
 
     private val services: MutableMap<KClass<*>, Any> = HashMap()
@@ -20,18 +21,22 @@ class InternalServiceRegistry {
         return services.containsKey(clazz)
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun <C : Any> provide(clazz: KClass<C>): C? {
-        if (!services.containsKey(clazz)) return null
+        if (!isRegistered(clazz)) return null
 
         return services[clazz] as C
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <C : Any> provideUnchecked(clazz: KClass<C>): C {
-        if (!services.containsKey(clazz)) throw NoSuchElementException("Service '$clazz' has not been registered!")
+    inline fun <reified C : Any> provide(): C? {
+        if (!isRegistered(C::class)) return null
 
-        return services[clazz] as C
+        return provide(C::class)
     }
 
+    @Throws(NoSuchElementException::class)
+    inline fun <reified C : Any> provideUnchecked(): C {
+        if (!isRegistered(C::class)) throw NoSuchElementException("Service '${C::class}' has not been registered!")
+
+        return provide(C::class)!!
+    }
 }
