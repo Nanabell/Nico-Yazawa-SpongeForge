@@ -42,7 +42,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
 @Suppress("UNCHECKED_CAST")
-abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*>> : CommandCallable {
+abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*, *>> : CommandCallable {
 
     private val sourceType: Class<T>
     private val sourceTypePredicate: (CommandSource) -> Boolean
@@ -503,4 +503,4 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*>> : C
     }
 }
 
-abstract class StandardCommand<M : ConfigurableModule<*>> : AbstractCommand<CommandSource, M>()
+abstract class StandardCommand<M : ConfigurableModule<*, *>> : AbstractCommand<CommandSource, M>()

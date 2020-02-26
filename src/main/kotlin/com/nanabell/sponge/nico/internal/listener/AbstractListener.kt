@@ -5,7 +5,7 @@ import com.nanabell.sponge.nico.internal.module.ConfigurableModule
 import com.nanabell.sponge.nico.internal.module.StandardModule
 import org.slf4j.Logger
 
-abstract class AbstractListener<M : ConfigurableModule<*>> {
+abstract class AbstractListener<M : ConfigurableModule<*, *>> {
 
     protected val plugin: NicoYazawa = NicoYazawa.getPlugin()
     protected val logger: Logger = plugin.getLogger("Listener", javaClass.simpleName)

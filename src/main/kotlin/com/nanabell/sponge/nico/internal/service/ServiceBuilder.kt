@@ -5,7 +5,6 @@ import com.nanabell.sponge.nico.internal.InvalidSubClassException
 import com.nanabell.sponge.nico.internal.MissingAnnotationException
 import com.nanabell.sponge.nico.internal.annotation.service.ApiService
 import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
-import com.nanabell.sponge.nico.internal.module.ConfigurableModule
 import com.nanabell.sponge.nico.internal.module.StandardModule
 import org.spongepowered.api.Sponge
 import kotlin.reflect.KClass
@@ -21,7 +20,7 @@ class ServiceBuilder(
     private val logger = module.logger
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : AbstractService<out ConfigurableModule<*>>> register(clazz: KClass<T>) {
+    fun <T : AbstractService<*>> register(clazz: KClass<T>): T {
         val rs = clazz.findAnnotation<RegisterService>() ?: throw MissingAnnotationException(clazz, RegisterService::class)
         val key = if (rs.value == AbstractService::class) clazz else rs.value
 
@@ -31,14 +30,14 @@ class ServiceBuilder(
         if (clazz.findAnnotation<ApiService>() != null) {
             if (Sponge.getServiceManager().isRegistered(key.java as Class<Any>) && !rs.override) {
                 logger.warn("There already is a Service registered for {}", rs.value)
-                return
+                TODO("Get a proper exception for this")
             }
 
             Sponge.getServiceManager().setProvider(plugin, rs.value.java as Class<Any>, service)
         } else {
             if (plugin.getServiceRegistry().isRegistered(rs.value) && !rs.override) {
                 logger.warn("There already is an Internal Service registered for {}", rs.value)
-                return
+                TODO("Get a proper exception for this")
             }
 
             plugin.getServiceRegistry().register(rs.value, service)
@@ -46,6 +45,8 @@ class ServiceBuilder(
 
         logger.info("Registered Service: ${clazz.simpleName}") // TODO: change back to debug
         service.setModule(module)
-        service.onEnable()
+        service.onPreEnable()
+
+        return service
     }
 }

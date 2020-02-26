@@ -1,5 +1,5 @@
 package com.nanabell.sponge.nico.module.core.config
 
-import uk.co.drnaylor.quickstart.config.TypedAbstractConfigAdapter
+import com.nanabell.sponge.nico.internal.config.StandardConfigAdapter
 
-class CoreConfigAdapter : TypedAbstractConfigAdapter.StandardWithSimpleDefault<CoreConfig>(CoreConfig::class.java)
+class CoreConfigAdapter : StandardConfigAdapter<CoreConfig>(CoreConfig::class)

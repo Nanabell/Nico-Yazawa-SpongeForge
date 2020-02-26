@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
-    <list size="9">
+    <list size="11">
       <item index="0" class="java.lang.String" itemvalue="com.nanabell.sponge.nico.internal.annotation.RegisterListener" />
       <item index="1" class="java.lang.String" itemvalue="com.nanabell.sponge.nico.internal.annotation.RegisterRunnable" />
       <item index="2" class="java.lang.String" itemvalue="com.nanabell.sponge.nico.internal.annotation.RegisterService" />
       <item index="3" class="java.lang.String" itemvalue="com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand" />
-      <item index="4" class="java.lang.String" itemvalue="net.minecraftforge.fml.common.Mod" />
-      <item index="5" class="java.lang.String" itemvalue="net.minecraftforge.fml.common.Mod.EventHandler" />
-      <item index="6" class="java.lang.String" itemvalue="net.minecraftforge.fml.common.eventhandler.SubscribeEvent" />
-      <item index="7" class="java.lang.String" itemvalue="org.spongepowered.api.event.Listener" />
-      <item index="8" class="java.lang.String" itemvalue="org.spongepowered.api.plugin.Plugin" />
+      <item index="4" class="java.lang.String" itemvalue="com.nanabell.sponge.nico.internal.annotation.service.RegisterService" />
+      <item index="5" class="java.lang.String" itemvalue="net.minecraftforge.fml.common.Mod" />
+      <item index="6" class="java.lang.String" itemvalue="net.minecraftforge.fml.common.Mod.EventHandler" />
+      <item index="7" class="java.lang.String" itemvalue="net.minecraftforge.fml.common.eventhandler.SubscribeEvent" />
+      <item index="8" class="java.lang.String" itemvalue="org.spongepowered.api.event.Listener" />
+      <item index="9" class="java.lang.String" itemvalue="org.spongepowered.api.plugin.Plugin" />
+      <item index="10" class="java.lang.String" itemvalue="uk.co.drnaylor.quickstart.annotations.ModuleData" />
     </list>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />

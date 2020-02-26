@@ -11,7 +11,8 @@ import org.spongepowered.api.Sponge
 @RegisterService(CoreServiceInterface::class)
 class CoreService : AbstractService<CoreModule>(), CoreServiceInterface {
 
-    override fun onEnable() {
+
+    override fun onPreEnable() {
         logger.info("Hello World! Api Register Status: ${Sponge.getServiceManager().isRegistered(CoreServiceInterface::class.java)}")
     }
 }

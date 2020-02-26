@@ -22,12 +22,13 @@ import kotlin.reflect.full.isSubclassOf
 
 abstract class StandardModule : Module {
 
-    val plugin: NicoYazawa
+    private val plugin: NicoYazawa
     val logger: Logger
 
     val moduleId: String
     val moduleName: String
 
+    private lateinit var services: List<AbstractService<*>>
     private lateinit var packageName: String
 
     init {
@@ -57,7 +58,7 @@ abstract class StandardModule : Module {
         val services = getStreamForModule(AbstractService::class).toSet()
 
         val builder = ServiceBuilder(this.plugin, this)
-        services.forEach { builder.register(it) }
+        this.services = services.map { builder.register(it) }
 
         logger.debug("Finished Loading Services")
     }
@@ -68,10 +69,13 @@ abstract class StandardModule : Module {
 
     final override fun onEnable() {
         logger.debug("Starting Enable")
+        services.forEach { it.onEnable() }
+
         loadCommands()
         loadListeners()
         loadRunnables()
         performEnable()
+
         logger.debug("Finished Enable")
     }
 

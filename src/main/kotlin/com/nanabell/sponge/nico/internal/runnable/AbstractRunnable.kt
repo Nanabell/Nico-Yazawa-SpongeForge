@@ -6,7 +6,7 @@ import com.nanabell.sponge.nico.internal.module.StandardModule
 import org.slf4j.Logger
 import org.spongepowered.api.scheduler.Task
 
-abstract class AbstractRunnable<M : ConfigurableModule<*>> : Runnable {
+abstract class AbstractRunnable<M : ConfigurableModule<*, *>> : Runnable {
 
     protected val plugin: NicoYazawa = NicoYazawa.getPlugin()
     protected val logger: Logger = plugin.getLogger("Runnable", javaClass.simpleName)
