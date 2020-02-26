@@ -1,9 +1,15 @@
 package com.nanabell.sponge.nico.internal.module
 
 import com.nanabell.sponge.nico.NicoYazawa
+import com.nanabell.sponge.nico.internal.annotation.RegisterListener
+import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.command.AbstractCommand
 import com.nanabell.sponge.nico.internal.command.CommandBuilder
+import com.nanabell.sponge.nico.internal.listener.AbstractListener
+import com.nanabell.sponge.nico.internal.listener.ListenerBuilder
+import com.nanabell.sponge.nico.internal.runnable.AbstractRunnable
+import com.nanabell.sponge.nico.internal.runnable.RunnableBuilder
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.internal.service.ServiceBuilder
 import org.slf4j.Logger
@@ -63,7 +69,7 @@ abstract class StandardModule : Module {
     final override fun onEnable() {
         logger.debug("Starting Enable")
         loadCommands()
-        loadEvents()
+        loadListeners()
         loadRunnables()
         performEnable()
         logger.debug("Finished Enable")
@@ -81,12 +87,26 @@ abstract class StandardModule : Module {
         logger.debug("Finished Loading Commands")
     }
 
-    private fun loadEvents() {
-        logger.info("Loading Events")
+    private fun loadListeners() {
+        logger.info("Loading Listeners")
+
+        val events = getStreamForModule(AbstractListener::class).filter { it.findAnnotation<RegisterListener>() != null }.toSet()
+
+        val builder = ListenerBuilder(plugin, this)
+        events.forEach { builder.registerListener(it) }
+
+        logger.debug("Finished Loading Listeners")
     }
 
     private fun loadRunnables() {
         logger.info("Loading Runnables")
+
+        val runnables = getStreamForModule(AbstractRunnable::class).filter { it.findAnnotation<RegisterRunnable>() != null }
+
+        val builder = RunnableBuilder(plugin, this)
+        runnables.forEach { builder.register(it) }
+
+        logger.debug("Finished Loading Runnables")
     }
 
     @Suppress("UNCHECKED_CAST")

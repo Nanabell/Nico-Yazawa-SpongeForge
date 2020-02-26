@@ -1,6 +1,8 @@
 package com.nanabell.sponge.nico.internal.service
 
 import com.nanabell.sponge.nico.NicoYazawa
+import com.nanabell.sponge.nico.internal.InvalidSubClassException
+import com.nanabell.sponge.nico.internal.MissingAnnotationException
 import com.nanabell.sponge.nico.internal.annotation.ApiService
 import com.nanabell.sponge.nico.internal.annotation.RegisterService
 import com.nanabell.sponge.nico.internal.module.ConfigurableModule
@@ -16,7 +18,7 @@ class ServiceBuilder(
         private val module: StandardModule
 ) {
 
-    private val logger = NicoYazawa.getPlugin().getLogger("ServiceBuilder")
+    private val logger = module.logger
 
     @Suppress("UNCHECKED_CAST")
     fun <T : AbstractService<out ConfigurableModule<*>>> register(clazz: KClass<T>) {
@@ -42,6 +44,7 @@ class ServiceBuilder(
             plugin.getServiceRegistry().register(rs.value, service)
         }
 
+        logger.info("Registered Service: ${clazz.simpleName}") // TODO: change back to debug
         service.setModule(module)
         service.onEnable()
     }

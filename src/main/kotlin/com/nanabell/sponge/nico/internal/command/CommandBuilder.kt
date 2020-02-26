@@ -27,6 +27,7 @@ class CommandBuilder(
             Sponge.getCommandManager().register(plugin, command, *command.aliases)
         }
 
+        module.logger.info("Registered Command: ${clazz.simpleName}") // TODO: change back to debug
         return command
     }
 }
