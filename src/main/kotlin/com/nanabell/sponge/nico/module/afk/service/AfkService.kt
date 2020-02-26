@@ -1,38 +1,32 @@
-package com.nanabell.sponge.nico.activity
+package com.nanabell.sponge.nico.module.afk.service
 
-import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.config.PaymentConfig
-import com.nanabell.sponge.nico.extensions.*
-import com.nanabell.sponge.nico.module.economy.data.currency.NicoCurrency
-import org.spongepowered.api.Sponge
+import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
+import com.nanabell.sponge.nico.internal.service.AbstractService
+import com.nanabell.sponge.nico.module.afk.AfkModule
+import com.nanabell.sponge.nico.module.afk.config.AfkConfig
+import com.nanabell.sponge.nico.module.afk.data.AfkPlayer
 import org.spongepowered.api.entity.living.player.Player
-import org.spongepowered.api.entity.living.player.User
 import org.spongepowered.api.event.cause.Cause
-import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.service.economy.EconomyService
-import org.spongepowered.api.text.chat.ChatTypes
-import java.math.BigDecimal
 import java.time.Duration
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
 
-class ActivityService {
+@RegisterService
+class AfkService : AbstractService<AfkModule>() {
 
-    private val logger = NicoYazawa.getPlugin().getLogger(javaClass.simpleName)
-    private val config = NicoYazawa.getPlugin().getConfig()
-    private val economy = Sponge.getServiceManager().provideUnchecked(EconomyService::class.java)
+    private val economyService: EconomyService = NicoYazawa.getServiceRegistry().provideUnchecked()
+    private val afkPlayers = ConcurrentHashMap<UUID, AfkPlayer>()
 
-    private val activityPlayers = ConcurrentHashMap<UUID, ActivityPlayer>()
+    private lateinit var config: AfkConfig
 
-    fun init() {
-        if (!config.get().activityConfig.enabled) {
-            return
-        }
+    override fun onPreEnable() {
+        config = module.getConfigOrDefault()
+    }
 
-        Sponge.getEventManager().registerListeners(NicoYazawa.getPlugin(), ActivityListener(this))
+/*    fun init() {
 
         // Main Activity Tracker Task
         Sponge.getScheduler().createTaskBuilder()
@@ -51,41 +45,50 @@ class ActivityService {
                 TimeUnit.DAYS.toSeconds(1),
                 TimeUnit.SECONDS
         )
+    }*/
+
+    fun interact(player: Player, cause: Cause) {
+        getPlayer(player).interact(player, cause)
     }
 
-    fun getPlayer(player: User): ActivityPlayer {
-        return activityPlayers.computeIfAbsent(player.uniqueId) { ActivityPlayer(it) }
+    fun isAfk(player: Player): Boolean {
+        return getPlayer(player).isAFK
     }
 
-    private fun activityTask(): Runnable {
+    fun startAfk(player: Player, cause: Cause, force: Boolean = false) {
+        if (force) getPlayer(player).forceStartAFK()
+        else getPlayer(player).startAFK(player, cause)
+    }
+
+    fun stopAfk(player: Player, cause: Cause, force: Boolean = false) {
+        if (force) getPlayer(player).forceStopAFK()
+        else getPlayer(player).stopAFK(player, cause)
+    }
+
+    fun getInactiveDuration(player: Player): Duration {
+        return Duration.between(Instant.now(), getPlayer(player).lastInteract)
+    }
+
+    fun getAfkDuration(player: Player): Duration {
+        val duration = Duration.between(Instant.now(), getPlayer(player).afkSince)
+        return if (duration < Duration.ZERO) Duration.ZERO else duration
+    }
+
+    fun isImmune(player: Player): Boolean {
+        return player.hasPermission("nico.afk.exempt")
+    }
+
+    private fun getPlayer(player: Player): AfkPlayer {
+        return afkPlayers.computeIfAbsent(player.uniqueId) { AfkPlayer(it) }
+    }
+
+/*    private fun activityTask(): Runnable {
         return Runnable {
             val config = config.get()
 
             logger.debug("Running main activity task")
-            for ((_, player) in activityPlayers) {
+            for ((_, player) in afkPlayers) {
                 val mcPlayer = Sponge.getServer().getPlayer(player.uuid).orNull() ?: continue
-
-                // Set inactive players afk
-                if (!player.isAFK) {
-                    val inactiveSince = (System.currentTimeMillis() - player.lastInteract) / 1000
-
-                    val afkTimeout = config.activityConfig.afkTimeout
-                    if (afkTimeout < 1) {
-                        logger.debug("Skipping AFK detection as afkTimeout is less than 1")
-                        continue
-                    }
-
-                    if (inactiveSince >= afkTimeout) {
-                        if (mcPlayer.hasPermission("nico.activity.afk-immunity")) {
-                            logger.debug("Skip setting AFK on user ${mcPlayer.name} because of 'nico.activity.afk-immunity' permission")
-                            continue
-                        }
-
-
-                        player.startAFK(Cause.of(EventContext.of(mapOf(NicoConstants.INACTIVE to inactiveSince)), this))
-                        logger.info("Changed ${mcPlayer.name}'s status to AFK")
-                    }
-                }
 
                 // Handle Nico Points
                 val cooldownTimer = config.activityConfig.cooldownTimer
@@ -114,7 +117,7 @@ class ActivityService {
                 payout@ for (paymentConfig in this.config.get().activityConfig.paymentConfigs) {
                     if (checkPayout(paymentConfig, mcPlayer, player)) continue
 
-                    val account = economy.getOrCreateAccount(player.uuid).orNull()
+                    val account = economyService.getOrCreateAccount(player.uuid).orNull()
                     val currency = NicoCurrency.instance
 
                     if (account != null && account.hasBalance(currency)) {
@@ -140,15 +143,15 @@ class ActivityService {
                 }
             }
         }
-    }
+    }*/
 
-    private fun checkPayout(paymentConfig: PaymentConfig, player: Player, activityPlayer: ActivityPlayer): Boolean {
+/*    private fun checkPayout(paymentConfig: PaymentConfig, player: Player, afkPlayer: AfkPlayer): Boolean {
         if (paymentConfig.requiredPermission.isNotEmpty() && !player.hasPermission(paymentConfig.requiredPermission)) {
             logger.debug("Skipping payment for ${player.name}. Player does not have the required Permission ${paymentConfig.requiredPermission}")
             return false
         }
 
-        if (paymentConfig.dailyPaymentLimit > 0 && activityPlayer.totalPayment >= paymentConfig.dailyPaymentLimit) {
+        if (paymentConfig.dailyPaymentLimit > 0 && afkPlayer.totalPayment >= paymentConfig.dailyPaymentLimit) {
             logger.debug("Skipping payment for ${player.name}. Player reached daily payout limit ${paymentConfig.dailyPaymentLimit}")
             return false
         }
@@ -169,9 +172,9 @@ class ActivityService {
         }
 
         return true
-    }
+    }*/
 
-    private fun calculateInitialDelay(): Long {
+/*    private fun calculateInitialDelay(): Long {
         val now = LocalDateTime.now()
         val next = now.withHour(0).withMinute(15).withSecond(0)
         if (now > next) next.plusDays(1)
@@ -182,14 +185,15 @@ class ActivityService {
 
     private fun dailyReset(): Runnable {
         return Runnable {
-            for ((_, player) in activityPlayers) {
+            for ((_, player) in afkPlayers) {
                 player.totalPayment = 0L
             }
             logger.info("Reset all daily totalPayments to 0")
         }
-    }
+    }*/
 
-    companion object {
+/*    companion object {
         val RANDOM = Random()
-    }
+    }*/
+
 }

@@ -1,7 +1,6 @@
 package com.nanabell.sponge.nico
 
 import com.google.inject.Inject
-import com.nanabell.sponge.nico.activity.ActivityService
 import com.nanabell.sponge.nico.config.Config
 import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.internal.InternalServiceRegistry
@@ -14,7 +13,6 @@ import org.spongepowered.api.Sponge
 import org.spongepowered.api.config.ConfigDir
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.game.GameReloadEvent
-import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent
 import org.spongepowered.api.event.game.state.GameInitializationEvent
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent
 import org.spongepowered.api.plugin.Plugin
@@ -77,16 +75,6 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
         }
 
         permissionRegistry.registerPermissions()
-
-        val serviceManager = Sponge.getServiceManager()
-        serviceManager.setProvider(this, ActivityService::class.java, ActivityService())
-    }
-
-    @Listener
-    fun onGameAboutToStartServer(event: GameAboutToStartServerEvent) {
-        val serviceManager = Sponge.getServiceManager()
-
-        serviceManager.provideUnchecked(ActivityService::class.java).init()
     }
 
     @Listener
