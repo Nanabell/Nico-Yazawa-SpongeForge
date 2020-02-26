@@ -1,8 +1,8 @@
 package com.nanabell.sponge.nico
 
 import com.nanabell.sponge.nico.activity.ActivityPlayer
+import com.nanabell.sponge.nico.command.CurrencyElement
 import com.nanabell.sponge.nico.command.DiscordUserElement
-import com.nanabell.sponge.nico.economy.CurrencyElement
 import com.nanabell.sponge.nico.extensions.DiscordUser
 import net.dv8tion.jda.api.entities.MessageChannel
 import org.spongepowered.api.command.CommandSource

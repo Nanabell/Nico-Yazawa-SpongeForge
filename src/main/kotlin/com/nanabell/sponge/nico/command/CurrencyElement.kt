@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.economy
+package com.nanabell.sponge.nico.command
 
 import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.extensions.toText
