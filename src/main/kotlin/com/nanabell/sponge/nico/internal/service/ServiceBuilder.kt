@@ -34,14 +34,14 @@ class ServiceBuilder(
             }
 
             Sponge.getServiceManager().setProvider(plugin, rs.value.java as Class<Any>, service)
-        } else {
-            if (plugin.getServiceRegistry().isRegistered(rs.value) && !rs.override) {
-                logger.warn("There already is an Internal Service registered for {}", rs.value)
-                TODO("Get a proper exception for this")
-            }
-
-            plugin.getServiceRegistry().register(rs.value, service)
         }
+
+        if (plugin.getServiceRegistry().isRegistered(rs.value) && !rs.override) {
+            logger.warn("There already is an Internal Service registered for {}", rs.value)
+            TODO("Get a proper exception for this")
+        }
+
+        plugin.getServiceRegistry().register(rs.value, service)
 
         logger.info("Registered Service: ${clazz.simpleName}") // TODO: change back to debug
         service.setModule(module)
