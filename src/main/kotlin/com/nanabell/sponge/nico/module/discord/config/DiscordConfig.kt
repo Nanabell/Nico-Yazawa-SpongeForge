@@ -2,7 +2,9 @@ package com.nanabell.sponge.nico.module.discord.config
 
 import com.nanabell.sponge.nico.internal.config.Config
 import ninja.leaping.configurate.objectmapping.Setting
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
+@ConfigSerializable
 data class DiscordConfig(
 
         @Setting("token", comment = "The Discord Bot token used to log into Discord")

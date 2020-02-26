@@ -2,7 +2,9 @@ package com.nanabell.sponge.nico.module.link.config
 
 import com.nanabell.sponge.nico.internal.config.Config
 import ninja.leaping.configurate.objectmapping.Setting
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
+@ConfigSerializable
 data class KickConfig(
 
         @Setting("enabled", comment = "Is the AutoKick Watchdog enabled?")

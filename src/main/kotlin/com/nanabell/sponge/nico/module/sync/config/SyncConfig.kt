@@ -4,7 +4,9 @@ import com.nanabell.sponge.nico.internal.config.Config
 import com.nanabell.sponge.nico.module.sync.data.Troop
 import com.nanabell.sponge.nico.module.sync.misc.TroopSource
 import ninja.leaping.configurate.objectmapping.Setting
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
+@ConfigSerializable
 data class SyncConfig(
 
         @Setting("discord-sync", comment = "Sync Discord Roles to Minecraft Permissions?")
