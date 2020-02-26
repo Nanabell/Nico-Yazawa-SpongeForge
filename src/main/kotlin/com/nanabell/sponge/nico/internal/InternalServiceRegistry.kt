@@ -27,6 +27,11 @@ class InternalServiceRegistry {
         return services[clazz] as C
     }
 
+    @Suppress("UNCHECKED_CAST")
+    fun <C : Any> provideUnchecked(clazz: KClass<C>): C {
+        if (!services.containsKey(clazz)) throw NoSuchElementException("Service '$clazz' has not been registered!")
 
+        return services[clazz] as C
+    }
 
 }
