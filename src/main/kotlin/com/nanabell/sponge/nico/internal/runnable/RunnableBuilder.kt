@@ -15,10 +15,12 @@ class RunnableBuilder(
 ) {
 
     fun <R : AbstractRunnable<*>> register(clazz: KClass<out R>) {
-        val rr = clazz.findAnnotation<RegisterRunnable>() ?: throw MissingAnnotationException(clazz, RegisterRunnable::class)
+        val rr = clazz.findAnnotation<RegisterRunnable>()
+                ?: throw MissingAnnotationException(clazz, RegisterRunnable::class)
 
         val runnable = clazz.createInstance()
         runnable.setModule(module)
+        runnable.onReady()
 
         val builder = Sponge.getScheduler().createTaskBuilder()
         builder.name(rr.value)
@@ -32,8 +34,14 @@ class RunnableBuilder(
         if (rr.interval > 0)
             builder.interval(rr.interval, rr.intervalUnit)
 
-        // allow implementations to dynamically override these settings if necessary (e.g delay / interval in config)
-        runnable.builderOverride(builder)
+        // allow implementations to dynamically override these settings if necessary
+        val overrideDelay = runnable.overrideDelay()
+        if (overrideDelay != null)
+            builder.delay(overrideDelay.first, overrideDelay.second)
+
+        val overrideInterval = runnable.overrideInterval()
+        if (overrideInterval != null)
+            builder.delay(overrideInterval.first, overrideInterval.second)
 
         module.logger.info("Registered Runnable: ${clazz.simpleName}") // TODO: change back to debug
         builder.execute(runnable)
