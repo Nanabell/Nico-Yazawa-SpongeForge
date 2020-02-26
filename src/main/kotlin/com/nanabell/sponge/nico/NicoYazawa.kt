@@ -29,5 +29,9 @@ abstract class NicoYazawa {
         fun getPlugin(): NicoYazawa {
             return nicoYazawa
         }
+
+        fun getServiceRegistry(): InternalServiceRegistry {
+            return getPlugin().getServiceRegistry()
+        }
     }
 }
