@@ -8,13 +8,9 @@ import org.slf4j.Logger
 abstract class AbstractService<M : ConfigurableModule<*>> {
 
     protected val plugin: NicoYazawa = NicoYazawa.getPlugin()
-    protected val logger: Logger
+    protected val logger: Logger = plugin.getLogger("Service", javaClass.simpleName)
 
     protected lateinit var module: M
-
-    init {
-        this.logger = plugin.getLogger("Service", javaClass.simpleName)
-    }
 
     abstract fun onEnable()
 
