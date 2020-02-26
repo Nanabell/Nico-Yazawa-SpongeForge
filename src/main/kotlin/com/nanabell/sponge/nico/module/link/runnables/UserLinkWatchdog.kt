@@ -13,7 +13,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
-@RegisterRunnable("NicoYazawa-A-LinkWatchdog")
+@RegisterRunnable("NicoYazawa-A-LinkWatchdog", isAsync = true)
 class UserLinkWatchdog : AbstractRunnable<LinkModule>() {
 
     private val linkService = NicoYazawa.getServiceRegistry().provideUnchecked(LinkService::class)
