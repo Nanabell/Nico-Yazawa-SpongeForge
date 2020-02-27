@@ -9,16 +9,19 @@ group = "com.nanabell.nico"
 version = "1.0-SNAPSHOT"
 
 repositories {
-    maven("http://repo.drnaylor.co.uk/artifactory/list/minecraft")
+    //maven("http://repo.drnaylor.co.uk/artifactory/list/minecraft")
     mavenCentral()
     jcenter()
+    flatDir {
+        dir("libs")
+    }
 }
 
 dependencies {
     shadow(kotlin("stdlib-jdk8"))
     shadow(kotlin("reflect"))
 
-    shadow("uk.co.drnaylor:quickstart-moduleloader:0.11.0")
+    shadow(files("$projectDir/libs/quickstart-moduleloader-0.11.0.jar"))
     shadow("dev.morphia.morphia:core:1.5.8")
     shadow("net.dv8tion:JDA:4.ALPHA.0_76") {
         exclude("opus-java")
