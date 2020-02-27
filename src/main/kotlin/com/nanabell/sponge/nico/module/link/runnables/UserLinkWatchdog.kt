@@ -4,7 +4,7 @@ import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.extensions.toText
 import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
 import com.nanabell.sponge.nico.internal.runnable.AbstractRunnable
-import com.nanabell.sponge.nico.module.core.service.PlaytimeService
+import com.nanabell.sponge.nico.module.activity.service.PlaytimeService
 import com.nanabell.sponge.nico.module.link.LinkModule
 import com.nanabell.sponge.nico.module.link.config.KickConfig
 import com.nanabell.sponge.nico.module.link.service.LinkService
@@ -41,7 +41,7 @@ class UserLinkWatchdog : AbstractRunnable<LinkModule>() {
                 continue
             }
 
-            val duration = Duration.between(Instant.now(), playtimeService.computeIfAbsent(player.uniqueId) { Instant.now() })
+            val duration = playtimeService.getSessionPlaytimeRaw(player)
             if (duration.seconds > config.kickPlaytime) {
                 player.kick(config.information.replace("{playtime}", format(duration)).toText())
                 logger.info("${player.name} has been kicked after being on the server for ${format(duration)} and not having their Account linked to Discord")
