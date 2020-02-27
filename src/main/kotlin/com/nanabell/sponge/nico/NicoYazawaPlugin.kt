@@ -3,6 +3,7 @@ package com.nanabell.sponge.nico
 import com.google.inject.Inject
 import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
+import com.nanabell.sponge.nico.internal.interfaces.Reloadable
 import com.nanabell.sponge.nico.module.core.config.CoreConfigAdapter
 import ninja.leaping.configurate.ConfigurationOptions
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader
@@ -13,6 +14,7 @@ import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.game.GameReloadEvent
 import org.spongepowered.api.event.game.state.GameInitializationEvent
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent
+import org.spongepowered.api.event.game.state.GameStartedServerEvent
 import org.spongepowered.api.plugin.Plugin
 import uk.co.drnaylor.quickstart.loaders.SimpleModuleConstructor
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer
@@ -27,6 +29,8 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
 
     private val permissionRegistry: PermissionRegistry = PermissionRegistry()
     private val serviceRegistry: InternalServiceRegistry = InternalServiceRegistry()
+
+    private val reloadables: MutableList<Reloadable> = ArrayList()
 
     private lateinit var moduleContainer: DiscoveryModuleContainer
 
@@ -61,8 +65,9 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
     @Listener
     fun onInit(event: GameInitializationEvent) {
         try {
+            moduleContainer.refreshSystemConfig()
             moduleContainer.loadModules(true)
-            val coreConfig = moduleContainer.getConfigAdapterForModule("core", CoreConfigAdapter::class.java).nodeOrDefault
+            val coreConfig = moduleContainer.getConfigAdapterForModule("core-module", CoreConfigAdapter::class.java).nodeOrDefault
 
             if (coreConfig.startupError) throw IllegalStateException("Error on Startup is Enabled!")
 
@@ -72,11 +77,23 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
         }
 
         permissionRegistry.registerPermissions()
+        moduleContainer.reloadSystemConfig()
+    }
+
+    @Listener
+    fun onGameStart(event: GameStartedServerEvent) {
+        moduleContainer.refreshSystemConfig()
+        reloadAll()
     }
 
     @Listener
     fun onGameReload(event: GameReloadEvent) {
-        moduleContainer.reloadSystemConfig()
+        moduleContainer.refreshSystemConfig()
+        reloadAll()
+    }
+
+    private fun reloadAll() {
+        reloadables.forEach { it.onReload() }
     }
 
     private fun disable() {
@@ -93,6 +110,10 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
             return logger
 
         return TopicLogger(_logger, *topics)
+    }
+
+    override fun registerReloadable(reloadable: Reloadable) {
+        reloadables.add(reloadable)
     }
 
     override fun getPermissionRegistry(): PermissionRegistry {

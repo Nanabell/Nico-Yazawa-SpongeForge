@@ -18,10 +18,10 @@ class NicoAccount(private val userId: Long, private val config: EconomyConfig) :
 
     private lateinit var parent: Account
 
-    override fun init(parent: Account) {
+    override fun init(parent: Account, contexts: Set<Context>) {
         this.parent = parent
 
-        if (config.create && !hasBalance(emptySet())) {
+        if (config.create && !hasBalance(contexts)) {
             service.save(NicoStorage(userId.toString(), 0, 0))
         }
     }

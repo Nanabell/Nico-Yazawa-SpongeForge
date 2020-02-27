@@ -15,17 +15,17 @@ class PlaytimeListener : AbstractListener<ActivityModule>() {
     private val playtimeService: PlaytimeService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked()
 
     @Listener
-    private fun onPlayerJoin(event: ClientConnectionEvent.Join) {
+    fun onPlayerJoin(event: ClientConnectionEvent.Join) {
         playtimeService.startSession(event.targetEntity)
     }
 
     @Listener
-    private fun onPlayerDisconnect(event: ClientConnectionEvent.Disconnect) {
+    fun onPlayerDisconnect(event: ClientConnectionEvent.Disconnect) {
         playtimeService.endSession(event.targetEntity)
     }
 
     @Listener
-    private fun onPlayerResume(event: PlayerActiveEvent) {
+    fun onPlayerResume(event: PlayerActiveEvent) {
         playtimeService.addAfkDuration(event.targetEntity, event.getAfkDuration())
     }
 }

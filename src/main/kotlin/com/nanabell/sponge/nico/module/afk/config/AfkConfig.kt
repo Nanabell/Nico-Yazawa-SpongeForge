@@ -13,6 +13,8 @@ data class AfkConfig(
         val enabled: Boolean = true,
 
         @Setting("afk-timeout", comment = "Amount of time before somone is flagged as AFK")
-        val afkTimeout: Duration = Duration.of(30, ChronoUnit.MINUTES)
+        private val _afkTimeout: Long = 1800
 
-) : Config
+) : Config {
+        val afkTimeout: Duration get() = Duration.of(_afkTimeout, ChronoUnit.SECONDS)
+}

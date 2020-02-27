@@ -13,6 +13,7 @@ import com.nanabell.sponge.nico.internal.runnable.RunnableBuilder
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.internal.service.ServiceBuilder
 import org.slf4j.Logger
+import org.spongepowered.api.scheduler.Task
 import uk.co.drnaylor.quickstart.Module
 import uk.co.drnaylor.quickstart.annotations.ModuleData
 import java.lang.reflect.Modifier
@@ -29,6 +30,8 @@ abstract class StandardModule : Module {
     val moduleName: String
 
     private lateinit var services: List<AbstractService<*>>
+    private lateinit var runnables: List<Task>
+
     private lateinit var packageName: String
 
     init {
@@ -108,7 +111,7 @@ abstract class StandardModule : Module {
         val runnables = getStreamForModule(AbstractRunnable::class).filter { it.findAnnotation<RegisterRunnable>() != null }
 
         val builder = RunnableBuilder(plugin, this)
-        runnables.forEach { builder.register(it) }
+        this.runnables = runnables.map { builder.register(it) }
 
         logger.debug("Finished Loading Runnables")
     }

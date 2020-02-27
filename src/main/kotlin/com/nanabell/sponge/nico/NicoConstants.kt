@@ -1,7 +1,7 @@
 package com.nanabell.sponge.nico
 
-import com.nanabell.sponge.nico.command.CurrencyElement
-import com.nanabell.sponge.nico.command.DiscordUserElement
+import com.nanabell.sponge.nico.argument.CurrencyArgument
+import com.nanabell.sponge.nico.argument.DiscordUserArgument
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.args.CommandElement
 import org.spongepowered.api.event.cause.EventContextKey
@@ -21,8 +21,8 @@ object NicoConstants {
 
 
     // CommandElement
-    fun currency(currency: Text): CommandElement = CurrencyElement(currency)
-    fun discordUser(user: Text): CommandElement = DiscordUserElement(user)
+    fun currency(currency: Text): CommandElement = CurrencyArgument(currency)
+    fun discordUser(user: Text): CommandElement = DiscordUserArgument(user)
 
     // EventContextKeys
     val COMMAND_SOURCE = createFor<CommandSource>("command-source")

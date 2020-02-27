@@ -1,5 +1,6 @@
 package com.nanabell.sponge.nico.module.link.listener
 
+import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.annotation.RegisterListener
 import com.nanabell.sponge.nico.internal.extension.*
 import com.nanabell.sponge.nico.internal.listener.AbstractListener
@@ -10,7 +11,6 @@ import com.nanabell.sponge.nico.module.link.event.LinkedEvent
 import com.nanabell.sponge.nico.module.link.event.UnlinkedEvent
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
-import org.spongepowered.api.Sponge
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.service.permission.SubjectData
@@ -19,7 +19,7 @@ import org.spongepowered.api.util.Tristate
 @RegisterListener
 class LinkListener : AbstractListener<LinkModule>() {
 
-    private val discordService = Sponge.getServiceManager().provideUnchecked(DiscordService::class.java)
+    private val discordService: DiscordService? = NicoYazawa.getServiceRegistry().provide()
 
     private lateinit var config: LinkConfig
 
@@ -28,7 +28,7 @@ class LinkListener : AbstractListener<LinkModule>() {
     }
 
     @Listener
-    private fun onLinked(event: LinkedEvent) {
+    fun onLinked(event: LinkedEvent) {
         val player = event.minecraftUser.player.orNull()
 
         addPermission(event.minecraftUser, player)
@@ -36,7 +36,7 @@ class LinkListener : AbstractListener<LinkModule>() {
     }
 
     @Listener
-    private fun unUnlinked(event: UnlinkedEvent) {
+    fun unUnlinked(event: UnlinkedEvent) {
         val minecraftUser = event.uniqueId.toMinecraftUser()
         if (minecraftUser != null) {
             val player = minecraftUser.player.orNull()
@@ -80,7 +80,7 @@ class LinkListener : AbstractListener<LinkModule>() {
     private fun addRole(dUser: DiscordUser, player: Player?) {
         val (member, role) = checkRoleRequirements(dUser, false) ?: return
 
-        if (discordService.addRole(member, role)) {
+        if (discordService?.addRole(member, role) == true) {
             player?.sendMessage("You've been given the Discord Role ".toText().gold()
                     .concat(role.name.toText().yellow())
                     .concat(" in the Guild ".toText().gold())
@@ -93,7 +93,7 @@ class LinkListener : AbstractListener<LinkModule>() {
     private fun removeRole(dUser: DiscordUser, player: Player?) {
         val (member, role) = checkRoleRequirements(dUser, true) ?: return
 
-        if (discordService.removeRole(member, role)) {
+        if (discordService?.removeRole(member, role) == true) {
             player?.sendMessage("You've lost the Discord Role ".toText().gold()
                     .concat(role.name.toText().yellow())
                     .concat(" in the Guild ".toText().gold())
@@ -131,13 +131,13 @@ class LinkListener : AbstractListener<LinkModule>() {
             return null
         }
 
-        val role = discordService.getRole(config.linkRole)
+        val role = discordService?.getRole(config.linkRole)
         if (role == null) {
             logger.warn("Unable to pass check for Discord Role. Configured Role ${config.linkRole} not Found!")
             return null
         }
 
-        val member = discordService.getMember(dUser.idLong)
+        val member = discordService?.getMember(dUser.idLong)
         if (member == null) {
             logger.warn("Unable to pass check for Discord Role. Member ${dUser.asTag} no longer part of Guild")
             return null

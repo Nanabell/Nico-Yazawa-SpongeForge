@@ -5,7 +5,5 @@ import com.nanabell.sponge.nico.module.core.config.CoreConfig
 import com.nanabell.sponge.nico.module.core.config.CoreConfigAdapter
 import uk.co.drnaylor.quickstart.annotations.ModuleData
 
-@ModuleData(id = "core", name = "Core Module")
-class CoreModule : ConfigurableModule<CoreConfigAdapter, CoreConfig>(CoreConfigAdapter::class) {
-
-}
+@ModuleData(id = "core-module", name = "Core Module")
+class CoreModule : ConfigurableModule<CoreConfigAdapter, CoreConfig>(CoreConfigAdapter::class)

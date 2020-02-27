@@ -2,12 +2,15 @@ package com.nanabell.sponge.nico
 
 import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
+import com.nanabell.sponge.nico.internal.interfaces.Reloadable
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer
 
 
 abstract class NicoYazawa {
 
     abstract fun getLogger(vararg topics: String): TopicLogger
+
+    abstract fun registerReloadable(reloadable: Reloadable)
 
     abstract fun getPermissionRegistry(): PermissionRegistry
 
@@ -24,6 +27,10 @@ abstract class NicoYazawa {
 
         fun getPlugin(): NicoYazawa {
             return nicoYazawa
+        }
+
+        fun registerReloadable(reloadable: Reloadable) {
+            getPlugin().registerReloadable(reloadable)
         }
 
         fun getServiceRegistry(): InternalServiceRegistry {

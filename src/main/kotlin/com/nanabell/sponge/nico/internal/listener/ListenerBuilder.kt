@@ -20,7 +20,7 @@ class ListenerBuilder (
         if (clazz.members.all { it.findAnnotation<Listener>() == null })
             throw MissingEventListenersException(clazz)
 
-        module.logger.info("Registered Listener: ${clazz.simpleName}") // TODO: change back to debug
+        module.logger.debug("Registered Listener: ${clazz.simpleName}")
         listener.setModule(module)
         listener.onReady()
 

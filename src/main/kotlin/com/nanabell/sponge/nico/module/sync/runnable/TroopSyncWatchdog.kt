@@ -38,4 +38,8 @@ class TroopSyncWatchdog : AbstractRunnable<SyncModule>() {
         logger.debug("Finished Sync run")
     }
 
+    override fun onReload() {
+        this.config = module.getConfigOrDefault()
+    }
+
 }

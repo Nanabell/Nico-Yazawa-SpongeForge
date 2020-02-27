@@ -2,7 +2,9 @@ package com.nanabell.sponge.nico.module.activity.config
 
 import com.nanabell.sponge.nico.internal.config.Config
 import ninja.leaping.configurate.objectmapping.Setting
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
+@ConfigSerializable
 data class RewardConfig(
 
         @Setting("currency", comment = "Name of the currency to use")
@@ -28,12 +30,12 @@ data class RewardConfig(
 
 ) : Config {
 
-    val amount = _amount.coerceAtLeast(0)
+    val amount get() = _amount.coerceAtLeast(0)
 
-    val limit = _limit.coerceAtLeast(-1)
+    val limit get() = _limit.coerceAtLeast(-1)
 
-    val chance = _chance.coerceIn(0, 100)
+    val chance get() = _chance.coerceIn(0, 100)
 
-    val bonusAmount = _bonusAmount.coerceAtLeast(0)
+    val bonusAmount get() = _bonusAmount.coerceAtLeast(0)
 
 }

@@ -5,11 +5,11 @@ import org.spongepowered.api.event.cause.Cause
 
 abstract class StandardCancellableEvent(cause: Cause) : StandardEvent(cause), Cancellable {
 
-    private var isCanceled = false
+    private var cancel = false
 
     override fun setCancelled(cancel: Boolean) {
-        this.isCanceled = cancel
+        this.cancel = cancel
     }
 
-    override fun isCancelled(): Boolean = isCancelled
+    override fun isCancelled(): Boolean = cancel
 }

@@ -17,7 +17,7 @@ import kotlin.collections.HashMap
 class PlaytimeService : AbstractService<ActivityModule>() {
 
     private val database: DatabaseService = NicoYazawa.getServiceRegistry().provideUnchecked()
-    private val afkService: AfkService? = NicoYazawa.getServiceRegistry().provide()
+    private val afkService: AfkService? = NicoYazawa.getServiceRegistry().provideUnchecked()
 
     private val sessionJoins: MutableMap<UUID, Instant> = HashMap()
     private val afkDurations: MutableMap<UUID, Duration> = HashMap()
@@ -30,15 +30,15 @@ class PlaytimeService : AbstractService<ActivityModule>() {
         val session = getSessionPlaytime(player)
 
         val data = database.findById<PlaytimeData>("userId", player.uniqueId)
-        return if (data != null) session.plus(data.playtime) else session
+        return if (data != null) session.plus(data.getPlaytime()) else session
     }
 
     fun getSessionPlaytime(player: Player): Duration {
-        var playtime = Duration.between(Instant.now(), getOrAddNow(player))
+        var playtime = Duration.between(getOrAddNow(player), Instant.now())
 
         // If the user is AFK right now add the time since start.
         if (afkService?.isAfk(player) == true) {
-            playtime.plus(afkService.getAfkDuration(player))
+            playtime.minus(afkService.getAfkDuration(player))
         }
 
         // Add any preexisting AFK times
@@ -50,7 +50,7 @@ class PlaytimeService : AbstractService<ActivityModule>() {
     }
 
     fun getSessionPlaytimeRaw(player: Player): Duration {
-        return Duration.between(Instant.now(), getOrAddNow(player))
+        return Duration.between(getOrAddNow(player), Instant.now())
     }
 
     fun addAfkDuration(player: Player, afkDuration: Duration) {
@@ -66,9 +66,9 @@ class PlaytimeService : AbstractService<ActivityModule>() {
     fun endSession(player: Player) {
         val data = database.findById<PlaytimeData>("userId", player.uniqueId)
         if (data != null) {
-            database.update("userId", player.uniqueId, database.newUpdateOperations<PlaytimeData>().set("playtime", getSessionPlaytime(player).plus(data.playtime)))
+            database.update("userId", player.uniqueId, database.newUpdateOperations<PlaytimeData>().set("playtime", getSessionPlaytime(player).plus(data.getPlaytime()).seconds))
         } else {
-            database.save(PlaytimeData(player.uniqueId, getSessionPlaytime(player)))
+            database.save(PlaytimeData(player.uniqueId, getSessionPlaytime(player).seconds))
         }
 
         sessionJoins.remove(player.uniqueId)

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists
 import com.google.common.collect.Sets
 import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.internal.IllegalCommandException
 import com.nanabell.sponge.nico.internal.MissingAnnotationException
 import com.nanabell.sponge.nico.internal.NicoArgumentParseException
@@ -17,10 +16,7 @@ import com.nanabell.sponge.nico.internal.module.StandardModule
 import org.slf4j.Logger
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.*
-import org.spongepowered.api.command.args.ArgumentParseException
-import org.spongepowered.api.command.args.CommandArgs
-import org.spongepowered.api.command.args.CommandContext
-import org.spongepowered.api.command.args.CommandElement
+import org.spongepowered.api.command.args.*
 import org.spongepowered.api.command.args.parsing.InputTokenizer
 import org.spongepowered.api.command.args.parsing.SingleArg
 import org.spongepowered.api.command.dispatcher.SimpleDispatcher
@@ -53,7 +49,7 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*, *>> 
     private val isAsync: Boolean = this::class.findAnnotation<RunAsync>() != null
 
     private val commandPath: String
-    private val permissions: CommandPermissionHandler
+    protected val permissions: CommandPermissionHandler
 
     val aliases: Array<String>
 
@@ -106,7 +102,7 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*, *>> 
     }
 
     fun postInit() {
-        this.argumentParser = Args.seq(*getArguments())
+        this.argumentParser = GenericArguments.seq(*getArguments())
         createChildCommands()
 
         afterPostInit()
@@ -503,3 +499,10 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*, *>> 
 }
 
 abstract class StandardCommand<M : ConfigurableModule<*, *>> : AbstractCommand<CommandSource, M>()
+abstract class NoExecutorCommand<M : ConfigurableModule<*, *>> : StandardCommand<M>() {
+
+    override fun executeCommand(source: CommandSource, args: CommandContext, cause: Cause): CommandResult {
+        throw IllegalAccessException("Command has no executor!")
+    }
+
+}

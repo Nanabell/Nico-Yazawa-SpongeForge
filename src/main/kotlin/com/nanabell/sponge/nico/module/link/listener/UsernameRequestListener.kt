@@ -26,7 +26,7 @@ class UsernameRequestListener : AbstractListener<LinkModule>() {
 
     override fun onReady() {
         val config = module.getConfigOrDefault()
-        val discordService: DiscordService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked()
+        val discordService: DiscordService = NicoYazawa.getPlugin().getServiceRegistry().provide() ?: return
         discordService.registerListener(this)
 
         val channel = discordService.getTextChannel(config.channelId) ?: return
@@ -39,7 +39,7 @@ class UsernameRequestListener : AbstractListener<LinkModule>() {
     }
 
     @SubscribeEvent
-    private fun onGuildMessageReactionAdd(@Nonnull event: GuildMessageReactionAddEvent) {
+    fun onGuildMessageReactionAdd(@Nonnull event: GuildMessageReactionAddEvent) {
         val user = event.user
         if (user.isBot || user.isFake) return
 
@@ -60,7 +60,7 @@ class UsernameRequestListener : AbstractListener<LinkModule>() {
     }
 
     @SubscribeEvent
-    private fun onPrivateMessageReceived(@Nonnull event: PrivateMessageReceivedEvent) {
+    fun onPrivateMessageReceived(@Nonnull event: PrivateMessageReceivedEvent) {
         val user = event.author
         if (user.isBot || user.isFake) return
         if (!pending.contains(user.idLong)) {
@@ -72,7 +72,7 @@ class UsernameRequestListener : AbstractListener<LinkModule>() {
     }
 
     @Listener
-    private fun onUserFound(event: UsernameFoundEvent) {
+    fun onUserFound(event: UsernameFoundEvent) {
         pending.remove(event.source.idLong)
 
         event.source.openPrivateChannel().queue {
@@ -81,7 +81,7 @@ class UsernameRequestListener : AbstractListener<LinkModule>() {
     }
 
     @Listener
-    private fun onLinkRequestFailed(event: LinkRequestFailedEvent) {
+    fun onLinkRequestFailed(event: LinkRequestFailedEvent) {
         val message = when (event) {
             is UsernameNotFoundEvent -> "`${event.username}` is not online.\nProvide the name of an online player."
             is AlreadyPendingEvent -> "There is already a Pending request for `${event.source.asTag}`"

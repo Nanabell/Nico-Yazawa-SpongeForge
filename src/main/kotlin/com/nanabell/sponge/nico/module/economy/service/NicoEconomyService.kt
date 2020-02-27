@@ -11,6 +11,7 @@ import com.nanabell.sponge.nico.module.economy.data.account.DelegatingAccount
 import com.nanabell.sponge.nico.module.economy.data.currency.MakiCurrency
 import com.nanabell.sponge.nico.module.economy.data.currency.NicoCurrency
 import com.nanabell.sponge.nico.module.link.service.LinkService
+import org.spongepowered.api.entity.living.player.User
 import org.spongepowered.api.service.context.ContextCalculator
 import org.spongepowered.api.service.economy.Currency
 import org.spongepowered.api.service.economy.EconomyService
@@ -44,20 +45,21 @@ class NicoEconomyService : AbstractService<EconomyModule>(), EconomyService {
     }
 
     override fun getOrCreateAccount(uuid: UUID): Optional<UniqueAccount> {
-        return getAccount(uuid.toString())
+        val user = uuid.toMinecraftUser() ?: return Optional.empty()
+        return getAccount(user)
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun getOrCreateAccount(identifier: String): Optional<Account> {
-        return getAccount(identifier) as Optional<Account>
+        val user = identifier.toMinecraftUser() ?: return Optional.empty()
+        return getAccount(user) as Optional<Account>
     }
 
     override fun registerContextCalculator(calculator: ContextCalculator<Account>) {
     }
 
-    private fun getAccount(identifier: String): Optional<UniqueAccount> {
-        val user = identifier.toMinecraftUser() ?: return Optional.empty()
-        val builder = DelegatingAccount.builder(module.getConfigOrDefault())
+    private fun getAccount(user: User): Optional<UniqueAccount> {
+        val builder = DelegatingAccount.builder(module.getConfigOrDefault(), user.activeContexts)
 
         val link = linkService.getLink(user)
         if (link != null)

@@ -8,7 +8,7 @@ import java.math.BigDecimal
 
 interface CurrencyAccount {
 
-    fun init(parent: Account)
+    fun init(parent: Account, contexts: Set<Context>)
 
     fun getDefaultBalance(): BigDecimal
 

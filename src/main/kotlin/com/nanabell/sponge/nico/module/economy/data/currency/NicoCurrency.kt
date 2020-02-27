@@ -30,7 +30,7 @@ class NicoCurrency : Currency {
         return formatter.format(amount).lightPurple()
                 .concat(symbol.bold())
                 .concat(" ".toText())
-                .concat(if (amount == BigDecimal.ONE) pluralDisplayName else displayName)
+                .concat(if (amount == BigDecimal.ONE) displayName else pluralDisplayName)
     }
 
     companion object {

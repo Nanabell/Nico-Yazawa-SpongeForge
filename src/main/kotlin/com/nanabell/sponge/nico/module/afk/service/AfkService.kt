@@ -1,6 +1,5 @@
 package com.nanabell.sponge.nico.module.afk.service
 
-import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.afk.AfkModule
@@ -8,7 +7,6 @@ import com.nanabell.sponge.nico.module.afk.config.AfkConfig
 import com.nanabell.sponge.nico.module.afk.data.AfkPlayer
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.cause.Cause
-import org.spongepowered.api.service.economy.EconomyService
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -17,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap
 @RegisterService
 class AfkService : AbstractService<AfkModule>() {
 
-    private val economyService: EconomyService = NicoYazawa.getServiceRegistry().provideUnchecked()
     private val afkPlayers = ConcurrentHashMap<UUID, AfkPlayer>()
 
     private lateinit var config: AfkConfig
@@ -45,7 +42,7 @@ class AfkService : AbstractService<AfkModule>() {
     }
 
     fun getInactiveDuration(player: Player): Duration {
-        return Duration.between(Instant.now(), getPlayer(player).lastInteract)
+        return Duration.between(getPlayer(player).lastInteract, Instant.now())
     }
 
     /**
@@ -58,7 +55,7 @@ class AfkService : AbstractService<AfkModule>() {
      * @return Duration since AfkStart Instant
      */
     fun getAfkDuration(player: Player): Duration {
-        val duration = Duration.between(Instant.now(), getPlayer(player).afkSince)
+        val duration = Duration.between(getPlayer(player).afkSince, Instant.now())
         return if (duration < Duration.ZERO) Duration.ZERO else duration
     }
 

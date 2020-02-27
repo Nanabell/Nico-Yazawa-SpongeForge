@@ -5,6 +5,7 @@ import com.nanabell.sponge.nico.internal.MissingAnnotationException
 import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
 import com.nanabell.sponge.nico.internal.module.StandardModule
 import org.spongepowered.api.Sponge
+import org.spongepowered.api.scheduler.Task
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
@@ -14,7 +15,7 @@ class RunnableBuilder(
         private val module: StandardModule
 ) {
 
-    fun <R : AbstractRunnable<*>> register(clazz: KClass<out R>) {
+    fun <R : AbstractRunnable<*>> register(clazz: KClass<out R>): Task {
         val rr = clazz.findAnnotation<RegisterRunnable>()
                 ?: throw MissingAnnotationException(clazz, RegisterRunnable::class)
 
@@ -41,10 +42,12 @@ class RunnableBuilder(
 
         val overrideInterval = runnable.overrideInterval()
         if (overrideInterval != null)
-            builder.delay(overrideInterval.first, overrideInterval.second)
+            builder.interval(overrideInterval.first, overrideInterval.second)
 
-        module.logger.info("Registered Runnable: ${clazz.simpleName}") // TODO: change back to debug
+        module.logger.info("Registered Runnable: ${clazz.simpleName}")
         builder.execute(runnable)
-        builder.submit(plugin)
+
+        NicoYazawa.registerReloadable(runnable)
+        return builder.submit(plugin)
     }
 }

@@ -56,6 +56,14 @@ class CommandPermissionHandler(clazz: KClass<out AbstractCommand<*, *>>) {
         return this.permissions
     }
 
+    fun getBase(): String {
+        return this.base
+    }
+
+    fun getOthers(): String {
+        return this.others
+    }
+
     fun registerPermission(permission: String) {
         this.permissions.add(permission)
     }

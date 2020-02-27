@@ -12,7 +12,7 @@ class PlayerAFKEvent(private val inactiveSince: Instant, private val player: Pla
     override fun getTargetEntity(): Player = player
 
     fun getInactivityDuration(): Duration {
-        return Duration.between(Instant.now(), inactiveSince)
+        return Duration.between(inactiveSince, Instant.now())
     }
 
 }

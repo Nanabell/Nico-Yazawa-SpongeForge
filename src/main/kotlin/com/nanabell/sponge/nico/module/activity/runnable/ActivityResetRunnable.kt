@@ -22,6 +22,9 @@ class ActivityResetRunnable : AbstractRunnable<ActivityModule>() {
         service.resetRewardCounter()
     }
 
+    override fun onReload() {
+    }
+
     private fun calculateInitialDelay(): Long {
         val now = LocalDateTime.now()
         val next = now.withHour(0).withMinute(15).withSecond(0)

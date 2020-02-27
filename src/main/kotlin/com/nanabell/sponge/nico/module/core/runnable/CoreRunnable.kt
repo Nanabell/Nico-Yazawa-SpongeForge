@@ -11,4 +11,7 @@ class CoreRunnable : AbstractRunnable<CoreModule>() {
         logger.info("Hello World!")
     }
 
+    override fun onReload() {
+    }
+
 }

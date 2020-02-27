@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.entities.Member
 
 class DiscordTrooper(private val config: SyncConfig) : ITrooper {
 
-    private val discordService: DiscordService = NicoYazawa.getServiceRegistry().provideUnchecked()
+    private val discordService: DiscordService? = NicoYazawa.getServiceRegistry().provide()
     private val linkService: LinkService = NicoYazawa.getServiceRegistry().provideUnchecked()
 
     override fun exists(player: MinecraftUser): Boolean {
@@ -43,7 +43,7 @@ class DiscordTrooper(private val config: SyncConfig) : ITrooper {
 
     override fun addTroop(player: MinecraftUser, troop: Troop) {
         val member = getMember(player) ?: return
-        val role = discordService.getRole(troop.role) ?: return
+        val role = discordService?.getRole(troop.role) ?: return
 
         if (!member.roles.contains(role)) {
             if (discordService.addRole(member, role)) {
@@ -54,7 +54,7 @@ class DiscordTrooper(private val config: SyncConfig) : ITrooper {
 
     override fun removeTroop(player: MinecraftUser, troop: Troop) {
         val member = getMember(player) ?: return
-        val role = discordService.getRole(troop.role) ?: return
+        val role = discordService?.getRole(troop.role) ?: return
 
         if (!member.roles.contains(role)) {
             if (discordService.removeRole(member, role)) {
@@ -66,7 +66,7 @@ class DiscordTrooper(private val config: SyncConfig) : ITrooper {
     private fun getMember(player: MinecraftUser): Member? {
         val link = linkService.getLink(player) ?: return null
 
-        return discordService.getMember(link.discordId)
+        return discordService?.getMember(link.discordId)
     }
 
     override fun toString(): String {

@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.module.link.config
+package com.nanabell.sponge.nico.module.sync.config
 
 import com.nanabell.sponge.nico.internal.config.Config
 import ninja.leaping.configurate.objectmapping.Setting
@@ -21,8 +21,8 @@ data class KickConfig(
 
 ) : Config {
 
-    val kickInterval = _kickInterval.coerceAtLeast(60)
+    val kickInterval get() = _kickInterval.coerceAtLeast(60)
 
-    val kickPlaytime = _kickPlaytime.coerceAtLeast(60)
+    val kickPlaytime get() = _kickPlaytime.coerceAtLeast(60)
 
 }

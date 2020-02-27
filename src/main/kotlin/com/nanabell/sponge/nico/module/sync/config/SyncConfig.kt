@@ -16,7 +16,11 @@ data class SyncConfig(
         val minecraftSync: Boolean = true,
 
         @Setting("troops", comment = "Syncing Rules. [example: roleId==>permission | roleId<==permission] arrow direction will determinate source\n target will be given is user has source")
-        private val _troops: List<String> = listOf()
+        private val _troops: List<String> = listOf(),
+
+        @Setting("auto-kick", comment = "Automatically Kick users who dont Link their Accounts within a settable TimeFrame")
+        val kickConfig: KickConfig = KickConfig()
+
 ) : Config {
     private val troops: Map<TroopSource, List<Troop>> by lazy {
         _troops.mapNotNull {

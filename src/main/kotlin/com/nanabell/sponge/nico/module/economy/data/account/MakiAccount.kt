@@ -4,7 +4,7 @@ import com.nanabell.sponge.nico.module.economy.config.EconomyConfig
 import com.nanabell.sponge.nico.module.economy.database.MakiStorage
 import com.nanabell.sponge.nico.module.economy.event.AccountBalanceChangeEvent
 import com.nanabell.sponge.nico.module.economy.interfaces.CurrencyAccount
-import dev.morphia.query.Query
+import dev.morphia.query.FindOptions
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.service.context.Context
@@ -20,22 +20,22 @@ class MakiAccount(private val uuid: UUID, private val config: EconomyConfig) : D
 
     private lateinit var parent: Account
 
-    override fun init(parent: Account) {
+    override fun init(parent: Account, contexts: Set<Context>) {
         this.parent = parent
 
-        if (config.create && !hasBalance(emptySet())) {
-            service.save(MakiStorage(uuid, getDefaultBalance(), emptySet()))
+        if (config.create && !hasBalance(contexts)) {
+            service.save(MakiStorage(uuid, getDefaultBalance()))
         }
     }
 
     override fun getDefaultBalance(): BigDecimal = BigDecimal(500)
 
     override fun hasBalance(contexts: Set<Context>): Boolean {
-        return getQuery(contexts).find().hasNext()
+        return getQuery().first() != null
     }
 
     override fun getBalance(contexts: Set<Context>): BigDecimal {
-        return getQuery(contexts).find().next().balance
+        return getQuery().first(FindOptions()).balance
     }
 
     override fun setBalance(amount: BigDecimal, cause: Cause, contexts: Set<Context>): TransactionResult {
@@ -46,7 +46,7 @@ class MakiAccount(private val uuid: UUID, private val config: EconomyConfig) : D
             return depositTransaction(parent, amount, ResultType.FAILED)
 
 
-        service.update(getQuery(contexts), getSet(amount))
+        service.update(getQuery(), getSet(amount))
         return depositTransaction(parent, amount, ResultType.SUCCESS)
     }
 
@@ -56,7 +56,7 @@ class MakiAccount(private val uuid: UUID, private val config: EconomyConfig) : D
         if (event.post(AccountBalanceChangeEvent(old, getDefaultBalance(), cause)))
             return withdrawTransaction(parent, getDefaultBalance(), ResultType.FAILED)
 
-        service.update(getQuery(contexts), getSet(getDefaultBalance()))
+        service.update(getQuery(), getSet(getDefaultBalance()))
         return withdrawTransaction(parent, getDefaultBalance(), ResultType.SUCCESS)
     }
 
@@ -71,7 +71,7 @@ class MakiAccount(private val uuid: UUID, private val config: EconomyConfig) : D
         if (event.post(AccountBalanceChangeEvent(old, added, cause)))
             return depositTransaction(parent, added, ResultType.FAILED)
 
-        service.update(getQuery(contexts), getUpdate(amount))
+        service.update(getQuery(), getUpdate(amount))
         return depositTransaction(parent, added, ResultType.SUCCESS)
     }
 
@@ -90,18 +90,12 @@ class MakiAccount(private val uuid: UUID, private val config: EconomyConfig) : D
         if (event.post(AccountBalanceChangeEvent(old, subtracted, cause)))
             return withdrawTransaction(parent, subtracted, ResultType.FAILED)
 
-        service.update(getQuery(contexts), getUpdate(-amount))
+        service.update(getQuery(), getUpdate(-amount))
         return withdrawTransaction(parent, subtracted, ResultType.SUCCESS)
     }
 
     private fun getUpdate(balance: BigDecimal) = getIncrement<MakiStorage>("balance", balance)
     private fun getSet(balance: BigDecimal) = getSet<MakiStorage>("balance", balance)
-    private fun getQuery(contexts: Set<Context>): Query<MakiStorage> {
-        val query = getQuery<MakiStorage>("uuid", uuid)
-        if (contexts.isNotEmpty())
-            query.field("contexts").hasAnyOf(contexts)
-
-        return query
-    }
+    private fun getQuery() = getQuery<MakiStorage>("uuid", uuid)
 
 }

@@ -16,7 +16,7 @@ class MinecraftTrooper(private val config: SyncConfig) : ITrooper {
     private val logger = NicoYazawa.getPlugin().getLogger(javaClass.simpleName)
 
     private val serviceAvailable = Sponge.getServiceManager().isRegistered(PermissionService::class.java)
-    private val discordService: DiscordService = NicoYazawa.getServiceRegistry().provideUnchecked()
+    private val discordService: DiscordService? = NicoYazawa.getServiceRegistry().provide()
 
     override fun exists(player: MinecraftUser): Boolean {
         return serviceAvailable
@@ -67,7 +67,7 @@ class MinecraftTrooper(private val config: SyncConfig) : ITrooper {
     }
 
     private fun getRoleName(longId: Long): String {
-        return discordService.getRole(longId)?.name ?: "Unable to retrieve role name!"
+        return discordService?.getRole(longId)?.name ?: "Unable to retrieve role name!"
     }
 
     override fun toString(): String {

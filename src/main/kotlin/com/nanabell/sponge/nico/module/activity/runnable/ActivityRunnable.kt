@@ -20,7 +20,7 @@ import org.spongepowered.api.text.chat.ChatTypes
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
-@RegisterRunnable("NicoYazawa-A-ActivityService", 2, TimeUnit.MINUTES, 2, TimeUnit.MINUTES, true)
+@RegisterRunnable("NicoYazawa-A-ActivityService", 10, TimeUnit.SECONDS, 30, TimeUnit.SECONDS, true)
 class ActivityRunnable : AbstractRunnable<ActivityModule>() {
 
     private val activityService: ActivityService = NicoYazawa.getServiceRegistry().provideUnchecked()
@@ -34,6 +34,9 @@ class ActivityRunnable : AbstractRunnable<ActivityModule>() {
     }
 
     override fun run() {
+        if (!config.enabled)
+            return
+
         for (player in Sponge.getServer().onlinePlayers) {
 
             if (activityService.isOnCooldown(player))
@@ -72,6 +75,10 @@ class ActivityRunnable : AbstractRunnable<ActivityModule>() {
                 break
             }
         }
+    }
+
+    override fun onReload() {
+        this.config = module.getConfigOrDefault()
     }
 
 }

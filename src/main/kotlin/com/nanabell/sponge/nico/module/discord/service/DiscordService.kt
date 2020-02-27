@@ -23,7 +23,7 @@ class DiscordService : AbstractService<DiscordModule>() {
 
     override fun onPreEnable() {
         val config = module.getConfigOrDefault()
-        jda = JDABuilder(config.token).setAudioEnabled(false).setEventManager(AnnotatedEventManager()).build()
+        jda = JDABuilder(config.token).setAudioEnabled(false).setEventManager(AnnotatedEventManager()).build().awaitReady()
         guild = jda.getGuildById(config.guildId) ?: throw IllegalStateException("Unable to find guild ${config.guildId}. Check Configs!")
         self = guild.selfMember
     }
@@ -77,19 +77,4 @@ class DiscordService : AbstractService<DiscordModule>() {
 
         return true
     }
-
-/*    private fun setInitialReaction() {
-        val config = config.get().discordLinkConfig
-
-        val channel = guild.getTextChannelById(config.channelId)
-        if (channel != null) {
-            val message = channel.getHistoryAround(config.messageId, 1).complete().getMessageById(config.messageId)
-            if (message != null && message.reactions.isEmpty()) {
-                message.addReaction(config.reactionEmote).queue {
-                    logger.info("Added initial reaction ${config.reactionEmote} to message ${message.id} in channel ${channel.name}")
-                }
-            }
-        }
-    }*/
-
 }

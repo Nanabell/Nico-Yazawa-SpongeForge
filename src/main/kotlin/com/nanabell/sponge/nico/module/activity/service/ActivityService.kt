@@ -24,7 +24,7 @@ class ActivityService : AbstractService<ActivityModule>() {
     }
 
     fun isOnCooldown(player: Player): Boolean {
-        val last = lastRewards[player.uniqueId] ?: return false
+        val last = lastRewards[player.uniqueId] ?: return false // TODO: Set Users on Cooldown when they join?
 
         return last.plus(config.rewardCooldown) > Instant.now()
     }
@@ -46,20 +46,23 @@ class ActivityService : AbstractService<ActivityModule>() {
 
     private fun checkPermission(rewardConfig: RewardConfig, player: Player): Boolean {
         if (rewardConfig.requiredPermission.isNotEmpty()) {
-            if (player.hasPermission(rewardConfig.requiredPermission))
-                return true
+            if (!player.hasPermission(rewardConfig.requiredPermission))
+                return false
         }
 
-        return false
+        return true
     }
 
     private fun checkLimit(rewardConfig: RewardConfig, player: Player): Boolean {
         if (rewardConfig.limit > 0 && rewardCounter.containsKey(player.uniqueId)) {
             if (rewardCounter[player.uniqueId] ?: 0 > rewardConfig.limit)
-                return true
+                return false
         }
 
-        return false
+        val count = rewardCounter.computeIfAbsent(player.uniqueId) { 0 } + 1
+        rewardCounter[player.uniqueId] = count
+
+        return true
     }
 
     private fun checkChance(rewardConfig: RewardConfig, player: Player): Boolean {

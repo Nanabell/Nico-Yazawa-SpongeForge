@@ -30,7 +30,7 @@ class MakiCurrency : Currency {
         return formatter.format(amount).red()
                 .concat(symbol.bold())
                 .concat(" ".toText())
-                .concat(if (amount == BigDecimal.ONE) pluralDisplayName else displayName)
+                .concat(if (amount == BigDecimal.ONE) displayName else pluralDisplayName)
     }
 
     companion object {

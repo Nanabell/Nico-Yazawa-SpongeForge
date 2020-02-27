@@ -1,7 +1,6 @@
 package com.nanabell.sponge.nico.module.afk.event
 
 import com.nanabell.sponge.nico.internal.event.StandardCancellableEvent
-import com.nanabell.sponge.nico.module.afk.data.AfkPlayer
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEvent
@@ -13,7 +12,7 @@ class PlayerActiveEvent(private val afkSince: Instant, private val player: Playe
     override fun getTargetEntity(): Player = player
 
     fun getAfkDuration(): Duration {
-        return Duration.between(Instant.now(), afkSince)
+        return Duration.between(afkSince, Instant.now())
     }
 
 }

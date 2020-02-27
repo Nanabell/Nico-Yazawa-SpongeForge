@@ -21,31 +21,36 @@ class ServiceBuilder(
 
     @Suppress("UNCHECKED_CAST")
     fun <T : AbstractService<*>> register(clazz: KClass<T>): T {
-        val rs = clazz.findAnnotation<RegisterService>() ?: throw MissingAnnotationException(clazz, RegisterService::class)
+        val rs = clazz.findAnnotation<RegisterService>()
+                ?: throw MissingAnnotationException(clazz, RegisterService::class)
+
         val key = if (rs.value == AbstractService::class) clazz else rs.value
 
         val service: T = clazz.createInstance()
         if (!service::class.isSubclassOf(rs.value)) throw InvalidSubClassException(clazz, rs.value)
 
-        if (clazz.findAnnotation<ApiService>() != null) {
-            if (Sponge.getServiceManager().isRegistered(key.java as Class<Any>) && !rs.override) {
-                logger.warn("There already is a Service registered for {}", rs.value)
-                TODO("Get a proper exception for this")
+        try {
+            service.setModule(module)
+            service.onPreEnable()
+
+            if (clazz.findAnnotation<ApiService>() != null) {
+                if (Sponge.getServiceManager().isRegistered(key.java as Class<Any>) && !rs.override) {
+                    logger.warn("There already is a Service registered for {}", key)
+                    TODO("Get a proper exception for this")
+                }
+                Sponge.getServiceManager().setProvider(plugin, key.java as Class<Any>, service)
             }
 
-            Sponge.getServiceManager().setProvider(plugin, rs.value.java as Class<Any>, service)
+            if (plugin.getServiceRegistry().isRegistered(key) && !rs.override) {
+                logger.warn("There already is an Internal Service registered for {}", key)
+                TODO("Get a proper exception for this")
+            }
+            plugin.getServiceRegistry().register(key, service)
+
+            logger.debug("Registered Service: ${clazz.simpleName}")
+        } catch (e: Exception) {
+            logger.error("Failed to construct Service: $clazz", e)
         }
-
-        if (plugin.getServiceRegistry().isRegistered(rs.value) && !rs.override) {
-            logger.warn("There already is an Internal Service registered for {}", rs.value)
-            TODO("Get a proper exception for this")
-        }
-
-        plugin.getServiceRegistry().register(rs.value, service)
-
-        logger.info("Registered Service: ${clazz.simpleName}") // TODO: change back to debug
-        service.setModule(module)
-        service.onPreEnable()
 
         return service
     }

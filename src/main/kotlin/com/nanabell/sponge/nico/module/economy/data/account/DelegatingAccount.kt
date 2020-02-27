@@ -23,10 +23,11 @@ import kotlin.collections.HashMap
 
 class DelegatingAccount(
         private val user: MinecraftUser,
-        private val currencyHolders: Map<Currency, CurrencyAccount>
+        private val currencyHolders: Map<Currency, CurrencyAccount>,
+        private val contexts: Set<Context>
 ) : UniqueAccount {
 
-    class Builder(private val config: EconomyConfig) {
+    class Builder(private val config: EconomyConfig, private val contexts: Set<Context>) {
 
         private val _holders: MutableMap<Currency, CurrencyAccount> = HashMap()
 
@@ -39,12 +40,12 @@ class DelegatingAccount(
         fun build(user: MinecraftUser): DelegatingAccount {
             _holders[MakiCurrency.instance] = MakiAccount(user.uniqueId, config)
 
-            return DelegatingAccount(user, _holders)
+            return DelegatingAccount(user, _holders, contexts)
         }
     }
 
     init {
-        currencyHolders.forEach { it.value.init(this) }
+        currencyHolders.forEach { it.value.init(this, contexts) }
     }
 
     override fun getUniqueId(): UUID = user.uniqueId
@@ -119,6 +120,6 @@ class DelegatingAccount(
     }
 
     companion object {
-        fun builder(config: EconomyConfig): Builder = Builder(config)
+        fun builder(config: EconomyConfig, contexts: Set<Context>): Builder = Builder(config, contexts)
     }
 }

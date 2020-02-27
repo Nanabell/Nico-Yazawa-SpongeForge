@@ -20,9 +20,6 @@ data class LinkConfig(
         val linkPermission: String = "",
 
         @Setting("link-role", comment = "Discord Role Id which is awarded upon Link. Will be revoked if the Link is broken")
-        val linkRole: Long = -1,
-
-        @Setting("auto-kick", comment = "Automatically Kick users who dont Link their Accounts within a settable TimeFrame")
-        val kickConfig: KickConfig = KickConfig()
+        val linkRole: Long = -1
 
 ) : Config
