@@ -18,11 +18,10 @@ class AfkPlayer(val uuid: UUID) {
     var isAFK = false
         private set
 
-    var afkSince: Instant = Instant.MAX
-        private set
+    var afkSince = Instant.now()
 
     fun startAFK(player: Player, cause: Cause) {
-        if (eventManager.post(PlayerAFKEvent(this, player, cause))) return
+        if (eventManager.post(PlayerAFKEvent(lastInteract, player, cause))) return
 
         forceStartAFK()
     }
@@ -33,7 +32,7 @@ class AfkPlayer(val uuid: UUID) {
     }
 
     fun stopAFK(player: Player, cause: Cause) {
-        if (eventManager.post(PlayerActiveEvent(this, player, cause))) return
+        if (eventManager.post(PlayerActiveEvent(afkSince, player, cause))) return
 
         forceStopAFK()
     }
@@ -41,7 +40,6 @@ class AfkPlayer(val uuid: UUID) {
     fun forceStopAFK() {
         isAFK = false
 
-        afkSince = Instant.MAX
         lastInteract = Instant.now()
     }
 
