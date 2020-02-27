@@ -1,9 +1,9 @@
 package com.nanabell.sponge.nico.internal
 
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.internal.command.AbstractCommand
 import com.nanabell.sponge.nico.internal.command.CommandPermissionHandler
+import com.nanabell.sponge.nico.internal.extension.orNull
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.service.permission.PermissionService
 import kotlin.reflect.KClass

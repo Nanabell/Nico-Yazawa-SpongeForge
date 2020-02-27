@@ -7,8 +7,8 @@ import com.nanabell.sponge.nico.command.link.LinkAcceptCommand
 import com.nanabell.sponge.nico.command.link.LinkCommand
 import com.nanabell.sponge.nico.command.link.LinkDenyCommand
 import com.nanabell.sponge.nico.command.link.UnlinkCommand
-import com.nanabell.sponge.nico.extensions.orNull
-import com.nanabell.sponge.nico.extensions.toText
+import com.nanabell.sponge.nico.internal.extension.orNull
+import com.nanabell.sponge.nico.internal.extension.toText
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandException
 import org.spongepowered.api.command.CommandManager

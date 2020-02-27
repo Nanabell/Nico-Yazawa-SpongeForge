@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.extensions
+package com.nanabell.sponge.nico.internal.extension
 
 import java.util.*
 

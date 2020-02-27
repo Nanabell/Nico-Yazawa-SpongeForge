@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.internal
 
-import com.nanabell.sponge.nico.extensions.toText
+import com.nanabell.sponge.nico.internal.extension.toText
 import org.spongepowered.api.command.CommandException
 import org.spongepowered.api.command.CommandPermissionException
 import org.spongepowered.api.command.args.ArgumentParseException

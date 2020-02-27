@@ -1,8 +1,8 @@
 package com.nanabell.sponge.nico.module.economy.data.currency
 
-import com.nanabell.sponge.nico.extensions.bold
-import com.nanabell.sponge.nico.extensions.red
-import com.nanabell.sponge.nico.extensions.toText
+import com.nanabell.sponge.nico.internal.extension.bold
+import com.nanabell.sponge.nico.internal.extension.red
+import com.nanabell.sponge.nico.internal.extension.toText
 import org.spongepowered.api.service.economy.Currency
 import org.spongepowered.api.text.Text
 import java.math.BigDecimal

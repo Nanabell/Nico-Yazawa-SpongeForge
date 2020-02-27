@@ -1,9 +1,9 @@
 package com.nanabell.sponge.nico.module.link.listener
 
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.extensions.orNull
-import com.nanabell.sponge.nico.extensions.toText
 import com.nanabell.sponge.nico.internal.annotation.RegisterListener
+import com.nanabell.sponge.nico.internal.extension.orNull
+import com.nanabell.sponge.nico.internal.extension.toText
 import com.nanabell.sponge.nico.internal.listener.AbstractListener
 import com.nanabell.sponge.nico.module.link.LinkModule
 import com.nanabell.sponge.nico.module.link.event.*

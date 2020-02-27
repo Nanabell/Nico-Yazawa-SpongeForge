@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.module.sync.interfaces
 
-import com.nanabell.sponge.nico.extensions.MinecraftUser
+import com.nanabell.sponge.nico.internal.extension.MinecraftUser
 import com.nanabell.sponge.nico.module.sync.data.Troop
 
 interface ITrooper {

@@ -1,10 +1,10 @@
 package com.nanabell.sponge.nico.module.economy.service
 
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.extensions.toMinecraftUser
-import com.nanabell.sponge.nico.extensions.toOptional
 import com.nanabell.sponge.nico.internal.annotation.service.ApiService
 import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
+import com.nanabell.sponge.nico.internal.extension.toMinecraftUser
+import com.nanabell.sponge.nico.internal.extension.toOptional
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.economy.EconomyModule
 import com.nanabell.sponge.nico.module.economy.data.account.DelegatingAccount

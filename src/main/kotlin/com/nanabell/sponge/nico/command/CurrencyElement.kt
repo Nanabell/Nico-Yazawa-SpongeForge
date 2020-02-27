@@ -1,7 +1,7 @@
 package com.nanabell.sponge.nico.command
 
-import com.nanabell.sponge.nico.extensions.orNull
-import com.nanabell.sponge.nico.extensions.toText
+import com.nanabell.sponge.nico.internal.extension.orNull
+import com.nanabell.sponge.nico.internal.extension.toText
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.args.CommandArgs

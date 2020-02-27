@@ -1,8 +1,8 @@
 package com.nanabell.sponge.nico.module.link.runnables
 
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.extensions.toText
 import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
+import com.nanabell.sponge.nico.internal.extension.toText
 import com.nanabell.sponge.nico.internal.runnable.AbstractRunnable
 import com.nanabell.sponge.nico.module.activity.service.PlaytimeService
 import com.nanabell.sponge.nico.module.link.LinkModule
@@ -10,7 +10,6 @@ import com.nanabell.sponge.nico.module.link.config.KickConfig
 import com.nanabell.sponge.nico.module.link.service.LinkService
 import org.spongepowered.api.Sponge
 import java.time.Duration
-import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 @RegisterRunnable("NicoYazawa-A-LinkWatchdog", isAsync = true)

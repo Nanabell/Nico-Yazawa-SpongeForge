@@ -1,4 +1,4 @@
-package com.nanabell.sponge.nico.extensions
+package com.nanabell.sponge.nico.internal.extension
 
 import com.nanabell.sponge.nico.module.discord.service.DiscordService
 import net.dv8tion.jda.api.entities.Member

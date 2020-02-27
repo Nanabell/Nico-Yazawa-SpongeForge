@@ -1,7 +1,7 @@
 package com.nanabell.sponge.nico.module.sync.service
 
-import com.nanabell.sponge.nico.extensions.MinecraftUser
 import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
+import com.nanabell.sponge.nico.internal.extension.MinecraftUser
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.sync.SyncModule
 import com.nanabell.sponge.nico.module.sync.config.SyncConfig

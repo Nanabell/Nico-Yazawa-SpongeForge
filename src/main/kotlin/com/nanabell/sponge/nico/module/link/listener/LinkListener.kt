@@ -1,7 +1,7 @@
 package com.nanabell.sponge.nico.module.link.listener
 
-import com.nanabell.sponge.nico.extensions.*
 import com.nanabell.sponge.nico.internal.annotation.RegisterListener
+import com.nanabell.sponge.nico.internal.extension.*
 import com.nanabell.sponge.nico.internal.listener.AbstractListener
 import com.nanabell.sponge.nico.module.discord.service.DiscordService
 import com.nanabell.sponge.nico.module.link.LinkModule

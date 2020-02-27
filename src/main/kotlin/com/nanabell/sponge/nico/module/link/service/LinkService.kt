@@ -2,9 +2,9 @@ package com.nanabell.sponge.nico.module.link.service
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.extensions.DiscordUser
-import com.nanabell.sponge.nico.extensions.MinecraftUser
 import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
+import com.nanabell.sponge.nico.internal.extension.DiscordUser
+import com.nanabell.sponge.nico.internal.extension.MinecraftUser
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.core.service.DatabaseService
 import com.nanabell.sponge.nico.module.link.LinkModule

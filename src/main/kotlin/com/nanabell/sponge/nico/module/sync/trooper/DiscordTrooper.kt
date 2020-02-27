@@ -1,7 +1,7 @@
 package com.nanabell.sponge.nico.module.sync.trooper
 
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.extensions.*
+import com.nanabell.sponge.nico.internal.extension.*
 import com.nanabell.sponge.nico.module.discord.service.DiscordService
 import com.nanabell.sponge.nico.module.link.service.LinkService
 import com.nanabell.sponge.nico.module.sync.config.SyncConfig

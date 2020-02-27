@@ -1,7 +1,7 @@
 package com.nanabell.sponge.nico.module.economy.data.account
 
-import com.nanabell.sponge.nico.extensions.MinecraftUser
-import com.nanabell.sponge.nico.extensions.toText
+import com.nanabell.sponge.nico.internal.extension.MinecraftUser
+import com.nanabell.sponge.nico.internal.extension.toText
 import com.nanabell.sponge.nico.module.economy.config.EconomyConfig
 import com.nanabell.sponge.nico.module.economy.data.SimpleTransferResult
 import com.nanabell.sponge.nico.module.economy.data.currency.MakiCurrency

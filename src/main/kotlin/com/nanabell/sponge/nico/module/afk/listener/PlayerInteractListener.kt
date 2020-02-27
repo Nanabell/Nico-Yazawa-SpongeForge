@@ -1,8 +1,8 @@
 package com.nanabell.sponge.nico.module.afk.listener
 
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.internal.annotation.RegisterListener
+import com.nanabell.sponge.nico.internal.extension.orNull
 import com.nanabell.sponge.nico.internal.listener.AbstractListener
 import com.nanabell.sponge.nico.module.afk.AfkModule
 import com.nanabell.sponge.nico.module.afk.service.AfkService

@@ -1,9 +1,9 @@
 package com.nanabell.sponge.nico.module.afk.listener
 
-import com.nanabell.sponge.nico.extensions.darkGray
-import com.nanabell.sponge.nico.extensions.italic
-import com.nanabell.sponge.nico.extensions.toText
 import com.nanabell.sponge.nico.internal.annotation.RegisterListener
+import com.nanabell.sponge.nico.internal.extension.darkGray
+import com.nanabell.sponge.nico.internal.extension.italic
+import com.nanabell.sponge.nico.internal.extension.toText
 import com.nanabell.sponge.nico.internal.listener.AbstractListener
 import com.nanabell.sponge.nico.module.afk.AfkModule
 import com.nanabell.sponge.nico.module.afk.event.PlayerAFKEvent

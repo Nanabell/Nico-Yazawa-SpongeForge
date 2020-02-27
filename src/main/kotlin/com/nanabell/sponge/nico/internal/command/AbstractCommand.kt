@@ -5,14 +5,13 @@ import com.google.common.collect.Sets
 import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.command.Args
-import com.nanabell.sponge.nico.extensions.*
 import com.nanabell.sponge.nico.internal.IllegalCommandException
 import com.nanabell.sponge.nico.internal.MissingAnnotationException
 import com.nanabell.sponge.nico.internal.NicoArgumentParseException
 import com.nanabell.sponge.nico.internal.NicoCommandException
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.annotation.command.RunAsync
-import com.nanabell.sponge.nico.internal.extension.getActualTypeArguments
+import com.nanabell.sponge.nico.internal.extension.*
 import com.nanabell.sponge.nico.internal.module.ConfigurableModule
 import com.nanabell.sponge.nico.internal.module.StandardModule
 import org.slf4j.Logger

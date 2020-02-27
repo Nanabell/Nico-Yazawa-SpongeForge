@@ -1,8 +1,8 @@
 package com.nanabell.sponge.nico.internal.module
 
-import com.nanabell.sponge.nico.extensions.toOptional
 import com.nanabell.sponge.nico.internal.config.Config
 import com.nanabell.sponge.nico.internal.config.StandardConfigAdapter
+import com.nanabell.sponge.nico.internal.extension.toOptional
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter
 import java.util.*
 import kotlin.reflect.KClass

@@ -1,8 +1,8 @@
 package com.nanabell.sponge.nico.module.link.event
 
-import com.nanabell.sponge.nico.extensions.DiscordUser
-import com.nanabell.sponge.nico.extensions.MinecraftUser
 import com.nanabell.sponge.nico.internal.event.StandardEvent
+import com.nanabell.sponge.nico.internal.extension.DiscordUser
+import com.nanabell.sponge.nico.internal.extension.MinecraftUser
 import com.nanabell.sponge.nico.module.link.misc.LinkResult
 import org.spongepowered.api.event.Event
 import org.spongepowered.api.event.cause.Cause

@@ -3,9 +3,9 @@ package com.nanabell.sponge.nico.command.link
 import com.nanabell.sponge.nico.command.Args
 import com.nanabell.sponge.nico.command.SelfSpecCommand
 import com.nanabell.sponge.nico.command.requirePlayerOrArg
-import com.nanabell.sponge.nico.extensions.gold
-import com.nanabell.sponge.nico.extensions.red
-import com.nanabell.sponge.nico.extensions.toText
+import com.nanabell.sponge.nico.internal.extension.gold
+import com.nanabell.sponge.nico.internal.extension.red
+import com.nanabell.sponge.nico.internal.extension.toText
 import com.nanabell.sponge.nico.module.link.service.LinkService
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandException
