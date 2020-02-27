@@ -1,26 +1,31 @@
-package com.nanabell.sponge.nico.module.core.listener
+package com.nanabell.sponge.nico.module.activity.listener
 
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.annotation.RegisterListener
 import com.nanabell.sponge.nico.internal.listener.AbstractListener
-import com.nanabell.sponge.nico.module.core.CoreModule
-import com.nanabell.sponge.nico.module.core.service.PlaytimeService
+import com.nanabell.sponge.nico.module.activity.ActivityModule
+import com.nanabell.sponge.nico.module.activity.service.PlaytimeService
+import com.nanabell.sponge.nico.module.afk.event.PlayerActiveEvent
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.network.ClientConnectionEvent
-import java.time.Instant
 
 @RegisterListener
-class PlaytimeListener : AbstractListener<CoreModule>() {
+class PlaytimeListener : AbstractListener<ActivityModule>() {
 
     private val playtimeService: PlaytimeService = NicoYazawa.getPlugin().getServiceRegistry().provideUnchecked()
 
     @Listener
     private fun onPlayerJoin(event: ClientConnectionEvent.Join) {
-        playtimeService.add(event.targetEntity.uniqueId, Instant.now())
+        playtimeService.startSession(event.targetEntity)
     }
 
     @Listener
     private fun onPlayerDisconnect(event: ClientConnectionEvent.Disconnect) {
-        playtimeService.remove(event.targetEntity.uniqueId)
+        playtimeService.endSession(event.targetEntity)
+    }
+
+    @Listener
+    private fun onPlayerResume(event: PlayerActiveEvent) {
+        playtimeService.addAfkDuration(event.targetEntity, event.getAfkDuration())
     }
 }
