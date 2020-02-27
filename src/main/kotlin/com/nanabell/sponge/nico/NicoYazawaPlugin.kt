@@ -1,8 +1,6 @@
 package com.nanabell.sponge.nico
 
 import com.google.inject.Inject
-import com.nanabell.sponge.nico.config.Config
-import com.nanabell.sponge.nico.config.MainConfig
 import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
 import com.nanabell.sponge.nico.module.core.config.CoreConfigAdapter
@@ -26,7 +24,6 @@ import java.nio.file.Path
 class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) private val configDir: Path, private val _logger: Logger) : NicoYazawa() {
 
     private val logger = getLogger("Main")
-    private val config = Config(MainConfig::class.java, "nicos-yazawa.conf", configDir)
 
     private val permissionRegistry: PermissionRegistry = PermissionRegistry()
     private val serviceRegistry: InternalServiceRegistry = InternalServiceRegistry()
@@ -79,8 +76,7 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
 
     @Listener
     fun onGameReload(event: GameReloadEvent) {
-        // Reload Config
-        config.reload().also { _logger.info("Reloaded Config") } // TODO: Redo if possible
+        moduleContainer.reloadSystemConfig()
     }
 
     private fun disable() {
@@ -97,10 +93,6 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
             return logger
 
         return TopicLogger(_logger, *topics)
-    }
-
-    override fun getConfig(): Config<MainConfig> {
-        return config
     }
 
     override fun getPermissionRegistry(): PermissionRegistry {
