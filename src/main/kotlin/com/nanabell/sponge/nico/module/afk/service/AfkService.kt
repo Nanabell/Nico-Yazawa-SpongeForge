@@ -69,6 +69,15 @@ class AfkService : AbstractService<AfkModule>() {
         return Duration.between(Instant.now(), getPlayer(player).lastInteract)
     }
 
+    /**
+     * Get the duration for how long the player is currently AFK
+     *
+     * **NOTE** This value is only valid is the player in question is currently AFK.
+     * Consuming Services should check with [AfkService.isAfk] is the player is afk
+     *
+     * @param player Player in question
+     * @return Duration since AfkStart Instant
+     */
     fun getAfkDuration(player: Player): Duration {
         val duration = Duration.between(Instant.now(), getPlayer(player).afkSince)
         return if (duration < Duration.ZERO) Duration.ZERO else duration

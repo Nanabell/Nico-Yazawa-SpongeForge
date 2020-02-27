@@ -13,7 +13,7 @@ import org.spongepowered.api.event.cause.EventContext
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
-@RegisterRunnable("NicoYazawa-A-ActivityService", 2, TimeUnit.MINUTES, 2, TimeUnit.MINUTES, true)
+@RegisterRunnable("NicoYazawa-A-AfkWatchdog", 2, TimeUnit.MINUTES, 2, TimeUnit.MINUTES, true)
 class AfkWatchdog : AbstractRunnable<AfkModule>() {
 
     private val service: AfkService = NicoYazawa.getServiceRegistry().provideUnchecked()
