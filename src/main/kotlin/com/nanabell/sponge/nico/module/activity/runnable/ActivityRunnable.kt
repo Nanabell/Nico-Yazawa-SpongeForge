@@ -1,8 +1,11 @@
 package com.nanabell.sponge.nico.module.activity.runnable
 
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.extensions.orNull
 import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
+import com.nanabell.sponge.nico.internal.extension.gold
+import com.nanabell.sponge.nico.internal.extension.orNull
+import com.nanabell.sponge.nico.internal.extension.toText
+import com.nanabell.sponge.nico.internal.extension.yellow
 import com.nanabell.sponge.nico.internal.runnable.AbstractRunnable
 import com.nanabell.sponge.nico.module.activity.ActivityModule
 import com.nanabell.sponge.nico.module.activity.config.ActivityConfig
@@ -13,6 +16,7 @@ import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.service.economy.EconomyService
 import org.spongepowered.api.service.economy.transaction.ResultType
+import org.spongepowered.api.text.chat.ChatTypes
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
@@ -57,9 +61,13 @@ class ActivityRunnable : AbstractRunnable<ActivityModule>() {
 
                 val result = account.deposit(currency, amount, Cause.of(EventContext.empty(), this))
                 if (result.result != ResultType.SUCCESS) {
-
+                    logger.warn("Unable to award {} with {}. Deposit event was cancelled", player.name, currency.format(amount).toPlain())
                     continue
                 }
+
+                activityService.setOnCooldown(player)
+                player.sendMessage(ChatTypes.ACTION_BAR, "You have earned ".toText().gold().concat(currency.format(amount).yellow()).concat(" for being active".toText().gold()))
+                logger.info("Awarded {} with {}", player.name, currency.format(amount).toPlain())
 
                 break
             }
