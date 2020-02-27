@@ -33,6 +33,10 @@ class ActivityService : AbstractService<ActivityModule>() {
         lastRewards[player.uniqueId] = Instant.now()
     }
 
+    fun resetRewardCounter() {
+        rewardCounter.clear()
+    }
+
     // TODO: Move this somewhere else...
     fun checkRewardContext(rewardConfig: RewardConfig, player: Player): Boolean {
         return checkPermission(rewardConfig, player)
