@@ -9,11 +9,13 @@ group = "com.nanabell.nico"
 version = "1.0-SNAPSHOT"
 
 repositories {
-    //maven("http://repo.drnaylor.co.uk/artifactory/list/minecraft")
     mavenCentral()
     jcenter()
-    flatDir {
-        dir("libs")
+    maven("https://maven.pkg.github.com/nanabell/nico-yazawa-spongeforge") {
+        credentials {
+            username = project.findProperty("github.username") as String? ?: System.getenv("GITHUB_USERNAME")
+            password = project.findProperty("github.package.personal.access.token") as String? ?: System.getenv("GITHUB_PACKAGE_TOKEN")
+        }
     }
 }
 
