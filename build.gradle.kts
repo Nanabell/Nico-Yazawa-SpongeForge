@@ -9,21 +9,16 @@ group = "com.nanabell.nico"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    maven("https://dl.bintray.com/nanabell/Sponge-Minecraft")
     mavenCentral()
     jcenter()
-    maven("https://maven.pkg.github.com/nanabell/nico-yazawa-spongeforge") {
-        credentials {
-            username = project.findProperty("github.username") as String? ?: System.getenv("GITHUB_USERNAME")
-            password = project.findProperty("github.package.personal.access.token") as String? ?: System.getenv("GITHUB_PACKAGE_TOKEN")
-        }
-    }
 }
 
 dependencies {
     shadow(kotlin("stdlib-jdk8"))
     shadow(kotlin("reflect"))
 
-    shadow(files("$projectDir/libs/quickstart-moduleloader-0.11.0.jar"))
+    shadow("com.nanabell.quickstart:simple-moduleloader:0.5.0")
     shadow("dev.morphia.morphia:core:1.5.8")
     shadow("net.dv8tion:JDA:4.ALPHA.0_76") {
         exclude("opus-java")
