@@ -2,9 +2,8 @@ package com.nanabell.sponge.nico
 
 import org.slf4j.Logger
 import org.slf4j.Marker
-import uk.co.drnaylor.quickstart.LoggerProxy
 
-class TopicLogger(private val wrapped: Logger, vararg topics: String) : Logger, LoggerProxy {
+class TopicLogger(private val wrapped: Logger, vararg topics: String) : Logger {
 
     private val topic = topics.joinToString("] [", "[", "] ")
 

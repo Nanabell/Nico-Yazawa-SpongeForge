@@ -8,5 +8,6 @@ inline fun <reified S : Any> KClass<out S>.getActualTypeArguments(typedSuperclas
     if (!typedSuperclass.isSuperclassOf(this))
         return emptyList()
 
-    return if (typedSuperclass is ParameterizedType) typedSuperclass.actualTypeArguments.map { it as KClass<*> } else emptyList()
+    val type = typedSuperclass.java.genericSuperclass
+    return if (type is ParameterizedType) type.actualTypeArguments.map { (it as Class<*>).kotlin } else emptyList()
 }

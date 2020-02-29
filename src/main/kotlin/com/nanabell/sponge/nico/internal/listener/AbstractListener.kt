@@ -1,11 +1,10 @@
 package com.nanabell.sponge.nico.internal.listener
 
 import com.nanabell.sponge.nico.NicoYazawa
-import com.nanabell.sponge.nico.internal.module.ConfigurableModule
 import com.nanabell.sponge.nico.internal.module.StandardModule
 import org.slf4j.Logger
 
-abstract class AbstractListener<M : ConfigurableModule<*, *>> {
+abstract class AbstractListener<M : StandardModule<*>> {
 
     protected val plugin: NicoYazawa = NicoYazawa.getPlugin()
     protected val logger: Logger = plugin.getLogger("Listener", javaClass.simpleName)
@@ -16,7 +15,7 @@ abstract class AbstractListener<M : ConfigurableModule<*, *>> {
     open fun onReady() {}
 
     @Suppress("UNCHECKED_CAST")
-    fun setModule(module: StandardModule) {
+    fun setModule(module: StandardModule<*>) {
         this.module = module as M
     }
 }

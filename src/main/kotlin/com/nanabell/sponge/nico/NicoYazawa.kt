@@ -1,9 +1,9 @@
 package com.nanabell.sponge.nico
 
+import com.nanabell.quickstart.container.DiscoveryModuleContainer
 import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
 import com.nanabell.sponge.nico.internal.interfaces.Reloadable
-import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer
 
 
 abstract class NicoYazawa {

@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.module.sync.config
 
-import com.nanabell.sponge.nico.internal.config.Config
+import com.nanabell.quickstart.config.ModuleConfig
 import com.nanabell.sponge.nico.module.sync.data.Troop
 import com.nanabell.sponge.nico.module.sync.misc.TroopSource
 import ninja.leaping.configurate.objectmapping.Setting
@@ -21,7 +21,7 @@ data class SyncConfig(
         @Setting("auto-kick", comment = "Automatically Kick users who dont Link their Accounts within a settable TimeFrame")
         val kickConfig: KickConfig = KickConfig()
 
-) : Config {
+) : ModuleConfig {
     private val troops: Map<TroopSource, List<Troop>> by lazy {
         _troops.mapNotNull {
             val split = when {

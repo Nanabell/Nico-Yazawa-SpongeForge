@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.module.core.config
 
-import com.nanabell.sponge.nico.internal.config.Config
+import com.nanabell.quickstart.config.ModuleConfig
 import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
@@ -15,4 +15,4 @@ data class CoreConfig(
 
         @Setting("database", comment = "Name of the Database to use")
         val database: String = "nico-yazawa"
-) : Config
+) : ModuleConfig

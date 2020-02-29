@@ -11,7 +11,7 @@ import kotlin.reflect.full.findAnnotation
 
 class ListenerBuilder (
         private val plugin: NicoYazawa,
-        private val module: StandardModule
+        private val module: StandardModule<*>
 ) {
 
     fun <E : AbstractListener<*>> registerListener(clazz: KClass<out E>) {

@@ -11,7 +11,6 @@ import com.nanabell.sponge.nico.internal.NicoCommandException
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.annotation.command.RunAsync
 import com.nanabell.sponge.nico.internal.extension.*
-import com.nanabell.sponge.nico.internal.module.ConfigurableModule
 import com.nanabell.sponge.nico.internal.module.StandardModule
 import org.slf4j.Logger
 import org.spongepowered.api.Sponge
@@ -37,7 +36,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
 @Suppress("UNCHECKED_CAST")
-abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*, *>> : CommandCallable {
+abstract class AbstractCommand<T : CommandSource, M : StandardModule<*>> : CommandCallable {
 
     private val sourceType: Class<T>
     private val sourceTypePredicate: (CommandSource) -> Boolean
@@ -58,7 +57,7 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*, *>> 
 
     private lateinit var moduleCommands: Set<KClass<out AbstractCommand<*, *>>>
     private lateinit var commandBuilder: CommandBuilder
-    private lateinit var module: StandardModule
+    private lateinit var module: StandardModule<*>
 
     private lateinit var argumentParser: CommandElement
 
@@ -369,7 +368,7 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*, *>> 
      *
      * @param module The parent Module
      */
-    fun setModule(module: StandardModule) {
+    fun setModule(module: StandardModule<*>) {
         if (!this::module.isInitialized)
             this.module = module
     }
@@ -498,8 +497,8 @@ abstract class AbstractCommand<T : CommandSource, M : ConfigurableModule<*, *>> 
     }
 }
 
-abstract class StandardCommand<M : ConfigurableModule<*, *>> : AbstractCommand<CommandSource, M>()
-abstract class NoExecutorCommand<M : ConfigurableModule<*, *>> : StandardCommand<M>() {
+abstract class StandardCommand<M : StandardModule<*>> : AbstractCommand<CommandSource, M>()
+abstract class NoExecutorCommand<M : StandardModule<*>> : StandardCommand<M>() {
 
     override fun executeCommand(source: CommandSource, args: CommandContext, cause: Cause): CommandResult {
         throw IllegalAccessException("Command has no executor!")

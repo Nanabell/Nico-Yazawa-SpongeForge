@@ -51,5 +51,15 @@
       <option name="name" value="maven" />
       <option name="url" value="https://maven.pkg.github.com/nanabell/nico-yazawa-spongeforge" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="https://repo.spongepowered.org/maven/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="https://dl.bintray.com/nanabell/Sponge-Minecraft" />
+    </remote-repository>
   </component>
 </project>

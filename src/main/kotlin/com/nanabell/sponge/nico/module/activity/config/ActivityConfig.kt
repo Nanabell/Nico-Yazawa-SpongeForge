@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.module.activity.config
 
-import com.nanabell.sponge.nico.internal.config.Config
+import com.nanabell.quickstart.config.ModuleConfig
 import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 import java.time.Duration
@@ -21,7 +21,7 @@ data class ActivityConfig(
         @Setting("rewards", comment = "Rewards for being active")
         val rewards: List<RewardConfig> = listOf(RewardConfig(), RewardConfig())
 
-) : Config {
+) : ModuleConfig {
 
         val rewardCooldown: Duration get() = Duration.of(_rewardCooldown.coerceAtLeast(0), ChronoUnit.SECONDS)
 

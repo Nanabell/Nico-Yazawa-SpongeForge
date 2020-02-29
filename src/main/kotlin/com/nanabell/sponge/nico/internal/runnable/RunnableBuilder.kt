@@ -12,7 +12,7 @@ import kotlin.reflect.full.findAnnotation
 
 class RunnableBuilder(
         private val plugin: NicoYazawa,
-        private val module: StandardModule
+        private val module: StandardModule<*>
 ) {
 
     fun <R : AbstractRunnable<*>> register(clazz: KClass<out R>): Task {

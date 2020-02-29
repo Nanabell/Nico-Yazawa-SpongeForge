@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.module.afk.config
 
-import com.nanabell.sponge.nico.internal.config.Config
+import com.nanabell.quickstart.config.ModuleConfig
 import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 import java.time.Duration
@@ -15,6 +15,6 @@ data class AfkConfig(
         @Setting("afk-timeout", comment = "Amount of time before somone is flagged as AFK")
         private val _afkTimeout: Long = 1800
 
-) : Config {
+) : ModuleConfig {
         val afkTimeout: Duration get() = Duration.of(_afkTimeout, ChronoUnit.SECONDS)
 }

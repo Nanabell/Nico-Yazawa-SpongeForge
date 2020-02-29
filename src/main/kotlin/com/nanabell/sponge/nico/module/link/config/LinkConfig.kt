@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.module.link.config
 
-import com.nanabell.sponge.nico.internal.config.Config
+import com.nanabell.quickstart.config.ModuleConfig
 import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
@@ -22,4 +22,4 @@ data class LinkConfig(
         @Setting("link-role", comment = "Discord Role Id which is awarded upon Link. Will be revoked if the Link is broken")
         val linkRole: Long = -1
 
-) : Config
+) : ModuleConfig

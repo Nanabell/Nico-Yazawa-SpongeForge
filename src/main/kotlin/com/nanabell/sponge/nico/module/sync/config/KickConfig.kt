@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.module.sync.config
 
-import com.nanabell.sponge.nico.internal.config.Config
+import com.nanabell.quickstart.config.ModuleConfig
 import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
@@ -19,7 +19,7 @@ data class KickConfig(
         @Setting("kick-information", comment = "The Kick message that will display why he was kicked")
         val information: String = ""
 
-) : Config {
+) : ModuleConfig {
 
     val kickInterval get() = _kickInterval.coerceAtLeast(60)
 

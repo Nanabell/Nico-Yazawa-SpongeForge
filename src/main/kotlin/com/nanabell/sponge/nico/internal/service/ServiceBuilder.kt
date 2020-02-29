@@ -14,7 +14,7 @@ import kotlin.reflect.full.isSubclassOf
 
 class ServiceBuilder(
         private val plugin: NicoYazawa,
-        private val module: StandardModule
+        private val module: StandardModule<*>
 ) {
 
     private val logger = module.logger

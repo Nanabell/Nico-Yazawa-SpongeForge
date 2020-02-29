@@ -1,11 +1,10 @@
 package com.nanabell.sponge.nico
 
 import com.google.inject.Inject
+import com.nanabell.quickstart.container.DiscoveryModuleContainer
 import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
 import com.nanabell.sponge.nico.internal.interfaces.Reloadable
-import com.nanabell.sponge.nico.module.core.config.CoreConfigAdapter
-import ninja.leaping.configurate.ConfigurationOptions
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader
 import org.slf4j.Logger
 import org.spongepowered.api.Sponge
@@ -16,9 +15,6 @@ import org.spongepowered.api.event.game.state.GameInitializationEvent
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent
 import org.spongepowered.api.event.game.state.GameStartedServerEvent
 import org.spongepowered.api.plugin.Plugin
-import uk.co.drnaylor.quickstart.loaders.SimpleModuleConstructor
-import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer
-import uk.co.drnaylor.quickstart.modulecontainers.discoverystrategies.Strategy
 import java.nio.file.Path
 
 
@@ -43,18 +39,14 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
     fun preInit(event: GamePreInitializationEvent) {
         try {
             val moduleConfig = HoconConfigurationLoader.builder()
-                    .setPath(configDir.resolve("modules.conf"))
-                    .setDefaultOptions(ConfigurationOptions.defaults())
+                    .setPath(configDir.resolve("nico.conf"))
                     .build()
 
             moduleContainer = DiscoveryModuleContainer.builder()
                     .setConfigurationLoader(moduleConfig)
-                    .setModuleConfigSectionName("-modules")
-                    .setConstructor(SimpleModuleConstructor.INSTANCE)
-                    .setStrategy(Strategy.DEFAULT)
+                    .setModuleConfigKey("-modules")
                     .setPackageToScan(javaClass.`package`.name + ".module")
-                    .setRequireModuleDataAnnotation(true)
-                    .setLoggerProxy(getLogger("Module Discovery"))
+                    .setLogger(getLogger("Module Discovery"))
                     .build(true)
         } catch (e: Exception) {
             logger.error("Plugin PreInitialization failed!", e)
@@ -67,10 +59,6 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
         try {
             moduleContainer.refreshSystemConfig()
             moduleContainer.loadModules(true)
-            val coreConfig = moduleContainer.getConfigAdapterForModule("core-module", CoreConfigAdapter::class.java).nodeOrDefault
-
-            if (coreConfig.startupError) throw IllegalStateException("Error on Startup is Enabled!")
-
         } catch (e: Exception) {
             logger.error("Plugin Initialization failed!", e)
             disable()

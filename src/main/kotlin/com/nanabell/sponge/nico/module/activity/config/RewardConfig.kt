@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.module.activity.config
 
-import com.nanabell.sponge.nico.internal.config.Config
+import com.nanabell.quickstart.config.ModuleConfig
 import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
@@ -28,7 +28,7 @@ data class RewardConfig(
         @Setting("bonus-amount", comment = "Will be added on top of the regular reward if the user has the bonus-permission")
         private val _bonusAmount: Long = 0
 
-) : Config {
+) : ModuleConfig {
 
     val amount get() = _amount.coerceAtLeast(0)
 

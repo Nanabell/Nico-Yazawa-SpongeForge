@@ -1,5 +1,9 @@
 package com.nanabell.sponge.nico.internal.module
 
+import com.nanabell.quickstart.AbstractModule
+import com.nanabell.quickstart.RegisterModule
+import com.nanabell.quickstart.config.ModuleConfig
+import com.nanabell.quickstart.util.isInterface
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.annotation.RegisterListener
 import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
@@ -14,14 +18,11 @@ import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.internal.service.ServiceBuilder
 import org.slf4j.Logger
 import org.spongepowered.api.scheduler.Task
-import uk.co.drnaylor.quickstart.Module
-import uk.co.drnaylor.quickstart.annotations.ModuleData
-import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
 
-abstract class StandardModule : Module {
+abstract class StandardModule<C : ModuleConfig> : AbstractModule<C>() {
 
     private val plugin: NicoYazawa
     val logger: Logger
@@ -35,8 +36,7 @@ abstract class StandardModule : Module {
     private lateinit var packageName: String
 
     init {
-        val module = javaClass.getAnnotation(ModuleData::class.java)
-        this.configAdapter
+        val module = javaClass.getAnnotation(RegisterModule::class.java)
 
         moduleId = module.id
         moduleName = module.name
@@ -118,12 +118,11 @@ abstract class StandardModule : Module {
 
     @Suppress("UNCHECKED_CAST")
     private fun <T : Any> getStreamForModule(assignable: KClass<T>): List<KClass<out T>> {
-        val loaded = NicoYazawa.getPlugin().getModuleContainer().loadedClasses
-        return loaded
-                .filter { it.kotlin.isSubclassOf(assignable) }
-                .filter { it.`package`.name.startsWith(this.packageName) }
-                .filter { !Modifier.isAbstract(it.modifiers) && !Modifier.isInterface(it.modifiers) }
-                .map { it.kotlin as KClass<out T> }
+        return NicoYazawa.getPlugin().getModuleContainer().getLoadedClasses()
+                .filter { it.isSubclassOf(assignable) }
+                .filter { it.java.`package`.name.startsWith(this.packageName) }
+                .filter { !it.isAbstract && !it.isInterface }
+                .map { it as KClass<out T> }
     }
 
     @Throws(Exception::class)
