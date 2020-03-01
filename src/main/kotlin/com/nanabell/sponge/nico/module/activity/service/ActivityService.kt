@@ -1,7 +1,7 @@
 package com.nanabell.sponge.nico.module.activity.service
 
 import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
-import com.nanabell.sponge.nico.internal.extension.getOptionToLong
+import com.nanabell.sponge.nico.internal.extension.getOptionDuration
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.activity.ActivityModule
 import com.nanabell.sponge.nico.module.activity.config.ActivityConfig
@@ -9,7 +9,6 @@ import com.nanabell.sponge.nico.module.activity.config.RewardConfig
 import com.nanabell.sponge.nico.module.activity.data.Cooldown
 import org.spongepowered.api.entity.living.player.Player
 import java.time.Duration
-import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
@@ -54,7 +53,7 @@ class ActivityService : AbstractService<ActivityModule>() {
      */
     fun startCooldown(player: Player) {
         cooldowns.removeIf { it.uniqueId == player.uniqueId }
-        cooldowns.add(Cooldown(player.uniqueId, getRewardCooldown(player)))
+        cooldowns.add(Cooldown(player.uniqueId, player.getOptionDuration(ActivityModule.O_ACTIVITY_COOLDOWN, config.rewardCooldown)))
     }
 
     /**
@@ -75,11 +74,6 @@ class ActivityService : AbstractService<ActivityModule>() {
     fun resumeCooldown(player: Player) {
         val cooldown = cooldowns.firstOrNull { it.uniqueId == player.uniqueId } ?: return //TODO Handle
         cooldown.resume()
-    }
-
-    private fun getRewardCooldown(player: Player): Duration {
-        val seconds = player.getOptionToLong("nico.activity.cooldown", config.rewardCooldown.seconds)
-        return if (seconds != null) Duration.of(seconds, ChronoUnit.SECONDS) else config.rewardCooldown
     }
 
     /**

@@ -3,6 +3,7 @@ package com.nanabell.sponge.nico.module.afk.runnable
 import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
+import com.nanabell.sponge.nico.internal.extension.getOptionDuration
 import com.nanabell.sponge.nico.internal.runnable.AbstractRunnable
 import com.nanabell.sponge.nico.module.afk.AfkModule
 import com.nanabell.sponge.nico.module.afk.config.AfkConfig
@@ -33,8 +34,7 @@ class AfkWatchdog : AbstractRunnable<AfkModule>() {
             if (!service.isAfk(player)) {
                 val inactivity = service.getInactiveDuration(player)
 
-                if (inactivity > config.afkTimeout) {
-
+                if (inactivity > player.getOptionDuration(AfkModule.O_AFK_TIMEOUT, config.afkTimeout)) {
                     if (service.isImmune(player))
                         return
 

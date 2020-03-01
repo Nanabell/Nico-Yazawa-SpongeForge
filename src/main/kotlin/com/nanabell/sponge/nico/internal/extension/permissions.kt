@@ -5,13 +5,13 @@ import org.spongepowered.api.service.permission.Subject
 import org.spongepowered.api.service.permission.SubjectCollection
 import org.spongepowered.api.service.permission.SubjectData
 import org.spongepowered.api.service.permission.SubjectReference
+import java.time.Duration
+import java.time.temporal.ChronoUnit
 
-fun Subject.getOption(key: String, default: Any): String {
-    return this.getOption(key).orNull() ?: default.toString()
-}
+fun Subject.getOptionDuration(key: String, default: Duration): Duration {
+    val seconds = this.getOption(key).orNull()?.toLongOrNull()
 
-fun Subject.getOptionToLong(key: String, default: Any): Long? {
-    return getOption(key, default).toLongOrNull()
+    return if (seconds != null) Duration.of(seconds, ChronoUnit.SECONDS) else default
 }
 
 fun SubjectData.findParent(identifier: String, contexts: Set<Context> = emptySet()): SubjectReference? {

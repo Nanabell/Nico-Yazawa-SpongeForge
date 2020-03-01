@@ -60,7 +60,7 @@ class AfkService : AbstractService<AfkModule>() {
     }
 
     fun isImmune(player: Player): Boolean {
-        return player.hasPermission("nico.afk.exempt")
+        return player.hasPermission(AfkModule.P_AFK_EXEMPT)
     }
 
     private fun getPlayer(player: Player): AfkPlayer {
