@@ -68,7 +68,7 @@ class ActivityRunnable : AbstractRunnable<ActivityModule>() {
                     continue
                 }
 
-                activityService.setOnCooldown(player)
+                activityService.startCooldown(player)
                 player.sendMessage(ChatTypes.ACTION_BAR, "You have earned ".toText().gold().concat(currency.format(amount).yellow()).concat(" for being active".toText().gold()))
                 logger.info("Awarded {} with {}", player.name, currency.format(amount).toPlain())
 

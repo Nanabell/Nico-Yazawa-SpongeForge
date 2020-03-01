@@ -234,7 +234,7 @@ abstract class AbstractCommand<T : CommandSource, M : StandardModule<*>> : Comma
 
     @Throws(CommandException::class)
     final override fun getSuggestions(source: CommandSource, arguments: String, targetPosition: Location<World>?): List<String> {
-        val singleArgs: MutableList<SingleArg> = Lists.newArrayList<SingleArg>(tokenizer.tokenize(arguments, false))
+        val singleArgs: MutableList<SingleArg> = Lists.newArrayList(tokenizer.tokenize(arguments, false))
 
         // If we end with a space - then we add another argument.
         if (arguments.isEmpty() || arguments.endsWith(" ")) {
