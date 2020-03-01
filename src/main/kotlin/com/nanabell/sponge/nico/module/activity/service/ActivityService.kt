@@ -77,6 +77,16 @@ class ActivityService : AbstractService<ActivityModule>() {
     }
 
     /**
+     * Remove the cooldown for a given player
+     *
+     * @param player player in question
+     * @return [Boolean] if successful
+     */
+    fun removeCooldown(player: Player): Boolean {
+        return cooldowns.removeIf { it.uniqueId == player.uniqueId }
+    }
+
+    /**
      * Reset the reward Counter
      */
     fun resetRewardCounter() {
