@@ -106,7 +106,7 @@ data class Playtime(
         val duration = Duration.between(lastChange, Instant.now())
 
         if (isAfk) {
-            sessionAfkTime = sessionPlayTime.plus(duration)
+            sessionAfkTime = sessionAfkTime.plus(duration)
         }
 
         sessionPlayTime = sessionPlayTime.plus(duration)
