@@ -323,15 +323,24 @@ abstract class AbstractCommand<T : CommandSource, M : StandardModule<*>> : Comma
             it.findAnnotation<RegisterCommand>().let { rc -> rc != null && rc.subCommandOf == this::class }
         }
 
-        children.forEach {
-            try {
-                this.commandBuilder.buildCommand(it, false).also { sub -> this.dispatcher.register(sub, *sub.aliases) }
-            } catch (e: Exception) {
-                logger.error("Failed to construct Child Command for Class $it", e)
-            }
-        }
-
+        children.forEach { registerChild(this.commandBuilder, it) }
         this.dispatcher.register(usageCommand, "?", "help")
+    }
+
+    /**
+     * Register a command as a Child Command to this Command.
+     *
+     * @param commandBuilder Required to set Module Specific information to the children
+     * @param clazz Class<out AbstractCommand> which will be constructed
+     */
+    fun registerChild(commandBuilder: CommandBuilder, clazz: KClass<out AbstractCommand<*, *>>) {
+        try {
+            commandBuilder.buildCommand(clazz, false).also {
+                dispatcher.register(it, *it.aliases)
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to construct child command $clazz", e)
+        }
     }
 
     /**

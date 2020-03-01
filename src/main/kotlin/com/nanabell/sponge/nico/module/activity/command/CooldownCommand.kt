@@ -2,6 +2,7 @@ package com.nanabell.sponge.nico.module.activity.command
 
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.NoPlayerArgCommandException
+import com.nanabell.sponge.nico.internal.annotation.command.Permissions
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.command.StandardCommand
 import com.nanabell.sponge.nico.internal.extension.formatDefault
@@ -19,6 +20,7 @@ import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.text.Text
 
+@Permissions
 @RegisterCommand(["cooldown", "cd"], ActivityCommand::class)
 class CooldownCommand : StandardCommand<ActivityModule>() {
 

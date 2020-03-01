@@ -99,6 +99,10 @@ class ActivityService : AbstractService<ActivityModule>() {
         payouts.add(Payout(player.uniqueId, amount))
     }
 
+    fun clearPayouts(player: Player): Boolean {
+        return payouts.removeIf { it.uniqueId == player.uniqueId }
+    }
+
     fun clearPayouts() {
         payouts.clear()
     }

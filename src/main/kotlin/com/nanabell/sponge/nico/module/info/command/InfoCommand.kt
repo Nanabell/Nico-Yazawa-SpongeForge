@@ -7,6 +7,7 @@ import com.nanabell.sponge.nico.internal.command.StandardCommand
 import com.nanabell.sponge.nico.internal.extension.*
 import com.nanabell.sponge.nico.module.activity.service.ActivityService
 import com.nanabell.sponge.nico.module.activity.service.PlaytimeService
+import com.nanabell.sponge.nico.module.economy.data.currency.NicoCurrency
 import com.nanabell.sponge.nico.module.info.InfoModule
 import com.nanabell.sponge.nico.module.link.service.LinkService
 import org.spongepowered.api.Sponge
@@ -68,7 +69,7 @@ class InfoCommand : StandardCommand<InfoModule>() {
 
         if (activity != null) {
             messages.add(Text.NEW_LINE.concat("Activity".toText().yellow()))
-            messages.add("Session Rewards: ".toText().aqua().concat("Not yet Implemented!".toText().yellow())) // TODO: Track Session rewards
+            messages.add("Rewards Today: ".toText().aqua().concat(NicoCurrency.instance.format(activity.getPayoutAmount(target)).yellow()))
             messages.add("Cooldown: ".toText().aqua().concat(activity.getCooldown(target).formatDefault().toText().yellow()))
         }
 
