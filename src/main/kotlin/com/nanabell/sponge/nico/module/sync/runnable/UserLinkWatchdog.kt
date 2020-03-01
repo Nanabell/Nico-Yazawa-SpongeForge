@@ -2,6 +2,7 @@ package com.nanabell.sponge.nico.module.sync.runnable
 
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
+import com.nanabell.sponge.nico.internal.extension.formatDefault
 import com.nanabell.sponge.nico.internal.extension.toText
 import com.nanabell.sponge.nico.internal.runnable.AbstractRunnable
 import com.nanabell.sponge.nico.module.activity.service.PlaytimeService
@@ -9,7 +10,6 @@ import com.nanabell.sponge.nico.module.link.service.LinkService
 import com.nanabell.sponge.nico.module.sync.SyncModule
 import com.nanabell.sponge.nico.module.sync.config.KickConfig
 import org.spongepowered.api.Sponge
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 
 @RegisterRunnable("NicoYazawa-A-LinkWatchdog", isAsync = true)
@@ -40,10 +40,10 @@ class UserLinkWatchdog : AbstractRunnable<SyncModule>() {
                 continue
             }
 
-            val duration = playtimeService.getSessionPlaytimeRaw(player)
+            val duration = playtimeService.getSessionPlayTime(player)
             if (duration.seconds >= config.kickPlaytime) {
-                player.kick(config.information.replace("{playtime}", format(duration)).toText())
-                logger.info("${player.name} has been kicked after being on the server for ${format(duration)} and not having their Account linked to Discord")
+                player.kick(config.information.replace("{playtime}", duration.formatDefault()).toText())
+                logger.info("${player.name} has been kicked after being on the server for ${duration.formatDefault()} and not having their Account linked to Discord")
             }
         }
         logger.debug("Finished UserLinkWatchdog")
@@ -51,12 +51,5 @@ class UserLinkWatchdog : AbstractRunnable<SyncModule>() {
 
     override fun onReload() {
         this.config = module.getConfigOrDefault().kickConfig
-    }
-
-    private fun format(duration: Duration): String {
-        return duration.toString()
-                .substring(2)
-                .replace("(\\d[HMS])(?!$)", "$1 ")
-                .toLowerCase()
     }
 }

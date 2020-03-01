@@ -4,78 +4,80 @@ import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.activity.ActivityModule
-import com.nanabell.sponge.nico.module.activity.database.PlaytimeData
-import com.nanabell.sponge.nico.module.afk.service.AfkService
+import com.nanabell.sponge.nico.module.activity.database.Playtime
 import com.nanabell.sponge.nico.module.core.service.DatabaseService
 import org.spongepowered.api.entity.living.player.Player
 import java.time.Duration
-import java.time.Instant
-import java.util.*
-import kotlin.collections.HashMap
 
 @RegisterService
 class PlaytimeService : AbstractService<ActivityModule>() {
 
     private val database: DatabaseService = NicoYazawa.getServiceRegistry().provideUnchecked()
-    private val afkService: AfkService? = NicoYazawa.getServiceRegistry().provideUnchecked()
-
-    private val sessionJoins: MutableMap<UUID, Instant> = HashMap()
-    private val afkDurations: MutableMap<UUID, Duration> = HashMap()
+    private val playTimes: MutableSet<Playtime> = HashSet()
 
     override fun onPreEnable() {
 
     }
 
-    fun getTotalPlaytime(player: Player): Duration {
-        val session = getSessionPlaytime(player)
-
-        val data = database.findById<PlaytimeData>("userId", player.uniqueId)
-        return if (data != null) session.plus(data.getPlaytime()) else session
+    fun getPlayTime(player: Player): Duration {
+        return get(player).getPlayTime()
     }
 
-    fun getSessionPlaytime(player: Player): Duration {
-        var playtime = Duration.between(getOrAddNow(player), Instant.now())
-
-        // If the user is AFK right now add the time since start.
-        if (afkService?.isAfk(player) == true) {
-            playtime.minus(afkService.getAfkDuration(player))
-        }
-
-        // Add any preexisting AFK times
-        if (afkDurations.containsKey(player.uniqueId)) {
-            playtime = playtime.minus(afkDurations[player.uniqueId])
-        }
-
-        return playtime
+    fun getAfkTime(player: Player): Duration {
+        return get(player).getAfkTime()
     }
 
-    fun getSessionPlaytimeRaw(player: Player): Duration {
-        return Duration.between(getOrAddNow(player), Instant.now())
+    fun getActiveTime(player: Player): Duration {
+        return get(player).getActiveTime()
     }
 
-    fun addAfkDuration(player: Player, afkDuration: Duration) {
-        val last = afkDurations.computeIfAbsent(player.uniqueId) { Duration.ZERO }
+    fun getSessionPlayTime(player: Player): Duration {
+        return  get(player).getSessionPlayTime()
+    }
 
-        afkDurations[player.uniqueId] = last.plus(afkDuration)
+    fun getSessionAfkTime(player: Player): Duration {
+        return get(player).getSessionAfkTime()
+    }
+
+    fun getSessionActiveTime(player: Player): Duration {
+        return get(player).getSessionActiveTime()
+    }
+
+    fun setAfk(player: Player) {
+        get(player).setAfk()
+    }
+
+    fun setActive(player: Player) {
+        get(player).setActive()
     }
 
     fun startSession(player: Player) {
-        sessionJoins[player.uniqueId] = Instant.now()
+        playTimes.removeIf { it.uniqueId == player.uniqueId }
+        playTimes.add(get(player))
     }
 
     fun endSession(player: Player) {
-        val data = database.findById<PlaytimeData>("userId", player.uniqueId)
-        if (data != null) {
-            database.update("userId", player.uniqueId, database.newUpdateOperations<PlaytimeData>().set("playtime", getSessionPlaytime(player).plus(data.getPlaytime()).seconds))
-        } else {
-            database.save(PlaytimeData(player.uniqueId, getSessionPlaytime(player).seconds))
-        }
+        val playtime = get(player)
+        playtime.endSession()
 
-        sessionJoins.remove(player.uniqueId)
-        afkDurations.remove(player.uniqueId)
+        database.save(playtime)
     }
 
-    private fun getOrAddNow(player: Player): Instant {
-        return sessionJoins.computeIfAbsent(player.uniqueId) { Instant.now() }
+    private fun get(player: Player): Playtime {
+        var playtime = playTimes.firstOrNull { it.uniqueId == player.uniqueId }
+        if (playtime != null) {
+            playtime.update()
+            return playtime
+        }
+
+        playtime = database.findById("uniqueId", player.uniqueId)
+        if (playtime == null) {
+            playtime = Playtime(player.uniqueId)
+
+            database.save(playtime)
+        }
+
+        playtime.update()
+        return playtime
     }
 }
