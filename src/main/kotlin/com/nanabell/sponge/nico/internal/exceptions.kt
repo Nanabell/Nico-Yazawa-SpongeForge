@@ -25,6 +25,7 @@ class MissingEventListenersException(clazz: KClass<*>) : MissingAnnotationExcept
 
 // Command
 class IllegalCommandException(message: String) : Exception(message)
+class NoPlayerArgCommandException : CommandException("This Command must be run by a Player or Provide a Player argument!".toText())
 
 class NicoArgumentParseException(
         message: Text,
