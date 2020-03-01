@@ -7,18 +7,17 @@ import com.nanabell.sponge.nico.module.activity.ActivityModule
 import com.nanabell.sponge.nico.module.activity.config.ActivityConfig
 import com.nanabell.sponge.nico.module.activity.config.RewardConfig
 import com.nanabell.sponge.nico.module.activity.data.Cooldown
+import com.nanabell.sponge.nico.module.activity.data.Payout
 import org.spongepowered.api.entity.living.player.Player
+import java.math.BigDecimal
 import java.time.Duration
-import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 import kotlin.random.Random
 
 @RegisterService
 class ActivityService : AbstractService<ActivityModule>() {
 
-    private val rewardCounter: MutableMap<UUID, Int> = HashMap()
     private val cooldowns: MutableSet<Cooldown> = HashSet()
+    private val payouts: MutableList<Payout> = ArrayList()
 
     private lateinit var config: ActivityConfig
 
@@ -58,21 +57,23 @@ class ActivityService : AbstractService<ActivityModule>() {
 
     /**
      * Pause the cooldown for a given player
+     * If the player has no cooldown registered this request is quietly ignored
      *
      * @param player player in question
      */
     fun pauseCooldown(player: Player) {
-        val cooldown = cooldowns.firstOrNull { it.uniqueId == player.uniqueId } ?: return //TODO Handle
+        val cooldown = cooldowns.firstOrNull { it.uniqueId == player.uniqueId } ?: return
         cooldown.pause()
     }
 
     /**
      * Resume the cooldown for a given player
+     * If the player has no cooldown registered this request is quietly ignored
      *
      * @param player player in question
      */
     fun resumeCooldown(player: Player) {
-        val cooldown = cooldowns.firstOrNull { it.uniqueId == player.uniqueId } ?: return //TODO Handle
+        val cooldown = cooldowns.firstOrNull { it.uniqueId == player.uniqueId } ?: return
         cooldown.resume()
     }
 
@@ -86,11 +87,20 @@ class ActivityService : AbstractService<ActivityModule>() {
         return cooldowns.removeIf { it.uniqueId == player.uniqueId }
     }
 
-    /**
-     * Reset the reward Counter
-     */
-    fun resetRewardCounter() {
-        rewardCounter.clear()
+    fun getPayoutAmount(player: Player): BigDecimal {
+        return payouts.filter { it.uniqueId == player.uniqueId }.sumByDouble { it.amount.toDouble() }.toBigDecimal()
+    }
+
+    fun getPayoutCount(player: Player): Int {
+        return payouts.filter { it.uniqueId == player.uniqueId }.count()
+    }
+
+    fun addPayout(player: Player, amount: BigDecimal) {
+        payouts.add(Payout(player.uniqueId, amount))
+    }
+
+    fun clearPayouts() {
+        payouts.clear()
     }
 
     /**
@@ -113,13 +123,10 @@ class ActivityService : AbstractService<ActivityModule>() {
     }
 
     private fun checkLimit(rewardConfig: RewardConfig, player: Player): Boolean {
-        if (rewardConfig.limit > 0 && rewardCounter.containsKey(player.uniqueId)) {
-            if (rewardCounter[player.uniqueId] ?: 0 > rewardConfig.limit)
+        if (rewardConfig.limit > 0 && payouts.any { it.uniqueId == player.uniqueId }) {
+            if (getPayoutCount(player) >= rewardConfig.limit)
                 return false
         }
-
-        val count = rewardCounter.computeIfAbsent(player.uniqueId) { 0 } + 1
-        rewardCounter[player.uniqueId] = count
 
         return true
     }

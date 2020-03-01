@@ -19,7 +19,7 @@ class ActivityResetRunnable : AbstractRunnable<ActivityModule>() {
     }
 
     override fun run() {
-        service.resetRewardCounter()
+        service.clearPayouts()
     }
 
     override fun onReload() {
