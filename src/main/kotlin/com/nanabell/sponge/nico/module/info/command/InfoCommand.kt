@@ -57,7 +57,8 @@ class InfoCommand : StandardCommand<InfoModule>() {
         messages.add("Gamemode: ".toText().aqua().concat(target.gameMode().get().name.toText().yellow()))
 
         if (playtime != null) {
-            messages.add(Text.NEW_LINE.concat("Playtime".toText().yellow()))
+            messages.add(Text.EMPTY)
+            messages.add("Playtime".toText().yellow())
 
             messages.add("Total Play Time: ".toText().aqua().concat(playtime.getPlayTime(target).formatDefault().toText().yellow()))
             messages.add("Total Afk Time: ".toText().aqua().concat(playtime.getAfkTime(target).formatDefault().toText().yellow()))
@@ -69,13 +70,15 @@ class InfoCommand : StandardCommand<InfoModule>() {
         }
 
         if (activity != null) {
-            messages.add(Text.NEW_LINE.concat("Activity".toText().yellow()))
+            messages.add(Text.EMPTY)
+            messages.add("Activity".toText().yellow())
             messages.add("Rewards Today: ".toText().aqua().concat(NicoCurrency.instance.format(activity.getPayoutAmount(target)).yellow()))
             messages.add("Cooldown: ".toText().aqua().concat(activity.getCooldown(target).formatDefault().toText().yellow()))
         }
 
         if (economy != null) {
-            messages.add(Text.NEW_LINE.concat("Economy".toText().yellow()))
+            messages.add(Text.EMPTY)
+            messages.add("Economy".toText().yellow())
 
             val account = economy.getOrCreateAccount(target.uniqueId).orNull()
             if (account != null) {
@@ -92,7 +95,8 @@ class InfoCommand : StandardCommand<InfoModule>() {
         }
 
         if (link != null) {
-            messages.add(Text.NEW_LINE.concat("Link".toText().yellow()))
+            messages.add(Text.EMPTY)
+            messages.add("Link".toText().yellow())
 
             val linked = link.getLink(target)
             if (linked != null) {
@@ -109,7 +113,6 @@ class InfoCommand : StandardCommand<InfoModule>() {
 
         pagination.builder()
                 .title("Information for ".toText().green().concat(target.name.toText().yellow()))
-                .linesPerPage(20)
                 .contents(messages)
                 .sendTo(source)
         return CommandResult.success()
