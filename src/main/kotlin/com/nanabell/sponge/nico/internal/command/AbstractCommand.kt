@@ -33,7 +33,6 @@ import org.spongepowered.api.world.Location
 import org.spongepowered.api.world.World
 import java.util.*
 import java.util.stream.Collectors
-import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
 @Suppress("UNCHECKED_CAST")
@@ -77,28 +76,12 @@ abstract class AbstractCommand<T : CommandSource, M : StandardModule<*>> : Comma
         this.isRoot = co.subCommandOf == AbstractCommand::class
         this.hasExecutor = co.hasExecutor
 
-        this.commandPath = getSubCommandPath()
+        this.commandPath = this::class.getSubCommandPath()
         this.aliases = co.value
 
         this.permissions = NicoYazawa.getPlugin().getPermissionRegistry().getHandler(this::class)
         this.plugin = NicoYazawa.getPlugin()
         this.logger = plugin.getLogger("Command", javaClass.simpleName)
-    }
-
-    private fun getSubCommandPath(): String {
-        val builder = StringBuilder()
-        getNextSubCommandPath(this::class, builder, false)
-        return builder.toString()
-    }
-
-    private fun getNextSubCommandPath(clazz: KClass<out AbstractCommand<*, *>>, builder: StringBuilder, appendPeriod: Boolean) {
-        val co = clazz.findAnnotation<RegisterCommand>()
-                ?: throw MissingAnnotationException(clazz, RegisterCommand::class)
-        if (!co.subCommandOf.isAbstract && co.subCommandOf.java != this::class)
-            getNextSubCommandPath(co.subCommandOf, builder, true)
-
-        builder.append(co.value[0])
-        if (appendPeriod) builder.append('.')
     }
 
     fun postInit() {

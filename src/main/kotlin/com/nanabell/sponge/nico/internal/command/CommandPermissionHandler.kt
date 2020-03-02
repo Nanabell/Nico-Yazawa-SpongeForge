@@ -1,9 +1,8 @@
 package com.nanabell.sponge.nico.internal.command
 
 import com.nanabell.sponge.nico.NicoConstants
-import com.nanabell.sponge.nico.internal.MissingAnnotationException
 import com.nanabell.sponge.nico.internal.annotation.command.Permissions
-import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
+import com.nanabell.sponge.nico.internal.extension.getSubCommandPath
 import org.spongepowered.api.service.permission.Subject
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
@@ -21,12 +20,11 @@ class CommandPermissionHandler(clazz: KClass<out AbstractCommand<*, *>>) {
     init {
         val p = clazz.findAnnotation<Permissions>()
         if (p != null) {
-            val co = clazz.findAnnotation<RegisterCommand>() ?: throw MissingAnnotationException(clazz, RegisterCommand::class)
             val builder = StringBuilder(NicoConstants.PERMISSION_PREFIX)
 
             if (p.prefix.isNotEmpty()) builder.append(p.prefix).append('.')
 
-            if (p.mainOverride.isNotEmpty()) builder.append(p.mainOverride) else builder.append(co.value[0])
+            if (p.mainOverride.isNotEmpty()) builder.append(p.mainOverride) else builder.append(clazz.getSubCommandPath())
             builder.append('.')
 
             if (p.suffix.isNotEmpty()) builder.append(p.suffix).append('.')
