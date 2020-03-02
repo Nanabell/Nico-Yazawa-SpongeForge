@@ -10,6 +10,7 @@ import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.command.AbstractCommand
 import com.nanabell.sponge.nico.internal.command.CommandBuilder
+import com.nanabell.sponge.nico.internal.command.RegisterCommandRequestEvent
 import com.nanabell.sponge.nico.internal.listener.AbstractListener
 import com.nanabell.sponge.nico.internal.listener.ListenerBuilder
 import com.nanabell.sponge.nico.internal.runnable.AbstractRunnable
@@ -17,6 +18,9 @@ import com.nanabell.sponge.nico.internal.runnable.RunnableBuilder
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.internal.service.ServiceBuilder
 import org.slf4j.Logger
+import org.spongepowered.api.Sponge
+import org.spongepowered.api.event.cause.Cause
+import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.scheduler.Task
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
@@ -31,6 +35,7 @@ abstract class StandardModule<C : ModuleConfig> : AbstractModule<C>() {
     val moduleName: String
 
     private lateinit var services: List<AbstractService<*>>
+    private lateinit var commands: List<AbstractCommand<*, *>>
     private lateinit var runnables: List<Task>
 
     private lateinit var packageName: String
@@ -85,14 +90,22 @@ abstract class StandardModule<C : ModuleConfig> : AbstractModule<C>() {
     private fun loadCommands() {
         logger.info("Loading Commands")
 
-        val commands = getStreamForModule(AbstractCommand::class).filter { it.findAnnotation<RegisterCommand>() != null }.toSet()
-        val baseCommands = commands.filter { it.findAnnotation<RegisterCommand>()?.subCommandOf == AbstractCommand::class }
+        val builder = CommandBuilder(this.plugin, this)
+        val classes = getStreamForModule(AbstractCommand::class).filter { it.findAnnotation<RegisterCommand>() != null }.toSet()
 
-        val commandBuilder = CommandBuilder(this.plugin, commands, this)
-        baseCommands.forEach { commandBuilder.buildCommand(it) }
+        commands = classes.map { builder.buildCommand(it, it.findAnnotation<RegisterCommand>()?.subCommandOf == AbstractCommand::class) }
+        val registered = commands.flatMap { it.registerChildren(commands) }
+
+        val orphans = commands.minus(registered).filter { !it.isRoot }
+        if (orphans.isNotEmpty()) {
+            orphans.forEach {
+                Sponge.getEventManager().post(RegisterCommandRequestEvent(it, it::class.findAnnotation<RegisterCommand>()!!.subCommandOf, Cause.of(EventContext.empty(), this)))
+            }
+        }
 
         logger.debug("Finished Loading Commands")
     }
+
 
     private fun loadListeners() {
         logger.info("Loading Listeners")
@@ -116,11 +129,14 @@ abstract class StandardModule<C : ModuleConfig> : AbstractModule<C>() {
         logger.debug("Finished Loading Runnables")
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun <T : Any> getStreamForModule(assignable: KClass<T>): List<KClass<out T>> {
+        return getStream(assignable).filter { it.java.`package`.name.startsWith(this.packageName) }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : Any> getStream(assignable: KClass<T>): List<KClass<out T>> {
         return NicoYazawa.getPlugin().getModuleContainer().getLoadedClasses()
                 .filter { it.isSubclassOf(assignable) }
-                .filter { it.java.`package`.name.startsWith(this.packageName) }
                 .filter { !it.isAbstract && !it.isInterface }
                 .map { it as KClass<out T> }
     }
@@ -131,8 +147,16 @@ abstract class StandardModule<C : ModuleConfig> : AbstractModule<C>() {
 
     final override fun postEnable() {
         logger.debug("Starting PostEnable")
+        deregisterCommandListeners()
         performPostEnable()
         logger.debug("Finished PostEnable")
+    }
+
+    // Remove RegisterCommandRequestEvent no more CrossModuleCommands can be added
+    private fun deregisterCommandListeners() {
+        commands.forEach {
+            Sponge.getEventManager().unregisterListeners(it)
+        }
     }
 
     @Throws(Exception::class)

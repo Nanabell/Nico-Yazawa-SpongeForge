@@ -4,12 +4,14 @@ import com.google.inject.Inject
 import com.nanabell.quickstart.container.DiscoveryModuleContainer
 import com.nanabell.sponge.nico.internal.InternalServiceRegistry
 import com.nanabell.sponge.nico.internal.PermissionRegistry
+import com.nanabell.sponge.nico.internal.command.RegisterCommandRequestEvent
 import com.nanabell.sponge.nico.internal.interfaces.Reloadable
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader
 import org.slf4j.Logger
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.config.ConfigDir
 import org.spongepowered.api.event.Listener
+import org.spongepowered.api.event.Order
 import org.spongepowered.api.event.game.GameReloadEvent
 import org.spongepowered.api.event.game.state.GameInitializationEvent
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent
@@ -78,6 +80,13 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
     fun onGameReload(event: GameReloadEvent) {
         moduleContainer.refreshSystemConfig()
         reloadAll()
+    }
+
+    @Listener(order = Order.POST)
+    fun onRegisterCommandRequest(event: RegisterCommandRequestEvent) {
+        if (!event.isRegistered) {
+            logger.error("Command ${event.command::class.simpleName} has requested registration to class ${event.clazz.simpleName} but was never registered!")
+        }
     }
 
     private fun reloadAll() {

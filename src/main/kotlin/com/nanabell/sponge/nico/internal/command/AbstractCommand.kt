@@ -21,6 +21,7 @@ import org.spongepowered.api.command.args.parsing.SingleArg
 import org.spongepowered.api.command.dispatcher.SimpleDispatcher
 import org.spongepowered.api.command.spec.CommandExecutor
 import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.event.EventListener
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.service.pagination.PaginationService
 import org.spongepowered.api.service.permission.Subject
@@ -36,33 +37,32 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
 @Suppress("UNCHECKED_CAST")
-abstract class AbstractCommand<T : CommandSource, M : StandardModule<*>> : CommandCallable {
+abstract class AbstractCommand<T : CommandSource, M : StandardModule<*>> : CommandCallable, EventListener<RegisterCommandRequestEvent> {
 
     private val sourceType: Class<T>
     private val sourceTypePredicate: (CommandSource) -> Boolean
 
-    protected val logger: Logger
     private val plugin: NicoYazawa
-    private val hasExecutor: Boolean
-    private val isRoot: Boolean
-    private val isAsync: Boolean = this::class.findAnnotation<RunAsync>() != null
+    protected val logger: Logger
 
     private val commandPath: String
-    protected val permissions: CommandPermissionHandler
 
+    val isRoot: Boolean
+    val hasExecutor: Boolean
+    val isAsync: Boolean = this::class.findAnnotation<RunAsync>() != null
     val aliases: Array<String>
 
     private val usageCommand by lazy { UsageCommand(this) }
     private val dispatcher: SimpleDispatcher = SimpleDispatcher(SimpleDispatcher.FIRST_DISAMBIGUATOR)
 
-    private lateinit var moduleCommands: Set<KClass<out AbstractCommand<*, *>>>
-    private lateinit var commandBuilder: CommandBuilder
     private lateinit var module: StandardModule<*>
-
     private lateinit var argumentParser: CommandElement
 
+    protected val permissions: CommandPermissionHandler
+
     init {
-        val co = javaClass.getAnnotation(RegisterCommand::class.java) ?: throw MissingAnnotationException(this::class, RegisterCommand::class)
+        val co = javaClass.getAnnotation(RegisterCommand::class.java)
+                ?: throw MissingAnnotationException(this::class, RegisterCommand::class)
         if (co.value.isEmpty()) throw IllegalCommandException("value Element of @${RegisterCommand::class} at $javaClass cannot be empty")
 
         val types = this::class.getActualTypeArguments(AbstractCommand::class)
@@ -92,7 +92,8 @@ abstract class AbstractCommand<T : CommandSource, M : StandardModule<*>> : Comma
     }
 
     private fun getNextSubCommandPath(clazz: KClass<out AbstractCommand<*, *>>, builder: StringBuilder, appendPeriod: Boolean) {
-        val co = clazz.findAnnotation<RegisterCommand>() ?: throw MissingAnnotationException(clazz, RegisterCommand::class)
+        val co = clazz.findAnnotation<RegisterCommand>()
+                ?: throw MissingAnnotationException(clazz, RegisterCommand::class)
         if (!co.subCommandOf.isAbstract && co.subCommandOf.java != this::class)
             getNextSubCommandPath(co.subCommandOf, builder, true)
 
@@ -102,8 +103,6 @@ abstract class AbstractCommand<T : CommandSource, M : StandardModule<*>> : Comma
 
     fun postInit() {
         this.argumentParser = GenericArguments.seq(*getArguments())
-        createChildCommands()
-
         afterPostInit()
 
         getAdditionalPermissions().forEach { permissions.registerPermission(it) }
@@ -318,55 +317,31 @@ abstract class AbstractCommand<T : CommandSource, M : StandardModule<*>> : Comma
         return if (s.isEmpty()) null else Text.joinWith(Text.of(", "), s)
     }
 
-    private fun createChildCommands() {
-        val children = this.moduleCommands.stream().filter {
-            it.findAnnotation<RegisterCommand>().let { rc -> rc != null && rc.subCommandOf == this::class }
-        }
+    fun registerChildren(commands: List<AbstractCommand<*, *>>): List<AbstractCommand<*, *>> {
+        val children = commands.filter { it::class.findAnnotation<RegisterCommand>().let { rc -> rc != null && rc.subCommandOf == this::class } }
 
-        children.forEach { registerChild(this.commandBuilder, it) }
+        children.forEach { registerChild(it) }
         this.dispatcher.register(usageCommand, "?", "help")
+
+        return children
+    }
+
+    final override fun handle(event: RegisterCommandRequestEvent) {
+        if (event.clazz == this::class) {
+            logger.info("Registering CrossModuleSubCommand ${event.command::class.simpleName} to ${this::class.simpleName}")
+
+            registerChild(event.command)
+            event.isRegistered = true
+        }
     }
 
     /**
      * Register a command as a Child Command to this Command.
      *
-     * @param commandBuilder Required to set Module Specific information to the children
-     * @param clazz Class<out AbstractCommand> which will be constructed
+     * @param child Children to add to the dispatcher
      */
-    fun registerChild(commandBuilder: CommandBuilder, clazz: KClass<out AbstractCommand<*, *>>) {
-        try {
-            commandBuilder.buildCommand(clazz, false).also {
-                dispatcher.register(it, *it.aliases)
-            }
-        } catch (e: Exception) {
-            logger.error("Failed to construct child command $clazz", e)
-        }
-    }
-
-    /**
-     * Set the reference to the rest of the command in this module.
-     *
-     * Command Implementations or their Consumers should not try to set this value
-     * This method can only be called once! Any subsequent calls will be ignored
-     *
-     * @param commandSet The Set of AbstractCommand Classes
-     */
-    fun setModuleCommands(commandSet: Set<KClass<out AbstractCommand<*, *>>>) {
-        if (!::moduleCommands.isInitialized)
-            this.moduleCommands = commandSet
-    }
-
-    /**
-     * Set the [CommandBuilder] used by the Module. Necessary for Root Command to construct their children.
-     *
-     * Command Implementations or their Consumers should not try to set this value
-     * This method can only be called once! Any subsequent calls will be ignored
-     *
-     * @param builder The CommandBuilder for the current Module
-     */
-    fun setCommandBuilder(builder: CommandBuilder) {
-        if (!::commandBuilder.isInitialized)
-            this.commandBuilder = builder
+    private fun registerChild(child: AbstractCommand<*, *>) {
+        dispatcher.register(child, *child.aliases)
     }
 
     /**

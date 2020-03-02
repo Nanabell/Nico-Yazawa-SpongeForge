@@ -7,6 +7,7 @@ import com.nanabell.sponge.nico.internal.command.StandardCommand
 import com.nanabell.sponge.nico.internal.extension.*
 import com.nanabell.sponge.nico.module.activity.service.ActivityService
 import com.nanabell.sponge.nico.module.activity.service.PlaytimeService
+import com.nanabell.sponge.nico.module.core.command.NicoCommand
 import com.nanabell.sponge.nico.module.economy.data.currency.NicoCurrency
 import com.nanabell.sponge.nico.module.info.InfoModule
 import com.nanabell.sponge.nico.module.link.service.LinkService
