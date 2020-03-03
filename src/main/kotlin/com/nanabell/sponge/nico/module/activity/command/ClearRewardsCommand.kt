@@ -48,6 +48,6 @@ class ClearRewardsCommand : StandardCommand<ActivityModule>() {
         return CommandResult.successCount(successCount)
     }
 
-    override fun getDescription(): String = "" // TODO: Add Description
+    override fun getDescription(): String = "Clear the reward tracking for a player"
 
 }

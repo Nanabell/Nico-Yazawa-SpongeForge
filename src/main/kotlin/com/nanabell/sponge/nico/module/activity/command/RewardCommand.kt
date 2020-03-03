@@ -7,6 +7,6 @@ import com.nanabell.sponge.nico.module.activity.ActivityModule
 @RegisterCommand(["reward"], ActivityCommand::class , false)
 class RewardCommand : NoExecutorCommand<ActivityModule>() {
 
-    override fun getDescription(): String = "" // TODO: Add Description
+    override fun getDescription(): String = "Manage Activity Rewards"
 
 }
