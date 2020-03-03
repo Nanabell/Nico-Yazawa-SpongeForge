@@ -43,6 +43,15 @@ class InfoCommand : StandardCommand<InfoModule>() {
         ))
     }
 
+    override fun getAdditionalSuffixPermission(): List<String> {
+        return listOf(
+                InfoModule.PS_EXTRA_PLAYTIME,
+                InfoModule.PS_EXTRA_ACTIVITY,
+                InfoModule.PS_EXTRA_ECONOMY,
+                InfoModule.PS_EXTRA_LINK
+        )
+    }
+
     override fun executeCommand(source: CommandSource, args: CommandContext, cause: Cause): CommandResult {
         val target = source.requirePlayerOrArg(args, "player")
 
@@ -56,7 +65,7 @@ class InfoCommand : StandardCommand<InfoModule>() {
         messages.add("Last Played: ".toText().aqua().concat(target.joinData.lastPlayed().get().formatDefault().toText().yellow()))
         messages.add("Gamemode: ".toText().aqua().concat(target.gameMode().get().name.toText().yellow()))
 
-        if (playtime != null) {
+        if (playtime != null && permissions.testSuffix(source, InfoModule.PS_EXTRA_PLAYTIME)) {
             messages.add(Text.EMPTY)
             messages.add("Playtime".toText().yellow())
 
@@ -69,14 +78,14 @@ class InfoCommand : StandardCommand<InfoModule>() {
             messages.add("Session Active Time: ".toText().aqua().concat(playtime.getSessionActiveTime(target).formatDefault().toText().yellow()))
         }
 
-        if (activity != null) {
+        if (activity != null && permissions.testSuffix(source, InfoModule.PS_EXTRA_ACTIVITY)) {
             messages.add(Text.EMPTY)
             messages.add("Activity".toText().yellow())
             messages.add("Rewards Today: ".toText().aqua().concat(NicoCurrency.instance.format(activity.getPayoutAmount(target)).yellow()))
             messages.add("Cooldown: ".toText().aqua().concat(activity.getCooldown(target).formatDefault().toText().yellow()))
         }
 
-        if (economy != null) {
+        if (economy != null && permissions.testSuffix(source, InfoModule.PS_EXTRA_ECONOMY)) {
             messages.add(Text.EMPTY)
             messages.add("Economy".toText().yellow())
 
@@ -94,7 +103,7 @@ class InfoCommand : StandardCommand<InfoModule>() {
             }
         }
 
-        if (link != null) {
+        if (link != null && permissions.testSuffix(source, InfoModule.PS_EXTRA_LINK)) {
             messages.add(Text.EMPTY)
             messages.add("Link".toText().yellow())
 
@@ -122,6 +131,6 @@ class InfoCommand : StandardCommand<InfoModule>() {
 
     override fun getExtendedDescription(): String? {
         return "Returns a few Basic Information and everything Nico tracks about the Target\n" +
-                "You will need permission to view each of the sub-sections" // TODO: Actually make Permission required for the sections!
+                "You will need permission to view each of the sub-sections"
     }
 }
