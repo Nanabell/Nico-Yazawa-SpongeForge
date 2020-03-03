@@ -15,18 +15,22 @@ repositories {
 }
 
 dependencies {
-    shadow(kotlin("stdlib-jdk8"))
-    shadow(kotlin("reflect"))
-
-    shadow("com.nanabell.quickstart:simple-moduleloader:0.5.0")
-    shadow("dev.morphia.morphia:core:1.5.8")
-    shadow("net.dv8tion:JDA:4.ALPHA.0_76") {
-        exclude("opus-java")
-    }
+    compileOnly(kotlin("stdlib-jdk8"))
+    compileOnly(kotlin("reflect"))
 
     compileOnly("org.jetbrains:annotations:16.0.2")
     compileOnly("org.spongepowered:spongeapi:7.1.0")
     annotationProcessor("org.spongepowered:spongeapi:7.1.0")
+
+    shadow("dev.morphia.morphia:core:1.5.8")
+    shadow("com.nanabell.quickstart:simple-moduleloader:0.5.0") {
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
+        exclude("org.jetbrains.kotlin", "kotlin-reflect")
+    }
+
+    shadow("net.dv8tion:JDA:4.ALPHA.0_76") {
+        exclude("club.minnced", "opus-java")
+    }
 }
 
 configurations {
