@@ -36,11 +36,12 @@ class ActivityService : AbstractService<ActivityModule>() {
 
     /**
      * Retrieve the Cooldown duration for a specific user.
+     * Cooldown will pause on player leave
      *
      * @return Duration for cooldown or [Duration.ZERO] ir not on cooldown or user not found
      */
     fun getCooldown(player: Player): Duration {
-        val cooldown = cooldowns.firstOrNull { it.uniqueId == player.uniqueId } ?: return Duration.ZERO // TODO: Set Users on Cooldown when they join?
+        val cooldown = cooldowns.firstOrNull { it.uniqueId == player.uniqueId } ?: return Duration.ZERO
         return cooldown.getRemaining()
     }
 
