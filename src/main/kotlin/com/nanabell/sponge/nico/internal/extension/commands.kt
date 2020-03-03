@@ -9,5 +9,5 @@ fun CommandSource.requirePlayerOrArg(args: CommandContext, playerArg: String): P
     if (!args.hasAny(playerArg.toText()) && this !is Player)
         throw CommandException("Cannot Target ${this.name}. Valid Target is [Player]".toText())
 
-    return if (this is Player) this else args.requireOne(playerArg)
+    return args.getOne<Player>(playerArg).orNull() ?: this as Player
 }
