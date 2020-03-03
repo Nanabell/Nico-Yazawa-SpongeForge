@@ -3,9 +3,12 @@ package com.nanabell.sponge.nico.internal.command
 import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.internal.annotation.command.Permissions
 import com.nanabell.sponge.nico.internal.extension.getSubCommandPath
+import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.entity.living.player.User
 import org.spongepowered.api.service.permission.Subject
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
+
 
 class CommandPermissionHandler(clazz: KClass<out AbstractCommand<*, *>>) {
 
@@ -76,6 +79,15 @@ class CommandPermissionHandler(clazz: KClass<out AbstractCommand<*, *>>) {
 
     fun checkOthers(src: Subject): Boolean {
         return testSubject(src, this.others)
+    }
+
+    fun testSuffix(src: Subject, suffix: String): Boolean {
+        var source = src
+        if (src is User && src !is Player && src.player.isPresent) {
+            source = src.player.get()
+        }
+
+        return testSubject(source, prefix + suffix)
     }
 
     private fun testSubject(src: Subject, permission: String): Boolean {
