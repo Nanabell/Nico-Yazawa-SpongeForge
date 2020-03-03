@@ -8,6 +8,7 @@ import com.nanabell.sponge.nico.module.activity.service.ActivityService
 import com.nanabell.sponge.nico.module.afk.event.PlayerAFKEvent
 import com.nanabell.sponge.nico.module.afk.event.PlayerActiveEvent
 import org.spongepowered.api.event.Listener
+import org.spongepowered.api.event.network.ClientConnectionEvent
 
 @RegisterListener
 class CooldownPauseListener : AbstractListener<ActivityModule>() {
@@ -21,6 +22,16 @@ class CooldownPauseListener : AbstractListener<ActivityModule>() {
 
     @Listener
     fun onPlayerActive(event: PlayerActiveEvent) {
+        activity.resumeCooldown(event.targetEntity)
+    }
+
+    @Listener
+    fun onPlayerLeave(event: ClientConnectionEvent.Disconnect) {
+        activity.pauseCooldown(event.targetEntity)
+    }
+
+    @Listener
+    fun onPlayerJoin(event: ClientConnectionEvent.Join) {
         activity.resumeCooldown(event.targetEntity)
     }
 }
