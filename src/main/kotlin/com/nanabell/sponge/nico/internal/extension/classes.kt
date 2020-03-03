@@ -29,9 +29,11 @@ private fun getNextSubCommandPath(clazz: KClass<out AbstractCommand<*, *>>, buil
         getNextSubCommandPath(co.subCommandOf, builder, true)
 
     // Special handling for nico!
-    if (co.value[0] != "nico")
+    if (co.value[0] != "nico") {
         builder.append(co.value[0])
 
-    if (appendPeriod)
-        builder.append('.')
+        if (appendPeriod) {
+            builder.append('.')
+        }
+    }
 }
