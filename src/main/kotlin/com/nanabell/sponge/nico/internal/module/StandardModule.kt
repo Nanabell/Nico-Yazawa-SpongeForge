@@ -3,7 +3,6 @@ package com.nanabell.sponge.nico.internal.module
 import com.nanabell.quickstart.AbstractModule
 import com.nanabell.quickstart.RegisterModule
 import com.nanabell.quickstart.config.ModuleConfig
-import com.nanabell.quickstart.util.isInterface
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.annotation.RegisterListener
 import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
@@ -11,6 +10,7 @@ import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.command.AbstractCommand
 import com.nanabell.sponge.nico.internal.command.CommandBuilder
 import com.nanabell.sponge.nico.internal.command.RegisterCommandRequestEvent
+import com.nanabell.sponge.nico.internal.extension.isInterface
 import com.nanabell.sponge.nico.internal.listener.AbstractListener
 import com.nanabell.sponge.nico.internal.listener.ListenerBuilder
 import com.nanabell.sponge.nico.internal.runnable.AbstractRunnable

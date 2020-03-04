@@ -8,6 +8,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSuperclassOf
 
+val KClass<*>.isInterface get() = java.isInterface
+
 inline fun <reified S : Any> KClass<out S>.getActualTypeArguments(typedSuperclass: KClass<S>): List<KClass<*>> {
     if (!typedSuperclass.isSuperclassOf(this))
         return emptyList()
