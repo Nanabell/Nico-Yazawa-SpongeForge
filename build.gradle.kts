@@ -1,6 +1,6 @@
 plugins {
     java
-    kotlin("jvm") version "1.3.61"
+    kotlin("jvm") version "1.3.70"
     id("org.spongepowered.plugin") version "0.9.0"
     id("com.github.johnrengelman.shadow") version "4.0.4"
 }
