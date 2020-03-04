@@ -46,13 +46,13 @@ class LinkRequestListener : AbstractListener<LinkModule>() {
         val msg: Text = Text.builder("Incoming Discord link request: ").color(TextColors.BLUE)
                 .append(Text.of(event.source.asTag + " "))
                 .append(Text.of(TextColors.GREEN,
-                        TextActions.runCommand("/nico accept"),
-                        TextActions.showText("/nico accept".toText()),
+                        TextActions.runCommand("/link accept"),
+                        TextActions.showText("/link accept".toText()),
                         "[Confirm]"))
                 .append(Text.of(" "))
                 .append(Text.of(TextColors.RED,
-                        TextActions.runCommand("/nico deny"),
-                        TextActions.showText("/nico deny".toText()),
+                        TextActions.runCommand("/link deny"),
+                        TextActions.showText("/link deny".toText()),
                         "[Deny]"))
                 .build()
         player.sendMessage(msg)
