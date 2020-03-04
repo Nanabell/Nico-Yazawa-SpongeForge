@@ -1,6 +1,6 @@
 package com.nanabell.sponge.nico.internal.module
 
-import com.nanabell.quickstart.AbstractModule
+import com.nanabell.quickstart.ConfigurableModule
 import com.nanabell.quickstart.RegisterModule
 import com.nanabell.quickstart.config.ModuleConfig
 import com.nanabell.sponge.nico.NicoYazawa
@@ -26,10 +26,10 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
 
-abstract class StandardModule<C : ModuleConfig> : AbstractModule<C>() {
+abstract class StandardModule<C : ModuleConfig> : ConfigurableModule<C>() {
 
-    private val plugin: NicoYazawa
-    val logger: Logger
+    private val plugin: NicoYazawa = NicoYazawa.getPlugin()
+    val logger: Logger = plugin.getLogger("Module", javaClass.simpleName)
 
     val moduleId: String
     val moduleName: String
@@ -45,9 +45,6 @@ abstract class StandardModule<C : ModuleConfig> : AbstractModule<C>() {
 
         moduleId = module.id
         moduleName = module.name
-        plugin = NicoYazawa.getPlugin()
-
-        logger = plugin.getLogger("Module", javaClass.simpleName)
     }
 
     final override fun preEnable() {
