@@ -9,6 +9,7 @@ import com.nanabell.sponge.nico.module.activity.config.RewardConfig
 import com.nanabell.sponge.nico.module.activity.data.Cooldown
 import com.nanabell.sponge.nico.module.activity.data.Payout
 import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.entity.living.player.User
 import java.math.BigDecimal
 import java.time.Duration
 import kotlin.random.Random
@@ -30,8 +31,8 @@ class ActivityService : AbstractService<ActivityModule>() {
      *
      * @return [Boolean] if on cooldown
      */
-    fun isOnCooldown(player: Player): Boolean {
-        return getCooldown(player) != Duration.ZERO
+    fun isOnCooldown(user: User): Boolean {
+        return getCooldown(user) != Duration.ZERO
     }
 
     /**
@@ -40,8 +41,8 @@ class ActivityService : AbstractService<ActivityModule>() {
      *
      * @return Duration for cooldown or [Duration.ZERO] ir not on cooldown or user not found
      */
-    fun getCooldown(player: Player): Duration {
-        val cooldown = cooldowns.firstOrNull { it.uniqueId == player.uniqueId } ?: return Duration.ZERO
+    fun getCooldown(user: User): Duration {
+        val cooldown = cooldowns.firstOrNull { it.uniqueId == user.uniqueId } ?: return Duration.ZERO
         return cooldown.getRemaining()
     }
 
@@ -49,21 +50,21 @@ class ActivityService : AbstractService<ActivityModule>() {
      * (Re)-Start the cooldown for a player.
      * This will use either the "nico.activity.cooldown" option or the config option as fallback
      *
-     * @param player Player in question
+     * @param user Player in question
      */
-    fun startCooldown(player: Player) {
-        cooldowns.removeIf { it.uniqueId == player.uniqueId }
-        cooldowns.add(Cooldown(player.uniqueId, player.getOptionDuration(ActivityModule.O_ACTIVITY_COOLDOWN, config.rewardCooldown)))
+    fun startCooldown(user: User) {
+        cooldowns.removeIf { it.uniqueId == user.uniqueId }
+        cooldowns.add(Cooldown(user.uniqueId, user.getOptionDuration(ActivityModule.O_ACTIVITY_COOLDOWN, config.rewardCooldown)))
     }
 
     /**
      * Pause the cooldown for a given player
      * If the player has no cooldown registered this request is quietly ignored
      *
-     * @param player player in question
+     * @param user player in question
      */
-    fun pauseCooldown(player: Player) {
-        val cooldown = cooldowns.firstOrNull { it.uniqueId == player.uniqueId } ?: return
+    fun pauseCooldown(user: User) {
+        val cooldown = cooldowns.firstOrNull { it.uniqueId == user.uniqueId } ?: return
         cooldown.pause()
     }
 
@@ -71,37 +72,37 @@ class ActivityService : AbstractService<ActivityModule>() {
      * Resume the cooldown for a given player
      * If the player has no cooldown registered this request is quietly ignored
      *
-     * @param player player in question
+     * @param user player in question
      */
-    fun resumeCooldown(player: Player) {
-        val cooldown = cooldowns.firstOrNull { it.uniqueId == player.uniqueId } ?: return
+    fun resumeCooldown(user: User) {
+        val cooldown = cooldowns.firstOrNull { it.uniqueId == user.uniqueId } ?: return
         cooldown.resume()
     }
 
     /**
      * Remove the cooldown for a given player
      *
-     * @param player player in question
+     * @param user player in question
      * @return [Boolean] if successful
      */
-    fun removeCooldown(player: Player): Boolean {
-        return cooldowns.removeIf { it.uniqueId == player.uniqueId }
+    fun removeCooldown(user: User): Boolean {
+        return cooldowns.removeIf { it.uniqueId == user.uniqueId }
     }
 
-    fun getPayoutAmount(player: Player): BigDecimal {
-        return payouts.filter { it.uniqueId == player.uniqueId }.sumByDouble { it.amount.toDouble() }.toBigDecimal()
+    fun getPayoutAmount(user: User): BigDecimal {
+        return payouts.filter { it.uniqueId == user.uniqueId }.sumByDouble { it.amount.toDouble() }.toBigDecimal()
     }
 
-    fun getPayoutCount(player: Player): Int {
-        return payouts.filter { it.uniqueId == player.uniqueId }.count()
+    fun getPayoutCount(user: User): Int {
+        return payouts.filter { it.uniqueId == user.uniqueId }.count()
     }
 
-    fun addPayout(player: Player, amount: BigDecimal) {
-        payouts.add(Payout(player.uniqueId, amount))
+    fun addPayout(user: User, amount: BigDecimal) {
+        payouts.add(Payout(user.uniqueId, amount))
     }
 
-    fun clearPayouts(player: Player): Boolean {
-        return payouts.removeIf { it.uniqueId == player.uniqueId }
+    fun clearPayouts(user: User): Boolean {
+        return payouts.removeIf { it.uniqueId == user.uniqueId }
     }
 
     fun clearPayouts() {

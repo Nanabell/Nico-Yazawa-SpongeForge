@@ -7,6 +7,7 @@ import com.nanabell.sponge.nico.module.activity.ActivityModule
 import com.nanabell.sponge.nico.module.activity.database.Playtime
 import com.nanabell.sponge.nico.module.core.service.DatabaseService
 import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.entity.living.player.User
 import java.time.Duration
 
 @RegisterService
@@ -19,16 +20,16 @@ class PlaytimeService : AbstractService<ActivityModule>() {
 
     }
 
-    fun getPlayTime(player: Player): Duration {
-        return get(player).getPlayTime()
+    fun getPlayTime(user: User): Duration {
+        return get(user).getPlayTime()
     }
 
-    fun getAfkTime(player: Player): Duration {
-        return get(player).getAfkTime()
+    fun getAfkTime(user: User): Duration {
+        return get(user).getAfkTime()
     }
 
-    fun getActiveTime(player: Player): Duration {
-        return get(player).getActiveTime()
+    fun getActiveTime(user: User): Duration {
+        return get(user).getActiveTime()
     }
 
     fun getSessionPlayTime(player: Player): Duration {
@@ -63,16 +64,15 @@ class PlaytimeService : AbstractService<ActivityModule>() {
         database.save(playtime)
     }
 
-    private fun get(player: Player): Playtime {
-        var playtime = playTimes.firstOrNull { it.uniqueId == player.uniqueId }
+    private fun get(user: User): Playtime {
+        var playtime = playTimes.firstOrNull { it.uniqueId == user.uniqueId }
         if (playtime != null) {
-            playtime.update()
-            return playtime
+            return playtime.also { it.update() }
         }
 
-        playtime = database.findById("uniqueId", player.uniqueId)
+        playtime = database.findById("uniqueId", user.uniqueId)
         if (playtime == null) {
-            playtime = Playtime(player.uniqueId)
+            playtime = Playtime(user.uniqueId)
 
             database.save(playtime)
         }

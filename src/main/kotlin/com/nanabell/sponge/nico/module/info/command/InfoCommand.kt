@@ -17,6 +17,7 @@ import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.args.CommandContext
 import org.spongepowered.api.command.args.CommandElement
 import org.spongepowered.api.command.args.GenericArguments
+import org.spongepowered.api.data.key.Keys
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.service.economy.EconomyService
 import org.spongepowered.api.service.pagination.PaginationService
@@ -36,7 +37,7 @@ class InfoCommand : StandardCommand<InfoModule>() {
         return arrayOf(GenericArguments.optional(
                 GenericArguments.onlyOne(
                         GenericArguments.requiringPermission(
-                                GenericArguments.player("player".toText()),
+                                GenericArguments.user("user".toText()),
                                 permissions.getOthers()
                         )
                 )
@@ -53,17 +54,18 @@ class InfoCommand : StandardCommand<InfoModule>() {
     }
 
     override fun executeCommand(source: CommandSource, args: CommandContext, cause: Cause): CommandResult {
-        val target = source.requirePlayerOrArg(args, "player")
+        val target = source.requireUserOrArg(args, "user")
 
         // Player Name & Id
         val messages = mutableListOf<Text>()
 
         // Generic Info
+
         messages.add("General".toText().yellow())
         messages.add("ID: ".toText().aqua().concat(target.uniqueId.toString().toText().yellow()))
-        messages.add("First Played: ".toText().aqua().concat(target.joinData.firstPlayed().get().formatDefault().toText().yellow()))
-        messages.add("Last Played: ".toText().aqua().concat(target.joinData.lastPlayed().get().formatDefault().toText().yellow()))
-        messages.add("Gamemode: ".toText().aqua().concat(target.gameMode().get().name.toText().yellow()))
+        target[Keys.FIRST_DATE_PLAYED].ifPresent { messages.add("First Played: ".toText().aqua().concat(it.formatDefault().toText().yellow())) }
+        target[Keys.LAST_DATE_PLAYED].ifPresent { messages.add("Last Played: ".toText().aqua().concat(it.formatDefault().toText().yellow())) }
+        target[Keys.GAME_MODE].ifPresent { messages.add("Gamemode: ".toText().aqua().concat(it.name.toText().yellow())) }
 
         if (playtime != null && permissions.testSuffix(source, InfoModule.PS_EXTRA_PLAYTIME)) {
             messages.add(Text.EMPTY)
@@ -73,9 +75,11 @@ class InfoCommand : StandardCommand<InfoModule>() {
             messages.add("Total Afk Time: ".toText().aqua().concat(playtime.getAfkTime(target).formatDefault().toText().yellow()))
             messages.add("Total Active Time: ".toText().aqua().concat(playtime.getActiveTime(target).formatDefault().toText().yellow()))
 
-            messages.add("Session Play Time: ".toText().aqua().concat(playtime.getSessionPlayTime(target).formatDefault().toText().yellow()))
-            messages.add("Session Afk Time: ".toText().aqua().concat(playtime.getSessionAfkTime(target).formatDefault().toText().yellow()))
-            messages.add("Session Active Time: ".toText().aqua().concat(playtime.getSessionActiveTime(target).formatDefault().toText().yellow()))
+            target.player.ifPresent {
+                messages.add("Session Play Time: ".toText().aqua().concat(playtime.getSessionPlayTime(it).formatDefault().toText().yellow()))
+                messages.add("Session Afk Time: ".toText().aqua().concat(playtime.getSessionAfkTime(it).formatDefault().toText().yellow()))
+                messages.add("Session Active Time: ".toText().aqua().concat(playtime.getSessionActiveTime(it).formatDefault().toText().yellow()))
+            }
         }
 
         if (activity != null && permissions.testSuffix(source, InfoModule.PS_EXTRA_ACTIVITY)) {
