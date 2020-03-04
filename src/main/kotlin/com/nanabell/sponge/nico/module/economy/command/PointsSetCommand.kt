@@ -25,7 +25,7 @@ import java.math.BigDecimal
 
 @Permissions
 @RegisterCommand(["set"], PointsCommand::class)
-class NicoSetCommand : StandardCommand<EconomyModule>() {
+class PointsSetCommand : StandardCommand<EconomyModule>() {
 
     private val economy: EconomyService = NicoYazawa.getServiceRegistry().provideUnchecked()
 
