@@ -24,7 +24,7 @@ import java.math.BigDecimal
 
 @Permissions
 @RegisterCommand(["add"], PointsCommand::class)
-class AddPointsCommand : StandardCommand<EconomyModule>() {
+class PointsAddCommand : StandardCommand<EconomyModule>() {
 
     val economy: EconomyService = NicoYazawa.getServiceRegistry().provideUnchecked()
 
