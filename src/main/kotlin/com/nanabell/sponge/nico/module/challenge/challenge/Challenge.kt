@@ -1,27 +1,24 @@
 package com.nanabell.sponge.nico.module.challenge.challenge
 
 import com.nanabell.sponge.nico.module.challenge.reward.ChallengeReward
-import org.spongepowered.api.event.cause.Cause
-import org.spongepowered.api.event.cause.EventContext
-import java.util.*
 
-abstract class Challenge(val userId: UUID) {
+abstract class Challenge(
+        val challengeId: String,
+        val challengeReward: ChallengeReward,
+        val dependencies: Array<String>
+) {
 
-    abstract val uniqueId: String
+    var status: ChallengeStatus = ChallengeStatus.ACTIVE
 
-    abstract val dependencies: Array<String>
-
-
-    private var challengeReward: ChallengeReward? = null
-
-    abstract fun isComplete(): Boolean
-
-    fun setReward(challengeReward: ChallengeReward) {
-        this.challengeReward = challengeReward
+    fun isComplete(): Boolean {
+        return status == ChallengeStatus.COMPLETED
     }
 
-    fun onComplete() {
-        challengeReward?.applyReward(Cause.of(EventContext.empty(), this))
+    fun isActive(): Boolean {
+        return status == ChallengeStatus.ACTIVE
     }
 
+    fun setActive() {
+        status = ChallengeStatus.ACTIVE
+    }
 }

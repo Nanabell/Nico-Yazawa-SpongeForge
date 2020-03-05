@@ -1,22 +1,22 @@
 package com.nanabell.sponge.nico.module.challenge.challenge
 
+import com.nanabell.sponge.nico.module.challenge.reward.ChallengeReward
 import org.spongepowered.api.entity.living.Living
 import java.util.*
 
 class KillGenericChallenge(
-        userId: UUID,
-        override val uniqueId: String,
-        override val dependencies: Array<String>,
+        challengeId: String,
+        challengeReward: ChallengeReward,
+        dependencies: Array<String> = emptyArray(),
         private val amount: Int
-) : KillChallenge(userId) {
+) : KillChallenge(challengeId, challengeReward, dependencies) {
 
     private var kills = 0
 
     override fun onEntityKill(killed: Living) {
         kills++
-    }
 
-    override fun isComplete(): Boolean {
-        return kills >= amount
+        if (kills >= amount && status == ChallengeStatus.ACTIVE)
+            status = ChallengeStatus.COMPLETED
     }
 }
