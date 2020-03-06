@@ -2,3 +2,6 @@
 /workspace.xml
 /compiler.xml
 /GrepConsole.xml
+/deployment.xml
+/sshConfigs.xml
+/webServers.xml
