@@ -1,7 +1,7 @@
-package com.nanabell.sponge.nico.module.challenge.config
+package com.nanabell.sponge.nico.module.quest.config
 
 import com.nanabell.quickstart.config.ModuleConfig
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 
 @ConfigSerializable
-class ChallengeConfig : ModuleConfig
+class QuestConfig : ModuleConfig
