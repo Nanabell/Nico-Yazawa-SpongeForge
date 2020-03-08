@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     shadow("com.nanabell.quickstart:simple-moduleloader:0.6.0") { isTransitive = true }
+    shadow("org.quartz-scheduler:quartz:2.3.2")
     shadow("net.dv8tion:JDA:4.ALPHA.0_76") { exclude("club.minnced", "opus-java") }
     shadow("dev.morphia.morphia:core:1.5.8")
 
