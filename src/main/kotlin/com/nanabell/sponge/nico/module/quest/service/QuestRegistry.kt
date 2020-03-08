@@ -27,46 +27,57 @@ import java.util.*
 class QuestRegistry : AbstractService<QuestModule>() {
 
     private val token = object : TypeToken<List<Quest>>() {}
+    private val serializers = TypeSerializers.getDefaultSerializers().newChild()
+            .registerType(TypeToken.of(Currency::class.java), CurrencySerializer())
+            .registerType(TypeToken.of(Duration::class.java), DurationSerializer())
+
+    private lateinit var defaultLoader: HoconConfigurationLoader
+    private lateinit var defaultRootNode: ConfigurationNode
 
     private lateinit var loader: HoconConfigurationLoader
     private lateinit var rootNode: ConfigurationNode
 
     override fun onPreEnable() {
-        val serializers = TypeSerializers.getDefaultSerializers().newChild()
-                .registerType(TypeToken.of(Currency::class.java), CurrencySerializer())
-                .registerType(TypeToken.of(Duration::class.java), DurationSerializer())
-
         val path = Sponge.getConfigManager().getPluginConfig(NicoYazawa.getPlugin()).directory.resolve("quests.conf")
         loader = HoconConfigurationLoader.builder()
                 .setDefaultOptions(ConfigurationOptions.defaults().setSerializers(serializers))
                 .setPath(path)
                 .build()
 
+        val defaultPath = Sponge.getConfigManager().getPluginConfig(NicoYazawa.getPlugin()).directory.resolve("default-quests.conf")
+        defaultLoader = HoconConfigurationLoader.builder()
+                .setDefaultOptions(ConfigurationOptions.defaults().setSerializers(serializers))
+                .setPath(defaultPath)
+                .build()
 
         rootNode = loader.load()
+        defaultRootNode = defaultLoader.load()
+    }
+
+    override fun onEnable() {
+        loadDefaults()
     }
 
     fun load(uniqueId: UUID): List<Quest> {
         val playerNode = rootNode.getNode(uniqueId.toString())
         if (playerNode.isVirtual) {
-            save(uniqueId, defaults())
+            save(uniqueId, loadDefaults())
         }
 
-        val quests = rootNode.getNode(uniqueId.toString()).getValue(token)
+        val quests = playerNode.getValue(token)
         if (quests == null) {
-            save(uniqueId, defaults())
+            save(uniqueId, loadDefaults())
             return load(uniqueId)
-        } else {
-            val total = quests.toMutableList()
-            defaults().forEach {
-                if (total.none { it.uniqueId == it.uniqueId }) {
-                    total.add(it)
-                }
-            }
-
-            save(uniqueId, total)
         }
 
+        val total = quests.toMutableList()
+        loadDefaults().forEach { quest ->
+            if (total.none { it.uniqueId == quest.uniqueId }) {
+                total.add(quest)
+            }
+        }
+
+        save(uniqueId, total)
         return quests
     }
 
@@ -79,6 +90,29 @@ class QuestRegistry : AbstractService<QuestModule>() {
 
         rootNode.mergeValuesFrom(root)
         loader.save(rootNode)
+    }
+
+    fun loadDefaults(): List<Quest> {
+        val questNode = defaultRootNode.getNode("quests")
+        if (questNode.isVirtual) {
+            saveDefaults(defaults())
+        }
+
+        val quests = questNode.getValue(token)
+        if (quests == null) {
+            saveDefaults(defaults())
+            return loadDefaults()
+        }
+
+        return quests
+    }
+
+    fun saveDefaults(quests: List<Quest>) {
+        val root: ConfigurationNode = defaultRootNode.getNode("quests")
+        root.setValue(token, quests)
+
+        defaultRootNode.mergeValuesFrom(root)
+        defaultLoader.save(defaultRootNode)
     }
 
     // TODO: Move to Default serialized file once serialization stands
@@ -126,7 +160,7 @@ class QuestRegistry : AbstractService<QuestModule>() {
                                 .setAmount(50)
                                 .build())
                         .addReward(MoneyReward.builder()
-                                .setAmount(1000 )
+                                .setAmount(1000)
                                 .build())
                         .addRequirement(UUID.fromString("6073df2d-cb4d-4663-a75d-aaf09e159479"))
                         .build("Kill 50 Hostile Mobs")
