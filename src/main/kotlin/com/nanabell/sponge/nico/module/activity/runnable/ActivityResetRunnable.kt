@@ -30,7 +30,7 @@ class ActivityResetRunnable : AbstractRunnable<ActivityModule>() {
         val next = now.withHour(0).withMinute(15).withSecond(0)
         if (now > next) next.plusDays(1)
 
-        val duration = Duration.between(next, now)
+        val duration = Duration.between(next, now) // TODO: This is just bork. Replace with Quartz Schedule!
         return duration.seconds
     }
 }
