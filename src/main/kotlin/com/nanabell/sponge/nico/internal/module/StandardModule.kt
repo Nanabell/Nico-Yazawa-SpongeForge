@@ -135,7 +135,7 @@ abstract class StandardModule<C : ModuleConfig> : ConfigurableModule<C>() {
 
         val schedules = getStreamForModule(AbstractSchedule::class).filter { it.findAnnotation<RegisterSchedule>() != null }
 
-        val builder = ScheduleBuilder(plugin.getScheduler())
+        val builder = ScheduleBuilder(plugin.getScheduler(), this)
         schedules.forEach { builder.register(it) }
 
         logger.debug("Finished Loading Schedules")
