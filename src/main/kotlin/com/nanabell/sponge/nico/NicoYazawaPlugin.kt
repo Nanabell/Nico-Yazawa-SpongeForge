@@ -7,6 +7,8 @@ import com.nanabell.sponge.nico.internal.PermissionRegistry
 import com.nanabell.sponge.nico.internal.command.RegisterCommandRequestEvent
 import com.nanabell.sponge.nico.internal.interfaces.Reloadable
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader
+import org.quartz.Scheduler
+import org.quartz.impl.StdSchedulerFactory
 import org.slf4j.Logger
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.config.ConfigDir
@@ -27,8 +29,8 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
 
     private val permissionRegistry: PermissionRegistry = PermissionRegistry()
     private val serviceRegistry: InternalServiceRegistry = InternalServiceRegistry()
-
     private val reloadables: MutableList<Reloadable> = ArrayList()
+    private val scheduler: Scheduler = StdSchedulerFactory.getDefaultScheduler()
 
     private lateinit var moduleContainer: DiscoveryModuleContainer
 
@@ -58,6 +60,8 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
 
     @Listener
     fun onInit(event: GameInitializationEvent) {
+        scheduler.start()
+
         try {
             moduleContainer.refreshSystemConfig()
             moduleContainer.loadModules(true)
@@ -97,6 +101,7 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
         Sponge.getEventManager().unregisterPluginListeners(this)
         Sponge.getCommandManager().getOwnedBy(this).forEach { Sponge.getCommandManager().removeMapping(it) }
         Sponge.getScheduler().getScheduledTasks(this).forEach { it.cancel() }
+        scheduler.shutdown()
 
         logger.error("Plugin Initialization has failed. Unable to continue")
         Sponge.getServer().shutdown()
@@ -109,8 +114,8 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
         return TopicLogger(_logger, *topics)
     }
 
-    override fun registerReloadable(reloadable: Reloadable) {
-        reloadables.add(reloadable)
+    override fun getScheduler(): Scheduler {
+        return scheduler
     }
 
     override fun getPermissionRegistry(): PermissionRegistry {
@@ -123,5 +128,9 @@ class NicoYazawaPlugin @Inject constructor(@ConfigDir(sharedRoot = false) privat
 
     override fun getServiceRegistry(): InternalServiceRegistry {
         return serviceRegistry
+    }
+
+    override fun registerReloadable(reloadable: Reloadable) {
+        reloadables.add(reloadable)
     }
 }
