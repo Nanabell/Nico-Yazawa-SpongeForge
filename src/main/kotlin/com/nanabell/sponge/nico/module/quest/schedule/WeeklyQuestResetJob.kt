@@ -10,7 +10,6 @@ import com.nanabell.sponge.nico.module.quest.quest.WeeklyQuest
 import com.nanabell.sponge.nico.module.quest.service.QuestRegistry
 import com.nanabell.sponge.nico.module.quest.service.QuestTracker
 import org.quartz.*
-import java.util.Calendar
 
 @RegisterSchedule
 class WeeklyQuestResetJob : AbstractSchedule<QuestModule>() {
@@ -29,10 +28,9 @@ class WeeklyQuestResetJob : AbstractSchedule<QuestModule>() {
                 TriggerBuilder.newTrigger()
                         .withIdentity(WeeklyQuestResetJob::class.simpleName + "Trigger" , QuestModule::class.simpleName)
                         .forJob(WeeklyQuestResetJob::class.simpleName, QuestModule::class.simpleName)
-                        .withSchedule(DailyTimeIntervalScheduleBuilder.dailyTimeIntervalSchedule()
-                                .startingDailyAt(TimeOfDay.hourAndMinuteOfDay(0, 0))
-                                .onDaysOfTheWeek(Calendar.MONDAY))
-                        .startNow()
+                        .withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
+                                .withIntervalInWeeks(1))
+                        .startAt(DateBuilder.tomorrowAt(0, 0, 0))
                         .build()
         )
     }

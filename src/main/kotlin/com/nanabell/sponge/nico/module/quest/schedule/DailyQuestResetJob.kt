@@ -28,10 +28,9 @@ class DailyQuestResetJob : AbstractSchedule<QuestModule>() {
                 TriggerBuilder.newTrigger()
                         .withIdentity(DailyQuestResetJob::class.simpleName + "Trigger" , QuestModule::class.simpleName)
                         .forJob(DailyQuestResetJob::class.simpleName, QuestModule::class.simpleName)
-                        .withSchedule(DailyTimeIntervalScheduleBuilder.dailyTimeIntervalSchedule()
-                                .startingDailyAt(TimeOfDay.hourAndMinuteOfDay(0, 0))
-                                .onEveryDay())
-                        .startNow()
+                        .withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
+                                .withIntervalInDays(1))
+                        .startAt(DateBuilder.tomorrowAt(0, 0, 0))
                         .build()
         )
     }
