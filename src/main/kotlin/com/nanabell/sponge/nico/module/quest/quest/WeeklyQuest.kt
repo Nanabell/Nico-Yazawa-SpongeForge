@@ -6,7 +6,7 @@ import com.nanabell.sponge.nico.module.quest.task.Task
 import org.spongepowered.api.text.Text
 import java.util.*
 
-class DailyQuest(
+class WeeklyQuest(
         uniqueId: UUID,
         name: String,
         description: String?,
@@ -19,13 +19,13 @@ class DailyQuest(
     constructor() : this(UUID.randomUUID(), "", "", emptyList(), emptyList(), emptyList())
 
     override fun getText(): Text {
-        return "Daily Quest ".green().concat(descriptionText())
+        return "Weekly Quest ".green().concat(descriptionText())
     }
 
-    class Builder : Quest.Builder<DailyQuest, Builder>() {
+    class Builder : Quest.Builder<WeeklyQuest, Builder>() {
 
-        override fun build(name: String): DailyQuest {
-            return DailyQuest(id, name, description, tasks, rewards, requirements)
+        override fun build(name: String): WeeklyQuest {
+            return WeeklyQuest(id, name, description, tasks, rewards, requirements)
         }
 
         override fun getThis(): Builder {
@@ -36,5 +36,4 @@ class DailyQuest(
     companion object {
         fun builder() = Builder()
     }
-
 }

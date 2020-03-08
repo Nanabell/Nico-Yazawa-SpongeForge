@@ -7,9 +7,10 @@ import com.nanabell.sponge.nico.internal.serializer.CurrencySerializer
 import com.nanabell.sponge.nico.internal.serializer.DurationSerializer
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.quest.QuestModule
+import com.nanabell.sponge.nico.module.quest.quest.DailyQuest
 import com.nanabell.sponge.nico.module.quest.quest.Quest
-import com.nanabell.sponge.nico.module.quest.quest.RepeatableQuest
 import com.nanabell.sponge.nico.module.quest.quest.SimpleQuest
+import com.nanabell.sponge.nico.module.quest.quest.WeeklyQuest
 import com.nanabell.sponge.nico.module.quest.reward.MoneyReward
 import com.nanabell.sponge.nico.module.quest.task.KillTask
 import ninja.leaping.configurate.ConfigurationNode
@@ -17,7 +18,6 @@ import ninja.leaping.configurate.ConfigurationOptions
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.service.economy.Currency
 import java.time.Duration
 import java.util.*
@@ -46,16 +46,16 @@ class QuestRegistry : AbstractService<QuestModule>() {
         rootNode = loader.load()
     }
 
-    fun load(player: Player): List<Quest> {
-        val playerNode = rootNode.getNode(player.uniqueId.toString())
+    fun load(uniqueId: UUID): List<Quest> {
+        val playerNode = rootNode.getNode(uniqueId.toString())
         if (playerNode.isVirtual) {
-            save(player, defaults())
+            save(uniqueId, defaults())
         }
 
-        val quests = rootNode.getNode(player.uniqueId.toString()).getValue(token)
+        val quests = rootNode.getNode(uniqueId.toString()).getValue(token)
         if (quests == null) {
-            save(player, defaults())
-            return load(player)
+            save(uniqueId, defaults())
+            return load(uniqueId)
         } else {
             val total = quests.toMutableList()
             defaults().forEach {
@@ -64,14 +64,14 @@ class QuestRegistry : AbstractService<QuestModule>() {
                 }
             }
 
-            save(player, total)
+            save(uniqueId, total)
         }
 
         return quests
     }
 
-    fun save(player: Player, quests: List<Quest>) {
-        var root: ConfigurationNode = rootNode.getNode(player.uniqueId.toString())
+    fun save(uniqueId: UUID, quests: List<Quest>) {
+        var root: ConfigurationNode = rootNode.getNode(uniqueId.toString())
         root.setValue(token, quests)
 
         if (root.parent != null)
@@ -107,7 +107,7 @@ class QuestRegistry : AbstractService<QuestModule>() {
                         .addRequirement(UUID.fromString("2e27a2b7-cea4-44fb-ae88-617a97d177fa"))
                         .build("Kill 2 Hostile Mobs"),
 
-                RepeatableQuest.builder()
+                DailyQuest.builder()
                         .setId(UUID.fromString("6073df2d-cb4d-4663-a75d-aaf09e159479"))
                         .setDescription("Kill 5 hostile mobs of any type")
                         .addTask(KillTask.builder()
@@ -117,10 +117,9 @@ class QuestRegistry : AbstractService<QuestModule>() {
                                 .setAmount(300)
                                 .build())
                         .addRequirement(UUID.fromString("a82f48d5-a4fd-4a5b-b55d-8635477456f4"))
-                        .setRepeats(5)
                         .build("Kill 5 Hostile Mobs"),
 
-                RepeatableQuest.builder()
+                WeeklyQuest.builder()
                         .setId(UUID.fromString("a46eae73-28f1-4260-aea1-1d551bf28e72"))
                         .setDescription("Kill 50 hostile mobs of any type")
                         .addTask(KillTask.builder()

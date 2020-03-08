@@ -5,7 +5,6 @@ import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.quest.QuestModule
 import com.nanabell.sponge.nico.module.quest.quest.Quest
-import com.nanabell.sponge.nico.module.quest.quest.RepeatableQuest
 import com.nanabell.sponge.nico.module.quest.task.KillTask
 import org.spongepowered.api.entity.living.Living
 import org.spongepowered.api.entity.living.player.Player
@@ -39,37 +38,35 @@ class QuestTracker : AbstractService<QuestModule>() {
     }
 
     private fun recheck(player: Player) {
-        var changed = false
         val quests = get(player)
 
         quests.forEach { quest ->
             if (quest.isComplete()) {
-                quest.rewards.forEach {
-                    it.claim(player, Cause.of(EventContext.empty(), this).with(quest, player, plugin)).also { changed = true }
-                }
-
-                if (quest is RepeatableQuest) {
-                    quest.reset().also { if (it) changed = true }
-                }
+                quest.claimRewards(player, Cause.of(EventContext.empty(), this).with(quest, player, plugin))
             }
         }
 
-        if (changed) {
-            questRegistry.save(player, quests)
+        if (quests.any { it.changed }) {
+            quests.forEach { it.changed = false }
+            questRegistry.save(player.uniqueId, quests)
         }
     }
 
     fun get(player: Player): List<Quest> {
         val quests = playerQuests[player.uniqueId]
         if (quests == null) {
-            val loaded = questRegistry.load(player)
-            loaded.forEach { it.buildRequirements(loaded) }
+            val loaded = questRegistry.load(player.uniqueId)
+            loaded.forEach { it.loadRequirements(loaded) }
 
             playerQuests[player.uniqueId] = loaded
             return get(player)
         }
 
         return quests
+    }
+
+    fun getAll(): Map<UUID, List<Quest>> {
+        return playerQuests.toMap()
     }
 
 }

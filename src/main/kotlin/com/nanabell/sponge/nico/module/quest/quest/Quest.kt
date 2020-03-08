@@ -7,6 +7,8 @@ import com.nanabell.sponge.nico.module.quest.reward.Reward
 import com.nanabell.sponge.nico.module.quest.task.Task
 import ninja.leaping.configurate.objectmapping.Setting
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
+import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.action.TextActions
 import java.util.*
@@ -31,37 +33,69 @@ abstract class Quest(
         val rewards: List<Reward>,
 
         @Setting("requirements")
-        val requirements: List<UUID> = emptyList()
+        val requirementIds: List<UUID> = emptyList(),
+
+        @Setting("status")
+        var status: QuestStatus = QuestStatus.LOCKED
 
 ) {
 
-    @Transient
-    private val questRequirements: MutableList<Quest> = ArrayList()
+    private val requirements: MutableList<Quest> = ArrayList()
+    var changed: Boolean = false
 
-    fun buildRequirements(questList: List<Quest>) {
-        questRequirements.clear()
+    fun loadRequirements(questList: List<Quest>) {
+        requirements.clear()
 
-        for (requirement in requirements) {
-            questRequirements.add(questList.first { it.uniqueId == requirement })
+        for (requirement in requirementIds) {
+            requirements.add(questList.first { it.uniqueId == requirement })
+        }
+
+        if (requirements.isEmpty()) status = QuestStatus.ACTIVE
+    }
+
+    fun isActive(): Boolean = update().let { status == QuestStatus.ACTIVE }
+    fun isComplete(): Boolean = update().let { status == QuestStatus.COMPLETED }
+    fun isClaimed(): Boolean = update().let { status == QuestStatus.CLAIMED }
+    fun isFinished(): Boolean = isComplete() || isClaimed()
+
+    fun claimRewards(player: Player, cause: Cause) {
+        rewards.filter { !it.isClaimed() }.forEach { it.claim(player, cause) }.also { update() }
+    }
+
+    fun reset() {
+        status = QuestStatus.LOCKED.also { changed = true }
+        rewards.forEach { it.reset() }
+        tasks.forEach { it.reset() }
+
+        update()
+    }
+
+    open fun update() {
+        if (status == QuestStatus.LOCKED) {
+            if (requirements.all { it.isFinished() }) {
+                status = QuestStatus.ACTIVE.also { changed = true }
+            }
+        }
+
+        if (status == QuestStatus.ACTIVE) {
+            if (tasks.all { it.isComplete() }) {
+                status = QuestStatus.COMPLETED.also { changed = true }
+            }
+        }
+
+        if (status == QuestStatus.COMPLETED) {
+            if (rewards.all { it.isClaimed() }) {
+                status = QuestStatus.CLAIMED.also { changed = true }
+            }
         }
     }
-
-    open fun isActive(): Boolean {
-        return questRequirements.all { it.isComplete() }
-    }
-
-    open fun isComplete(): Boolean {
-        return tasks.all { it.isComplete() }
-    }
-
-    open fun onComplete() {}
 
     abstract fun getText(): Text
 
     protected fun descriptionText(): Text {
         var nameText = name.toText().yellow()
         if (description != null)
-            nameText = nameText.action(TextActions.showText((description!!).toText()))
+            nameText = nameText.action(TextActions.showText((description).toText()))
 
         return nameText
     }

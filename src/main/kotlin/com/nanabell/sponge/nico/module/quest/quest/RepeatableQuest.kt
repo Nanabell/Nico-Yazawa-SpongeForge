@@ -17,29 +17,34 @@ open class RepeatableQuest(
         rewards: List<Reward>,
         requirements: List<UUID>,
 
-        @Setting("repeats")
-        private val repeats: Int
+        @Setting("max-repeats")
+        private val maxRepeat: Int
 
-) : SimpleQuest(uniqueId, name, description, tasks, rewards, requirements) {
+) : Quest(uniqueId, name, description, tasks, rewards, requirements) {
 
     @Suppress("unused")
     constructor() : this(UUID.randomUUID(), "", "", emptyList(), emptyList(), emptyList(), 0)
 
-    @Setting("repeat-count")
-    private var repeatCount = 1
+    @Setting("repeats")
+    private var repeats = 1
 
-    fun reset(): Boolean {
-        if (repeats < 0 || repeatCount < repeats) {
-            tasks.forEach { it.reset() }
-            rewards.forEach { it.reset() }
+    override fun update() {
+        super.update()
 
-            if (repeats >= 0)
-                repeatCount++
+        if (status == QuestStatus.CLAIMED) {
+            if (maxRepeat < 0 || repeats < maxRepeat) {
+                if (maxRepeat >= 0) repeats++
+                reset()
+            }
+        }
+    }
 
-            return true
+    override fun getText(): Text {
+        if (maxRepeat < 0) {
+            return "Infinite Repeatable Quest ".green().concat(descriptionText())
         }
 
-        return false
+        return "$repeats/$maxRepeat Repeatable Quest ".green().concat(descriptionText())
     }
 
     class Builder : Quest.Builder<RepeatableQuest, Builder>() {
@@ -59,14 +64,6 @@ open class RepeatableQuest(
         override fun getThis(): Builder {
             return this
         }
-    }
-
-    override fun getText(): Text {
-        if (repeats < 0) {
-            return "Infinite Repeatable Quest ".green().concat(descriptionText())
-        }
-
-        return "$repeatCount/$repeats Repeatable Quest ".green().concat(descriptionText())
     }
 
     companion object {

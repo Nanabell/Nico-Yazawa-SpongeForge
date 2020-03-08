@@ -12,8 +12,11 @@ abstract class Reward {
     private var claimed: Boolean = false
 
     fun claim(player: Player, cause: Cause) {
-        if (!claimed)
-            claimReward(player, cause).also { claimed = true }
+        claimReward(player, cause).also { claimed = true }
+    }
+
+    fun isClaimed(): Boolean {
+        return claimed
     }
 
     fun reset() {

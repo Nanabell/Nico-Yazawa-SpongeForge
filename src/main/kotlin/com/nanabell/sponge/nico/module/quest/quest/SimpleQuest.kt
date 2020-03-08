@@ -8,7 +8,7 @@ import org.spongepowered.api.text.Text
 import java.util.*
 
 @ConfigSerializable
-open class SimpleQuest(
+class SimpleQuest(
         uniqueId: UUID,
         name: String,
         description: String?,
@@ -20,6 +20,10 @@ open class SimpleQuest(
     @Suppress("unused")
     constructor() : this(UUID.randomUUID(), "", "", emptyList(), emptyList(), emptyList())
 
+    override fun getText(): Text {
+        return "Quest ".green().concat(descriptionText())
+    }
+
     class Builder : Quest.Builder<SimpleQuest, Builder>() {
 
         override fun build(name: String): SimpleQuest {
@@ -30,10 +34,6 @@ open class SimpleQuest(
             return this
         }
 
-    }
-
-    override fun getText(): Text {
-        return "Quest ".green().concat(descriptionText())
     }
 
     companion object {
