@@ -6,6 +6,7 @@ import com.nanabell.quickstart.config.ModuleConfig
 import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.annotation.RegisterListener
 import com.nanabell.sponge.nico.internal.annotation.RegisterRunnable
+import com.nanabell.sponge.nico.internal.annotation.RegisterSchedule
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.command.AbstractCommand
 import com.nanabell.sponge.nico.internal.command.CommandBuilder
@@ -15,6 +16,8 @@ import com.nanabell.sponge.nico.internal.listener.AbstractListener
 import com.nanabell.sponge.nico.internal.listener.ListenerBuilder
 import com.nanabell.sponge.nico.internal.runnable.AbstractRunnable
 import com.nanabell.sponge.nico.internal.runnable.RunnableBuilder
+import com.nanabell.sponge.nico.internal.schedule.AbstractSchedule
+import com.nanabell.sponge.nico.internal.schedule.ScheduleBuilder
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.internal.service.ServiceBuilder
 import org.slf4j.Logger
@@ -79,6 +82,7 @@ abstract class StandardModule<C : ModuleConfig> : ConfigurableModule<C>() {
         loadCommands()
         loadListeners()
         loadRunnables()
+        loadSchedules()
         performEnable()
 
         logger.debug("Finished Enable")
@@ -124,6 +128,17 @@ abstract class StandardModule<C : ModuleConfig> : ConfigurableModule<C>() {
         this.runnables = runnables.map { builder.register(it) }
 
         logger.debug("Finished Loading Runnables")
+    }
+
+    private fun loadSchedules() {
+        logger.info("Loading Schedules")
+
+        val schedules = getStreamForModule(AbstractSchedule::class).filter { it.findAnnotation<RegisterSchedule>() != null }
+
+        val builder = ScheduleBuilder(plugin.getScheduler())
+        schedules.forEach { builder.register(it) }
+
+        logger.debug("Finished Loading Schedules")
     }
 
     private fun <T : Any> getStreamForModule(assignable: KClass<T>): List<KClass<out T>> {
