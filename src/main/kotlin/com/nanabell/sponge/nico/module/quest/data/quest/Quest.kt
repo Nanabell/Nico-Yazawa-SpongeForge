@@ -7,7 +7,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 import java.util.*
 
 @ConfigSerializable
-abstract class Quest(
+abstract class Quest<T : IQuest<T>>(
 
         @Setting("quest-id")
         override val id: UUID,
@@ -27,4 +27,4 @@ abstract class Quest(
         @Setting("dependencies")
         override val dependencies: List<UUID>
 
-) : IQuest
+) : IQuest<T>

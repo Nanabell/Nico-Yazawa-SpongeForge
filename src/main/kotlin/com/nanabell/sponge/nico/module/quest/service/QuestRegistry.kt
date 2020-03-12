@@ -1,87 +1,54 @@
 package com.nanabell.sponge.nico.module.quest.service
 
-import com.google.common.reflect.TypeToken
 import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.quest.QuestModule
-import com.nanabell.sponge.nico.module.quest.data.quest.Quest
-import com.nanabell.sponge.nico.module.quest.data.quest.SimpleQuest
 import com.nanabell.sponge.nico.module.quest.interfaces.IQuest
-import ninja.leaping.configurate.ConfigurationNode
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader
-import org.spongepowered.api.Sponge
+import com.nanabell.sponge.nico.module.quest.interfaces.QuestStore
 import java.util.*
 import kotlin.collections.ArrayList
 
 @RegisterService
-@Suppress("UnstableApiUsage")
 class QuestRegistry : AbstractService<QuestModule>() {
 
-    private val token = object : TypeToken<List<IQuest>>() {}
     private val quests: MutableList<IQuest> = ArrayList()
-
-    private lateinit var loader: HoconConfigurationLoader
-    private lateinit var node: ConfigurationNode
+    private lateinit var store: QuestStore // TODO: Add
 
     override fun onPreEnable() {
-        val questPath = Sponge.getConfigManager().getPluginConfig(plugin).directory.resolve("quest/quests.conf")
-        loader = HoconConfigurationLoader.builder().setPath(questPath).build()
-        node = loader.load()
-
-        loadQuests()
+        load()
     }
 
+    fun has(quest: IQuest): Boolean = has(quest.id)
+    fun has(questId: UUID): Boolean = quests.any { it.id == questId }
 
-    fun loadQuests() {
-        val questsNode = node.getNode("quests")
-        if (questsNode.isVirtual) {
-            saveQuests()
+    fun get(questId: UUID): IQuest? {
+        val quest = quests.firstOrNull { it.id == questId }
+        if (quest == null) {
+            quests.add(store.load(questId) ?: return null)
+            return get(questId)
         }
 
-        val quests = questsNode.getValue(token)
-        if (quests == null)  {
-            saveQuests()
-            return
-        }
-
-        this.quests.addAll(quests)
+        return quest
     }
 
-    fun saveQuests() {
-        val toSave = quests.plus(defaults())
-        var root: ConfigurationNode = node.getNode("quests")
-        root.setValue(token, toSave)
+    fun add(quest: IQuest) {
+        if (has(quest)) throw IllegalStateException("Quest already added!")
 
-        if (root.parent != null)
-            root = root.parent!!
-
-        node.mergeValuesFrom(root)
-        loader.save(node)
+        quests.add(quest).also { store.save(quest) }
     }
 
-    private fun defaults(): List<Quest> {
-        return listOf(
-                SimpleQuest(
-                        UUID.randomUUID(),
-                        "Sample Quest",
-                        "This is a Sample Quest",
-                        listOf(UUID.randomUUID()),
-                        listOf(UUID.randomUUID(), UUID.randomUUID()),
-                        listOf()),
-                SimpleQuest(
-                        UUID.randomUUID(),
-                        "Sample Quest 2",
-                        "This is a Sample Quest 2",
-                        listOf(UUID.randomUUID()),
-                        listOf(UUID.randomUUID(), UUID.randomUUID()),
-                        listOf()),
-                SimpleQuest(
-                        UUID.randomUUID(),
-                        "Sample Quest 3",
-                        "This is a Sample Quest 3",
-                        listOf(UUID.randomUUID()),
-                        listOf(UUID.randomUUID(), UUID.randomUUID()),
-                        listOf(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
-        )
+    fun remove(quest: IQuest) {
+        if (!has(quest)) throw IllegalStateException("Quest is not in Registry!")
+
+        quests.removeIf { it.id == quest.id }.also { store.remove(quest) }
+    }
+
+
+    fun load() {
+        quests.clear().also { quests.addAll(store.loadAll()) }
+    }
+
+    fun save() {
+        store.removeAll().also { store.saveAll(quests) }
     }
 }
