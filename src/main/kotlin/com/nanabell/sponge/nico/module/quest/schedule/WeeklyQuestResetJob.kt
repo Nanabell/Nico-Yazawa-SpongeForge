@@ -7,7 +7,7 @@ import com.nanabell.sponge.nico.internal.extension.green
 import com.nanabell.sponge.nico.internal.schedule.AbstractSchedule
 import com.nanabell.sponge.nico.module.quest.QuestModule
 import com.nanabell.sponge.nico.module.quest.quest.WeeklyQuest
-import com.nanabell.sponge.nico.module.quest.service.QuestRegistry
+import com.nanabell.sponge.nico.module.quest.service.QuestRegistry_OLD
 import com.nanabell.sponge.nico.module.quest.service.QuestTracker
 import org.quartz.*
 
@@ -36,7 +36,7 @@ class WeeklyQuestResetJob : AbstractSchedule<QuestModule>() {
     }
 
     override fun execute(context: JobExecutionContext) {
-        val registry: QuestRegistry = NicoYazawa.getServiceRegistry().provideUnchecked()
+        val registry: QuestRegistry_OLD = NicoYazawa.getServiceRegistry().provideUnchecked()
         val tracker: QuestTracker = NicoYazawa.getServiceRegistry().provideUnchecked()
 
         tracker.getAll().forEach { (uniqueId, quests) ->

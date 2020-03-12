@@ -17,7 +17,7 @@ import kotlin.collections.HashMap
 class QuestTracker : AbstractService<QuestModule>() {
 
     private val playerQuests: MutableMap<UUID, List<Quest>> = HashMap()
-    private lateinit var questRegistry: QuestRegistry
+    private lateinit var questRegistry: QuestRegistry_OLD
 
     override fun onPreEnable() {
     }
