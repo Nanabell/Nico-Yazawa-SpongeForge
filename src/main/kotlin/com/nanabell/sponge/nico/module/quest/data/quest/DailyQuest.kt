@@ -5,7 +5,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 import java.util.*
 
 @ConfigSerializable
-class SimpleQuest(
+class DailyQuest(
         id: UUID,
         name: String,
         description: String?,
@@ -15,13 +15,13 @@ class SimpleQuest(
 ) : Quest(id, name, description, tasks, rewards, dependencies) {
 
     @Suppress("unused")
-    private constructor(): this(UUID.randomUUID(), "", null, mutableListOf(), mutableListOf(), mutableListOf())
+    private constructor(): this(UUID.randomUUID(), "", "", mutableListOf(), mutableListOf(), mutableListOf())
 
-    constructor(id: UUID, name: String, description: String?) : this(id, name, description, mutableListOf(), mutableListOf(), mutableListOf())
+    constructor(id: UUID, name: String, description: String?) : this(id,name, description, mutableListOf(), mutableListOf(), mutableListOf())
 
-    override val type: String = "Quest"
+    override val type: String = "Daily Quest"
 
     override fun copy(id: UUID): IQuest {
-        return SimpleQuest(id, name, description, tasks, rewards, dependencies)
+        return DailyQuest(id, name, description, tasks, rewards, dependencies)
     }
 }

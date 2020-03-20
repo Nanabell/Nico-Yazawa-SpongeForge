@@ -1,54 +1,34 @@
 package com.nanabell.sponge.nico.module.quest.service
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.quest.QuestModule
-import com.nanabell.sponge.nico.module.quest.interfaces.IQuest
-import com.nanabell.sponge.nico.module.quest.interfaces.QuestStore
+import com.nanabell.sponge.nico.module.quest.data.quest.InvalidQuest
+import com.nanabell.sponge.nico.module.quest.interfaces.quest.IQuest
+import com.nanabell.sponge.nico.module.quest.interfaces.quest.QuestStore
+import com.nanabell.sponge.nico.module.quest.store.ConfigQuestStore
+import org.spongepowered.api.Sponge
 import java.util.*
-import kotlin.collections.ArrayList
 
 @RegisterService
 class QuestRegistry : AbstractService<QuestModule>() {
 
-    private val quests: MutableList<IQuest> = ArrayList()
-    private lateinit var store: QuestStore // TODO: Add
+    private val cache = Caffeine.newBuilder().build<UUID, IQuest> { store.load(it) }
+    private lateinit var store: QuestStore
 
     override fun onPreEnable() {
-        load()
+        val path = Sponge.getConfigManager().getPluginConfig(plugin).directory.resolve("quests.conf")
+
+        store = ConfigQuestStore(path)
+        store.loadAll().forEach { cache.put(it.id, it) }
     }
 
-    fun has(quest: IQuest): Boolean = has(quest.id)
-    fun has(questId: UUID): Boolean = quests.any { it.id == questId }
+    fun has(quest: IQuest) = has(quest.id)
+    fun has(questId: UUID) = cache[questId] != null
+    fun get(questId: UUID) = cache[questId] ?: InvalidQuest(questId)
+    fun getAll() = cache.asMap().values
+    fun set(quest: IQuest) = store.save(quest).also { cache.put(quest.id, quest) }
+    fun remove(quest: IQuest) = store.remove(quest).also { cache.invalidate(quest.id) }
 
-    fun get(questId: UUID): IQuest? {
-        val quest = quests.firstOrNull { it.id == questId }
-        if (quest == null) {
-            quests.add(store.load(questId) ?: return null)
-            return get(questId)
-        }
-
-        return quest
-    }
-
-    fun add(quest: IQuest) {
-        if (has(quest)) throw IllegalStateException("Quest already added!")
-
-        quests.add(quest).also { store.save(quest) }
-    }
-
-    fun remove(quest: IQuest) {
-        if (!has(quest)) throw IllegalStateException("Quest is not in Registry!")
-
-        quests.removeIf { it.id == quest.id }.also { store.remove(quest) }
-    }
-
-
-    fun load() {
-        quests.clear().also { quests.addAll(store.loadAll()) }
-    }
-
-    fun save() {
-        store.removeAll().also { store.saveAll(quests) }
-    }
 }

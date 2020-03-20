@@ -6,9 +6,9 @@ import com.nanabell.sponge.nico.internal.extension.broadcast
 import com.nanabell.sponge.nico.internal.extension.green
 import com.nanabell.sponge.nico.internal.schedule.AbstractSchedule
 import com.nanabell.sponge.nico.module.quest.QuestModule
-import com.nanabell.sponge.nico.module.quest.quest.WeeklyQuest
-import com.nanabell.sponge.nico.module.quest.service.QuestRegistry_OLD
-import com.nanabell.sponge.nico.module.quest.service.QuestTracker
+import com.nanabell.sponge.nico.module.quest.data.quest.WeeklyQuest
+import com.nanabell.sponge.nico.module.quest.service.QuestRegistry
+import com.nanabell.sponge.nico.module.quest.service.UserRegistry
 import org.quartz.*
 
 @RegisterSchedule
@@ -36,12 +36,13 @@ class WeeklyQuestResetJob : AbstractSchedule<QuestModule>() {
     }
 
     override fun execute(context: JobExecutionContext) {
-        val registry: QuestRegistry_OLD = NicoYazawa.getServiceRegistry().provideUnchecked()
-        val tracker: QuestTracker = NicoYazawa.getServiceRegistry().provideUnchecked()
+        val userRegistry: UserRegistry = NicoYazawa.getServiceRegistry().provideUnchecked()
+        val questRegistry: QuestRegistry = NicoYazawa.getServiceRegistry().provideUnchecked()
 
-        tracker.getAll().forEach { (uniqueId, quests) ->
-            quests.filterIsInstance(WeeklyQuest::class.java).forEach { it.reset() }
-            registry.save(uniqueId, quests)
+        val quests = questRegistry.getAll().filterIsInstance<WeeklyQuest>()
+        for (user in userRegistry.getAll()) {
+            quests.forEach { user.reset(it.id) }
+            userRegistry.set(user)
         }
 
         "Weekly Quests have been Reset!".green().broadcast()

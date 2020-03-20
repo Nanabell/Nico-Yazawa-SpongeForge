@@ -275,7 +275,7 @@ abstract class AbstractCommand<T : CommandSource, M : StandardModule<*>> : Comma
         return builder.append(argumentParser.getUsage(source).toPlain().replace("\\?\\|".toRegex(), "")).toString()
     }
 
-    private fun getSimpleUsage(source: CommandSource): String {
+    protected fun getSimpleUsage(source: CommandSource): String {
         return "/" + commandPath.replace("\\.".toRegex(), " ") + " " + argumentParser.getUsage(source).toPlain()
     }
 

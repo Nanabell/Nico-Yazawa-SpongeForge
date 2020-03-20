@@ -23,8 +23,9 @@ class CurrencyArgument(key: Text) : CommandElement(key) {
 
     override fun complete(src: CommandSource, args: CommandArgs, context: CommandContext): MutableList<String> {
         if (!args.hasNext()) return mutableListOf()
+        val arg = args.peek()
 
-        return economy.currencies.map { it.name.replace(' ', '_') }.toMutableList()
+        return economy.currencies.map { it.name.replace(' ', '_') }.filter { it.startsWith(arg) }.toMutableList()
     }
 
 }

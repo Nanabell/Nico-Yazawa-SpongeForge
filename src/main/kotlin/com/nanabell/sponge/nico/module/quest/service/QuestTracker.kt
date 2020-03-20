@@ -4,69 +4,43 @@ import com.nanabell.sponge.nico.NicoYazawa
 import com.nanabell.sponge.nico.internal.annotation.service.RegisterService
 import com.nanabell.sponge.nico.internal.service.AbstractService
 import com.nanabell.sponge.nico.module.quest.QuestModule
-import com.nanabell.sponge.nico.module.quest.quest.Quest
-import com.nanabell.sponge.nico.module.quest.task.KillTask
-import org.spongepowered.api.entity.living.Living
-import org.spongepowered.api.entity.living.player.Player
+import com.nanabell.sponge.nico.module.quest.interfaces.task.ITask
+import com.nanabell.sponge.nico.module.quest.interfaces.task.ITaskProgress
+import org.spongepowered.api.entity.living.player.User
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
-import java.util.*
-import kotlin.collections.HashMap
+import kotlin.reflect.KClass
 
 @RegisterService
 class QuestTracker : AbstractService<QuestModule>() {
 
-    private val playerQuests: MutableMap<UUID, List<Quest>> = HashMap()
-    private lateinit var questRegistry: QuestRegistry_OLD
-
     override fun onPreEnable() {
     }
 
-    override fun onEnable() {
-        questRegistry = NicoYazawa.getServiceRegistry().provideUnchecked()
-    }
-
-    fun entityKilled(player: Player, living: Living) {
-        val quests = get(player)
-        quests.filter { it.isActive() }
-                .flatMap { it.tasks }
-                .filterIsInstance<KillTask>()
+    @Suppress("UNCHECKED_CAST")
+    fun <P : ITaskProgress> getActiveProgress(user: User, task: KClass<out ITask>): List<P> {
+        val questUser = userRegistry.get(user.uniqueId)
+        return questUser.getActiveQuests()
+                .flatMap { it.tasks() }
+                .filterIsInstance(task.java)
+                .map { it.getProgress(user.uniqueId) as P }
                 .filter { !it.isComplete() }
-                .forEach { it.confirmKill(living) }
-
-        recheck(player)
     }
 
-    private fun recheck(player: Player) {
-        val quests = get(player)
+    fun commit(user: User) {
+        val questUser = userRegistry.get(user.uniqueId)
 
-        quests.forEach { quest ->
-            if (quest.isComplete()) {
-                quest.claimRewards(player, Cause.of(EventContext.empty(), this).with(quest, player, plugin))
+        questUser.getActiveQuests().forEach { quest ->
+            if (quest.tasks().map { it.getProgress(questUser.id) }.all { it.isComplete() }) {
+                quest.rewards().forEach { it.reward(questUser.id, Cause.of(EventContext.empty(), this).with(quest, plugin)) }
+                questUser.setCompleted(quest.id)
             }
         }
 
-        if (quests.any { it.changed }) {
-            quests.forEach { it.changed = false }
-            questRegistry.save(player.uniqueId, quests)
-        }
+        userRegistry.set(questUser)
     }
 
-    fun get(player: Player): List<Quest> {
-        val quests = playerQuests[player.uniqueId]
-        if (quests == null) {
-            val loaded = questRegistry.load(player.uniqueId)
-            loaded.forEach { it.loadRequirements(loaded) }
-
-            playerQuests[player.uniqueId] = loaded
-            return get(player)
-        }
-
-        return quests
+    companion object {
+        private val userRegistry: UserRegistry by lazy { NicoYazawa.getServiceRegistry().provideUnchecked<UserRegistry>() }
     }
-
-    fun getAll(): Map<UUID, List<Quest>> {
-        return playerQuests.toMap()
-    }
-
 }

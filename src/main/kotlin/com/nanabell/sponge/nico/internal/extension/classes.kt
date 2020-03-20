@@ -25,6 +25,10 @@ fun KClass<out AbstractCommand<*, *>>.getSubCommandPath(): String {
     return builder.toString()
 }
 
+fun KClass<out AbstractCommand<*, *>>.getCommandString(): String {
+    return getSubCommandPath().replace('.', ' ')
+}
+
 private fun getNextSubCommandPath(clazz: KClass<out AbstractCommand<*, *>>, builder: StringBuilder, appendPeriod: Boolean) {
     val co = clazz.findAnnotation<RegisterCommand>() ?: throw MissingAnnotationException(clazz, RegisterCommand::class)
     if (!co.subCommandOf.isAbstract && co.subCommandOf.java != clazz)
