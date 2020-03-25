@@ -2,6 +2,7 @@ package com.nanabell.sponge.nico.module.quest.command.quest
 
 import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
+import com.nanabell.sponge.nico.internal.annotation.command.Permissions
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.command.StandardCommand
 import com.nanabell.sponge.nico.internal.extension.*
@@ -18,6 +19,7 @@ import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.action.TextActions
 
+@Permissions
 @RegisterCommand(["task"], QuestEditCommand::class)
 class QuestEditTasksCommand : StandardCommand<QuestModule>() {
 

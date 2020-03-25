@@ -2,6 +2,7 @@ package com.nanabell.sponge.nico.module.quest.command.reward
 
 import com.nanabell.sponge.nico.NicoConstants
 import com.nanabell.sponge.nico.NicoYazawa
+import com.nanabell.sponge.nico.internal.annotation.command.Permissions
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.command.StandardCommand
 import com.nanabell.sponge.nico.internal.extension.*
@@ -21,6 +22,7 @@ import org.spongepowered.api.text.action.TextActions
 import java.util.*
 import kotlin.reflect.KClass
 
+@Permissions
 @RegisterCommand(["new"], RewardCommand::class)
 class RewardNewCommand : StandardCommand<QuestModule>() {
 
