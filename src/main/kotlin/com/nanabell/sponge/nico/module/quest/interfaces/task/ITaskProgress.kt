@@ -1,5 +1,6 @@
 package com.nanabell.sponge.nico.module.quest.interfaces.task
 
+import org.spongepowered.api.text.Text
 import java.util.*
 
 interface ITaskProgress {
@@ -9,6 +10,8 @@ interface ITaskProgress {
     val type: String
 
     fun isComplete(): Boolean
+
+    fun getText(): Text
 
     fun copy(id: UUID): ITaskProgress
 

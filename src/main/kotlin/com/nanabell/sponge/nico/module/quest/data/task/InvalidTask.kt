@@ -25,6 +25,8 @@ class InvalidProgress(id: UUID) : TaskProgress(id) {
 
         override val type: String = "!INVALID!"
         override fun isComplete(): Boolean = false
+        override fun getText(): Text = "[ERR]".darkRed()
+
         override fun copy(id: UUID): ITaskProgress = this
 
 }

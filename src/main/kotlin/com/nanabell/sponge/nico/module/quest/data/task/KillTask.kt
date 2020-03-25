@@ -69,6 +69,10 @@ class KillProgress(
         return this.amount >= (taskRegistry.get(this.id) as KillTask).amount
     }
 
+    override fun getText(): Text {
+        return "[$amount/${(taskRegistry.get(this.id) as KillTask).amount}]".yellow()
+    }
+
     override fun copy(id: UUID): ITaskProgress {
         return KillProgress(id, amount)
     }

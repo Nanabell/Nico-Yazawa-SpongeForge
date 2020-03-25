@@ -26,7 +26,6 @@ import java.util.*
 class DummyCommand : AbstractCommand<CommandSource, CoreModule>() {
 
     override fun executeCommand(source: CommandSource, args: CommandContext, cause: Cause): CommandResult {
-
         val item = (source as Player).getItemInHand(HandTypes.MAIN_HAND).orNull() ?: return CommandResult.success()
 
         source.sendMessage(buildItemName(item))
