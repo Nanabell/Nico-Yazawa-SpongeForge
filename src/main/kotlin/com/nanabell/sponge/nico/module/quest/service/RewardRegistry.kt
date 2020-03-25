@@ -21,7 +21,7 @@ class RewardRegistry : AbstractService<QuestModule>() {
         val path = Sponge.getConfigManager().getPluginConfig(plugin).directory.resolve("rewards.conf")
 
         store = ConfigRewardStore(path)
-        store.loadAll().forEach { cache.put(it.id, it) }
+        reload()
     }
 
     fun has(reward: IReward) = has(reward.id)
@@ -30,5 +30,10 @@ class RewardRegistry : AbstractService<QuestModule>() {
     fun getAll() = cache.asMap().values
     fun set(reward: IReward) = store.save(reward).also { cache.put(reward.id, reward) }
     fun remove(reward: IReward) = store.remove(reward).also { cache.invalidate(reward.id) }
+
+    fun reload() {
+        cache.invalidateAll()
+        store.loadAll().forEach { cache.put(it.id, it) }
+    }
 
 }

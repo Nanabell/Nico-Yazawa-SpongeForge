@@ -21,7 +21,7 @@ class QuestRegistry : AbstractService<QuestModule>() {
         val path = Sponge.getConfigManager().getPluginConfig(plugin).directory.resolve("quests.conf")
 
         store = ConfigQuestStore(path)
-        store.loadAll().forEach { cache.put(it.id, it) }
+        reload()
     }
 
     fun has(quest: IQuest) = has(quest.id)
@@ -30,5 +30,10 @@ class QuestRegistry : AbstractService<QuestModule>() {
     fun getAll() = cache.asMap().values
     fun set(quest: IQuest) = store.save(quest).also { cache.put(quest.id, quest) }
     fun remove(quest: IQuest) = store.remove(quest).also { cache.invalidate(quest.id) }
+
+    fun reload() {
+        cache.invalidateAll()
+        store.loadAll().forEach { cache.put(it.id, it) }
+    }
 
 }

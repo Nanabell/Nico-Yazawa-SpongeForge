@@ -21,7 +21,7 @@ class TaskRegistry : AbstractService<QuestModule>() {
         val path = Sponge.getConfigManager().getPluginConfig(plugin).directory.resolve("tasks.conf")
 
         store = ConfigTaskStore(path)
-        store.loadAll().forEach { cache.put(it.id, it) }
+        reload()
     }
 
     fun has(task: ITask) = has(task.id)
@@ -30,5 +30,10 @@ class TaskRegistry : AbstractService<QuestModule>() {
     fun getAll() = cache.asMap().values
     fun set(task: ITask) = store.save(task).also { cache.put(task.id, task) }
     fun remove(task: ITask) = store.remove(task).also { cache.invalidate(task.id) }
+
+    fun reload() {
+        cache.invalidateAll()
+        store.loadAll().forEach { cache.put(it.id, it) }
+    }
 
 }
