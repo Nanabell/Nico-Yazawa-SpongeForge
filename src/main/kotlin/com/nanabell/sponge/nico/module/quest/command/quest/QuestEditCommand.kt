@@ -74,8 +74,8 @@ class QuestEditCommand : StandardCommand<QuestModule>() {
                                     .concat(Text.NEW_LINE).concat(it.getText())))
                             .action(TextActions.runCommand("/${QuestEditTasksCommand::class.getCommandString()} $questId ${it.id}")))
                     .concat(NicoConstants.SPACE)
-                    .concat("[Edit]".yellow()
-                            .action(TextActions.showText("CLick to edit...".gray()))
+                    .concat("[Edit]".gray()
+                            .action(TextActions.showText("Click to edit...".gray()))
                             .action(TextActions.runCommand("/${TaskEditCommand::class.getCommandString()} ${it.id}")))
         }
 
@@ -94,8 +94,8 @@ class QuestEditCommand : StandardCommand<QuestModule>() {
                                     .concat(Text.NEW_LINE).concat(it.getText())))
                             .action(TextActions.runCommand("/${QuestEditRewardCommand::class.getCommandString()} $questId ${it.id}")))
                     .concat(NicoConstants.SPACE)
-                    .concat("[Edit]".yellow()
-                            .action(TextActions.showText("CLick to edit...".gray()))
+                    .concat("[Edit]".gray()
+                            .action(TextActions.showText("Click to edit...".gray()))
                             .action(TextActions.runCommand("/${RewardEditCommand::class.getCommandString()} ${it.id}")))
         }
 
@@ -114,8 +114,8 @@ class QuestEditCommand : StandardCommand<QuestModule>() {
                                     .concat(Text.NEW_LINE).concat(it.getText())))
                             .action(TextActions.runCommand("/${QuestEditDependenciesCommand::class.getCommandString()} $questId ${it.id}")))
                     .concat(NicoConstants.SPACE)
-                    .concat("[Edit]".yellow()
-                            .action(TextActions.showText("CLick to edit...".gray()))
+                    .concat("[Edit]".gray()
+                            .action(TextActions.showText("Click to edit...".gray()))
                             .action(TextActions.runCommand("/${QuestEditCommand::class.getCommandString()} ${it.id}")))
         }
 
@@ -125,7 +125,7 @@ class QuestEditCommand : StandardCommand<QuestModule>() {
     private fun listHeader(rawType: String, questId: UUID): Text {
         val type = if (rawType == "quest") "dependency" else rawType
 
-        return " [Add]".yellow()
+        return " [Add]".aqua()
                 .action(TextActions.showText("Click to add existing,,,".gray()))
                 .action(TextActions.runCommand("/quest edit $type $questId "))
                 .concat(" [new]".blue()
