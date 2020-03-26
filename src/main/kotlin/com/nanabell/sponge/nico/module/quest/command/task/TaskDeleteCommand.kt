@@ -32,7 +32,7 @@ class TaskDeleteCommand : StandardCommand<QuestModule>() {
         return arrayOf(
                 GenericArguments.flags()
                         .flag("-force", "f")
-                        .buildWith(NicoConstants.task("task".toText()))
+                        .buildWith(NicoConstants.task("task".toText(), true))
         )
     }
 

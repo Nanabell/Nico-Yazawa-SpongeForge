@@ -29,7 +29,7 @@ class TaskEditAmountCommand : StandardCommand<QuestModule>() {
 
     override fun getArguments(): Array<CommandElement> {
         return arrayOf(
-                NicoConstants.task("task".toText()),
+                NicoConstants.task("task".toText(), true),
                 GenericArguments.optional(
                         GenericArguments.integer("amount".toText())
                 )

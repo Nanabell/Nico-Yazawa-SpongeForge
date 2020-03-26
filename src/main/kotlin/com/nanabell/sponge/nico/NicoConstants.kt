@@ -23,7 +23,7 @@ object NicoConstants {
     fun currency(currency: Text): CommandElement = CurrencyArgument(currency)
     fun discordUser(user: Text): CommandElement = DiscordUserArgument(user)
     fun quest(id: Text): QuestArgument = QuestArgument(id)
-    fun task(id: Text): TaskArgument = TaskArgument(id)
+    fun task(id: Text, all: Boolean): TaskArgument = TaskArgument(id, all)
     fun reward(id: Text): RewardArgument = RewardArgument(id)
 
     // EventContextKeys

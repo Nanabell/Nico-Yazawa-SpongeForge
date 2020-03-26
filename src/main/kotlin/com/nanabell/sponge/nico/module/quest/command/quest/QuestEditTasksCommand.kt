@@ -30,7 +30,7 @@ class QuestEditTasksCommand : StandardCommand<QuestModule>() {
         return arrayOf(
                 NicoConstants.quest("quest".toText()),
                 GenericArguments.optional(
-                        NicoConstants.task("task".toText())
+                        NicoConstants.task("task".toText(), false)
                 )
         )
     }

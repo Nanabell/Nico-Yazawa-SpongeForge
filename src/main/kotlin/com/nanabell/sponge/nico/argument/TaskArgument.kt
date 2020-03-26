@@ -11,7 +11,7 @@ import org.spongepowered.api.command.args.CommandElement
 import org.spongepowered.api.text.Text
 import java.util.*
 
-class TaskArgument(key: Text) : CommandElement(key) {
+class TaskArgument(key: Text, private val all: Boolean) : CommandElement(key) {
 
     private val taskRegistry: TaskRegistry = NicoYazawa.getServiceRegistry().provideUnchecked()
 
@@ -30,6 +30,6 @@ class TaskArgument(key: Text) : CommandElement(key) {
         if (!args.hasNext()) return mutableListOf()
         val arg = args.peek()
 
-        return taskRegistry.getAll().filter { !it.isAttached() }.map { it.id.toString() }.filter { it.startsWith(arg) }
+        return taskRegistry.getAll().filter { all || !it.isAttached() }.map { it.id.toString() }.filter { it.startsWith(arg) }
     }
 }

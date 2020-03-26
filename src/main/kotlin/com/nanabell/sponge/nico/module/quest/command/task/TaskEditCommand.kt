@@ -24,7 +24,7 @@ class TaskEditCommand : StandardCommand<QuestModule>() {
 
     private val pagination = Sponge.getServiceManager().provideUnchecked(PaginationService::class.java)
 
-    override fun getArguments(): Array<CommandElement> = arrayOf(NicoConstants.task("task".toText()))
+    override fun getArguments(): Array<CommandElement> = arrayOf(NicoConstants.task("task".toText(), true))
 
     override fun executeCommand(source: CommandSource, args: CommandContext, cause: Cause): CommandResult {
         val task = args.requireOne<ITask>("task")
