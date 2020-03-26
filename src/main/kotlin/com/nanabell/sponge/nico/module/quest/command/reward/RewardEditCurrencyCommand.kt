@@ -26,7 +26,7 @@ class RewardEditCurrencyCommand : StandardCommand<QuestModule>() {
 
     override fun getArguments(): Array<CommandElement> {
         return arrayOf(
-                NicoConstants.reward("reward".toText()),
+                NicoConstants.reward("reward".toText(), true),
                 NicoConstants.currency("currency".toText())
         )
     }

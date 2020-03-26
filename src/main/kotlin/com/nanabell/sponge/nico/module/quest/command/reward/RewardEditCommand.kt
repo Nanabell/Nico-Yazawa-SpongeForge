@@ -24,7 +24,7 @@ class RewardEditCommand : StandardCommand<QuestModule>() {
 
     private val pagination = Sponge.getServiceManager().provideUnchecked(PaginationService::class.java)
 
-    override fun getArguments(): Array<CommandElement> = arrayOf(NicoConstants.reward("reward".toText()))
+    override fun getArguments(): Array<CommandElement> = arrayOf(NicoConstants.reward("reward".toText(), true))
 
     override fun executeCommand(source: CommandSource, args: CommandContext, cause: Cause): CommandResult {
         val reward = args.requireOne<IReward>("reward")

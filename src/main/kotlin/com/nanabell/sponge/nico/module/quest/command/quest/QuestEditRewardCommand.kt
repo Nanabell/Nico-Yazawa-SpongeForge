@@ -32,7 +32,7 @@ class QuestEditRewardCommand : StandardCommand<QuestModule>() {
         return arrayOf(
                 NicoConstants.quest("quest".toText()),
                 GenericArguments.optional(
-                        NicoConstants.reward("reward".toText())
+                        NicoConstants.reward("reward".toText(), false)
                 )
         )
     }

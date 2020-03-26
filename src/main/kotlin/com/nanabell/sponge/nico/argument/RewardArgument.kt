@@ -11,7 +11,7 @@ import org.spongepowered.api.command.args.CommandElement
 import org.spongepowered.api.text.Text
 import java.util.*
 
-class RewardArgument(key: Text) : CommandElement(key) {
+class RewardArgument(key: Text, private val all: Boolean) : CommandElement(key) {
 
     private val rewardRegistry: RewardRegistry = NicoYazawa.getServiceRegistry().provideUnchecked()
 
@@ -30,6 +30,6 @@ class RewardArgument(key: Text) : CommandElement(key) {
         if (!args.hasNext()) return mutableListOf()
         val arg = args.peek()
 
-        return rewardRegistry.getAll().map { it.id.toString() }.filter { it.startsWith(arg) }
+        return rewardRegistry.getAll().filter { all || !it.isAttached() }.map { it.id.toString() }.filter { it.startsWith(arg) }
     }
 }

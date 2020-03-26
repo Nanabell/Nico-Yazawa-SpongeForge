@@ -32,7 +32,7 @@ class RewardDeleteCommand : StandardCommand<QuestModule>() {
         return arrayOf(
                 GenericArguments.flags()
                         .flag("-force", "f")
-                        .buildWith(NicoConstants.reward("reward".toText()))
+                        .buildWith(NicoConstants.reward("reward".toText(), true))
         )
     }
 
