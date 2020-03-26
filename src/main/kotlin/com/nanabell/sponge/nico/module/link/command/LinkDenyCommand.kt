@@ -1,6 +1,7 @@
 package com.nanabell.sponge.nico.module.link.command
 
 import com.nanabell.sponge.nico.NicoYazawa
+import com.nanabell.sponge.nico.internal.annotation.command.Permissions
 import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.command.AbstractCommand
 import com.nanabell.sponge.nico.internal.extension.green
@@ -13,6 +14,7 @@ import org.spongepowered.api.command.args.CommandContext
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.cause.Cause
 
+@Permissions
 @RegisterCommand(["deny"], LinkCommand::class)
 class LinkDenyCommand : AbstractCommand<Player, LinkModule>() {
 
