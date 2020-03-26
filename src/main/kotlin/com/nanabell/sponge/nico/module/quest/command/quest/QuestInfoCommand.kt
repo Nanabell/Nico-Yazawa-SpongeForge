@@ -18,6 +18,7 @@ import org.spongepowered.api.entity.living.player.User
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.service.pagination.PaginationService
 import org.spongepowered.api.text.Text
+import org.spongepowered.api.text.action.TextActions
 
 @Permissions(supportsOthers = true)
 @RegisterCommand(["info"], QuestCommand::class)
@@ -47,6 +48,12 @@ class QuestInfoCommand : StandardCommand<QuestModule>() {
         messages.add(taskText(quest, target))
         messages.add(rewardText(quest))
         messages.add(dependencyText(quest, target))
+
+        if (source.hasPermission("${QuestEditCommand::class.getSubCommandPath()}.base")) {
+            messages.add("[Edit]".yellow()
+                    .action(TextActions.showText("Click here to edit the Quest...".gray()))
+                    .action(TextActions.runCommand("/${QuestEditCommand::class.getCommandString()} ${quest.id}")))
+        }
 
         pagination.builder().contents(messages)
                 .title("Quest [".aqua().concat(quest.name.yellow()).concat("]".aqua()))
