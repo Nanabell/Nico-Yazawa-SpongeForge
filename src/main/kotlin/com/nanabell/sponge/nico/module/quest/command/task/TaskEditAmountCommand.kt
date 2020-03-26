@@ -54,7 +54,7 @@ class TaskEditAmountCommand : StandardCommand<QuestModule>() {
         }
 
         taskRegistry.set(task)
-        return Sponge.getCommandManager().process(source, "task edit ${task.id}")
+        return Sponge.getCommandManager().process(source, "task edit ${task.id} ")
     }
 
     override fun getDescription(): String = "Edit a Tasks Amount Property"
