@@ -57,12 +57,12 @@ class PointsCommand : StandardCommand<EconomyModule>() {
         }
 
         if (args.hasAny("all")) {
-            val message = (if (target == source) "Your Currency Report:" else "Currency Report for ${target.name}:").toText()
-            message.concat(Text.NEW_LINE)
+            var message = (if (target == source) "Your Currency Report:" else "Currency Report for ${target.name}:").toText()
+            message = message.concat(Text.NEW_LINE)
 
             economy.currencies.forEach {
                 if (account.hasBalance(it)) {
-                    message.concat(it.format(account.getBalance(it))).concat(Text.NEW_LINE)
+                    message = message.concat(it.format(account.getBalance(it))).concat(Text.NEW_LINE)
                 }
             }
 
