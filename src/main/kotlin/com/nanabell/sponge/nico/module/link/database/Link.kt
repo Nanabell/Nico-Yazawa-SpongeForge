@@ -11,6 +11,7 @@ import java.util.*
 
 @Entity("Discord.Link", noClassnameStored = true)
 data class Link(
+
         @Indexed
         val discordId: Long,
 

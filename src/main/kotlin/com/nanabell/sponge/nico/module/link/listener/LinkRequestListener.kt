@@ -41,7 +41,7 @@ class LinkRequestListener : AbstractListener<LinkModule>() {
         }
 
         eventManager.post(UsernameFoundEvent(player.name, event.source, Cause.of(EventContext.empty(), this)))
-        linkService.addPending(event.source, player)
+        linkService.addPending(player, event.source)
 
         val msg: Text = Text.builder("Incoming Discord link request: ").color(TextColors.BLUE)
                 .append(Text.of(event.source.asTag + " "))
