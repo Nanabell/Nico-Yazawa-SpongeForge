@@ -6,6 +6,7 @@ import com.nanabell.sponge.nico.internal.annotation.command.RegisterCommand
 import com.nanabell.sponge.nico.internal.command.StandardCommand
 import com.nanabell.sponge.nico.internal.extension.green
 import com.nanabell.sponge.nico.module.quest.QuestModule
+import com.nanabell.sponge.nico.module.quest.command.RewardCommand
 import com.nanabell.sponge.nico.module.quest.service.RewardRegistry
 import org.spongepowered.api.command.CommandResult
 import org.spongepowered.api.command.CommandSource
@@ -13,7 +14,7 @@ import org.spongepowered.api.command.args.CommandContext
 import org.spongepowered.api.event.cause.Cause
 
 @Permissions
-@RegisterCommand(["reload"])
+@RegisterCommand(["reload"], RewardCommand::class)
 class RewardReloadCommand : StandardCommand<QuestModule>() {
 
     private val rewardRegistry: RewardRegistry = NicoYazawa.getServiceRegistry().provideUnchecked()
