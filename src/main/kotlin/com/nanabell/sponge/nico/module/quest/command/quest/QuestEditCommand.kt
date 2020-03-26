@@ -7,6 +7,8 @@ import com.nanabell.sponge.nico.internal.command.StandardCommand
 import com.nanabell.sponge.nico.internal.extension.*
 import com.nanabell.sponge.nico.module.quest.QuestModule
 import com.nanabell.sponge.nico.module.quest.command.QuestCommand
+import com.nanabell.sponge.nico.module.quest.command.reward.RewardEditCommand
+import com.nanabell.sponge.nico.module.quest.command.task.TaskEditCommand
 import com.nanabell.sponge.nico.module.quest.interfaces.reward.IReward
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandResult
@@ -39,11 +41,11 @@ class QuestEditCommand : StandardCommand<QuestModule>() {
 
         messages.add("Name: ".green().concat(quest.name.yellow()
                 .action(TextActions.showText("Click to edit...".gray()))
-                .action(TextActions.suggestCommand("/quest edit name ${quest.id} "))))
+                .action(TextActions.suggestCommand("/${QuestEditNameCommand::class.getCommandString()} ${quest.id} "))))
 
         messages.add("Description: ".green().concat((if (quest.description.isNullOrBlank()) "None".gray() else quest.description!!.yellow())
                 .action(TextActions.showText("Click to edit...".gray()))
-                .action(TextActions.suggestCommand("/quest edit description ${quest.id} "))))
+                .action(TextActions.suggestCommand("/${QuestEditDescriptionCommand::class.getCommandString()} ${quest.id} "))))
 
         messages.add("Tasks: ".green().concat(listTasks(quest.id, quest.tasks())))
         messages.add("Rewards: ".green().concat(listRewards(quest.id, quest.rewards())))
@@ -51,7 +53,7 @@ class QuestEditCommand : StandardCommand<QuestModule>() {
 
         messages.add("[Delete?]".red()
                 .action(TextActions.showText("Click to delete the Quest...".gray()))
-                .action(TextActions.runCommand("/quest delete ${quest.id}")))
+                .action(TextActions.runCommand("/${QuestDeleteCommand::class.getCommandString()} ${quest.id}")))
 
         pagination.builder().contents(messages)
                 .title("Editing Quest ".green().concat(quest.name.yellow()))
@@ -70,7 +72,11 @@ class QuestEditCommand : StandardCommand<QuestModule>() {
                     .concat("[${it.id}]".yellow()
                             .action(TextActions.showText("Click to remove...".gray()
                                     .concat(Text.NEW_LINE).concat(it.getText())))
-                            .action(TextActions.runCommand("/quest edit task $questId ${it.id}")))
+                            .action(TextActions.runCommand("/${QuestEditTasksCommand::class.getCommandString()} $questId ${it.id}")))
+                    .concat(NicoConstants.SPACE)
+                    .concat("[Edit]".yellow()
+                            .action(TextActions.showText("CLick to edit...".gray()))
+                            .action(TextActions.runCommand("/${TaskEditCommand::class.getCommandString()} ${it.id}")))
         }
 
         return message
@@ -86,7 +92,11 @@ class QuestEditCommand : StandardCommand<QuestModule>() {
                     .concat("[${it.id}]".yellow()
                             .action(TextActions.showText("Click to remove...".gray()
                                     .concat(Text.NEW_LINE).concat(it.getText())))
-                            .action(TextActions.runCommand("/quest edit reward $questId ${it.id}")))
+                            .action(TextActions.runCommand("/${QuestEditRewardCommand::class.getCommandString()} $questId ${it.id}")))
+                    .concat(NicoConstants.SPACE)
+                    .concat("[Edit]".yellow()
+                            .action(TextActions.showText("CLick to edit...".gray()))
+                            .action(TextActions.runCommand("/${RewardEditCommand::class.getCommandString()} ${it.id}")))
         }
 
         return message
@@ -102,7 +112,11 @@ class QuestEditCommand : StandardCommand<QuestModule>() {
                     .concat("[${it.id}]".yellow()
                             .action(TextActions.showText("Click to remove...".gray()
                                     .concat(Text.NEW_LINE).concat(it.getText())))
-                            .action(TextActions.runCommand("/quest edit dependency $questId ${it.id}")))
+                            .action(TextActions.runCommand("/${QuestEditDependenciesCommand::class.getCommandString()} $questId ${it.id}")))
+                    .concat(NicoConstants.SPACE)
+                    .concat("[Edit]".yellow()
+                            .action(TextActions.showText("CLick to edit...".gray()))
+                            .action(TextActions.runCommand("/${QuestEditCommand::class.getCommandString()} ${it.id}")))
         }
 
         return message
