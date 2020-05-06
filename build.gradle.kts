@@ -44,6 +44,10 @@ tasks {
 
         exclude("META-INF/**")
         archiveClassifier.set("")
+
+        minimize {
+            exclude("org.quartz-scheduler:.*:.*")
+        }
     }
 
 

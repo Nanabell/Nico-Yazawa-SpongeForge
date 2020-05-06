@@ -6,16 +6,14 @@ import com.nanabell.sponge.nico.internal.extension.orNull
 import com.nanabell.sponge.nico.internal.listener.AbstractListener
 import com.nanabell.sponge.nico.module.link.event.LinkedEvent
 import com.nanabell.sponge.nico.module.quest.QuestModule
-import com.nanabell.sponge.nico.module.quest.data.task.KillProgress
-import com.nanabell.sponge.nico.module.quest.data.task.KillTask
-import com.nanabell.sponge.nico.module.quest.data.task.LinkDiscordProgress
-import com.nanabell.sponge.nico.module.quest.data.task.LinkDiscordTask
+import com.nanabell.sponge.nico.module.quest.data.task.*
 import com.nanabell.sponge.nico.module.quest.service.QuestTracker
 import com.nanabell.sponge.nico.module.quest.service.UserRegistry
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource
 import org.spongepowered.api.event.entity.DestructEntityEvent
+import org.spongepowered.api.event.entity.living.humanoid.ChangeLevelEvent
 import org.spongepowered.api.event.network.ClientConnectionEvent
 
 @RegisterListener
@@ -25,7 +23,19 @@ class QuestTrackerListener : AbstractListener<QuestModule>() {
     private val tracker: QuestTracker = NicoYazawa.getServiceRegistry().provideUnchecked()
 
     @Listener
+    fun onLevelUp(event: ChangeLevelEvent) {
+        val player = event.targetEntity
+        if (player is Player && event.level > event.originalLevel) {
+            val progress = tracker.getActiveProgress<LevelGainProgress>(player, LevelGainTask::class)
+            progress.forEach { it.amount++ }
+
+            tracker.commit(player)
+        }
+    }
+
+    @Listener
     fun onEntityDeath(event: DestructEntityEvent.Death) {
+        event.targetEntity
         val damageSource = event.cause.first(EntityDamageSource::class.java).orNull()
         if (damageSource != null && damageSource.source is Player) {
             val pes = tracker.getActiveProgress<KillProgress>(damageSource.source as Player, KillTask::class)

@@ -9,6 +9,7 @@ import com.nanabell.sponge.nico.internal.extension.*
 import com.nanabell.sponge.nico.module.quest.QuestModule
 import com.nanabell.sponge.nico.module.quest.command.TaskCommand
 import com.nanabell.sponge.nico.module.quest.data.task.KillTask
+import com.nanabell.sponge.nico.module.quest.data.task.LevelGainTask
 import com.nanabell.sponge.nico.module.quest.data.task.LinkDiscordTask
 import com.nanabell.sponge.nico.module.quest.interfaces.task.ITask
 import com.nanabell.sponge.nico.module.quest.service.TaskRegistry
@@ -32,6 +33,7 @@ class TaskNewCommand : StandardCommand<QuestModule>() {
     override fun getArguments(): Array<CommandElement> {
         return arrayOf(
                 GenericArguments.choices("type".toText(), mapOf<String, KClass<out ITask>>(
+                        "level" to LevelGainTask::class,
                         "kill" to KillTask::class,
                         "link" to LinkDiscordTask::class
                 )),

@@ -10,6 +10,7 @@ import com.nanabell.sponge.nico.internal.extension.red
 import com.nanabell.sponge.nico.internal.extension.toText
 import com.nanabell.sponge.nico.module.quest.QuestModule
 import com.nanabell.sponge.nico.module.quest.data.task.KillTask
+import com.nanabell.sponge.nico.module.quest.data.task.LevelGainTask
 import com.nanabell.sponge.nico.module.quest.interfaces.task.ITask
 import com.nanabell.sponge.nico.module.quest.service.TaskRegistry
 import org.spongepowered.api.Sponge
@@ -49,6 +50,7 @@ class TaskEditAmountCommand : StandardCommand<QuestModule>() {
         }
 
         when (task) {
+            is LevelGainTask -> task.amount = amount
             is KillTask -> task.amount = amount
             else -> throw IllegalArgumentException("Task $task does not have a Amount property!")
         }

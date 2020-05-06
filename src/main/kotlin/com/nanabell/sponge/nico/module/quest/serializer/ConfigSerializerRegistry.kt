@@ -4,10 +4,7 @@ import com.nanabell.sponge.nico.module.quest.data.quest.DailyQuest
 import com.nanabell.sponge.nico.module.quest.data.quest.SimpleQuest
 import com.nanabell.sponge.nico.module.quest.data.quest.WeeklyQuest
 import com.nanabell.sponge.nico.module.quest.data.reward.MoneyReward
-import com.nanabell.sponge.nico.module.quest.data.task.KillProgress
-import com.nanabell.sponge.nico.module.quest.data.task.KillTask
-import com.nanabell.sponge.nico.module.quest.data.task.LinkDiscordProgress
-import com.nanabell.sponge.nico.module.quest.data.task.LinkDiscordTask
+import com.nanabell.sponge.nico.module.quest.data.task.*
 import com.nanabell.sponge.nico.module.quest.interfaces.quest.QuestConfigSerializer
 import com.nanabell.sponge.nico.module.quest.interfaces.reward.RewardConfigSerializer
 import com.nanabell.sponge.nico.module.quest.interfaces.task.TaskConfigSerializer
@@ -21,6 +18,7 @@ object ConfigSerializerRegistry {
     )
 
     private val taskSerializers: Map<String, TaskConfigSerializer> = mapOf(
+            "LevelGainTask" to DefaultTaskSerializer(LevelGainTask::class, LevelGainProgress::class),
             "KillTask" to DefaultTaskSerializer(KillTask::class, KillProgress::class),
             "DiscordLinkTask" to DefaultTaskSerializer(LinkDiscordTask::class, LinkDiscordProgress::class)
     )
