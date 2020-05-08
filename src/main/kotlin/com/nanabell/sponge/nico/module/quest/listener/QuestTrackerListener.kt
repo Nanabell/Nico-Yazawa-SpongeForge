@@ -39,7 +39,12 @@ class QuestTrackerListener : AbstractListener<QuestModule>() {
         val damageSource = event.cause.first(EntityDamageSource::class.java).orNull()
         if (damageSource != null && damageSource.source is Player) {
             val pes = tracker.getActiveProgress<KillProgress>(damageSource.source as Player, KillTask::class)
-            pes.forEach { it.inc() }
+            pes.forEach {
+                val task = it.getTask() as KillTask
+                if (task.target == null || task.target == event.targetEntity.type.id)
+                    it.amount++
+            }
+
             tracker.commit(damageSource.source as Player)
         }
     }

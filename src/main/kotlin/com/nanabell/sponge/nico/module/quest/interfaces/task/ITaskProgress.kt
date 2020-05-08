@@ -9,6 +9,8 @@ interface ITaskProgress {
 
     val type: String
 
+    fun getTask(): ITask
+
     fun isComplete(): Boolean
 
     fun getText(): Text

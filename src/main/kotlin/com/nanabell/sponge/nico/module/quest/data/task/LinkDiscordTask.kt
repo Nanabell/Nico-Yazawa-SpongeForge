@@ -38,6 +38,8 @@ class LinkDiscordProgress(
     private constructor() : this(UUID.randomUUID(), false)
 
     override val type: String = "DiscordLinkTask"
+    override fun getTask(): ITask = taskRegistry.get(id)
+
     override fun isComplete(): Boolean = linked
     override fun getText(): Text = "[${if (linked) "Linked" else "Not Linked"}]".yellow()
 

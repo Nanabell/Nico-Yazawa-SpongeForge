@@ -29,7 +29,7 @@ class LevelGainTask(
     override val type: String = "LevelGainTask"
 
     override fun newProgress(): ITaskProgress {
-        TODO("Not yet implemented")
+        return LevelGainProgress(id, 0)
     }
 
     override fun getName(): Text = "Gain Levels Task".green()
@@ -58,13 +58,14 @@ class LevelGainProgress(
 ) : TaskProgress(id) {
 
     override val type: String = "LevelGainTask"
+    override fun getTask(): ITask = taskRegistry.get(id)
 
     override fun isComplete(): Boolean {
-        return this.amount >= (taskRegistry.get(this.id) as LevelGainTask).amount
+        return this.amount >= (getTask() as LevelGainTask).amount
     }
 
     override fun getText(): Text {
-        return "[$amount/${(taskRegistry.get(this.id) as LevelGainTask).amount}]".yellow()
+        return "[$amount/${(getTask() as LevelGainTask).amount}]".yellow()
     }
 
     override fun copy(id: UUID): ITaskProgress = LevelGainProgress(id, amount)

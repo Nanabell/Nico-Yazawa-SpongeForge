@@ -19,12 +19,15 @@ class KillTask(
         id: UUID,
 
         @Setting("amount")
-        var amount: Int
+        var amount: Int,
+
+        @Setting("target")
+        var target: String?
 
 ) : Task(id) {
 
     @Suppress("unused")
-    private constructor() : this(UUID.randomUUID(), 0)
+    private constructor() : this(UUID.randomUUID(), 0, null)
 
     override val type: String = "KillTask"
 
@@ -39,12 +42,16 @@ class KillTask(
         return listOf(
                 "Amount: ".green().concat(amount.toString().yellow()
                         .action(TextActions.showText("Click to edit...".gray()))
-                        .action(TextActions.suggestCommand("/task edit amount $id")))
+                        .action(TextActions.suggestCommand("/task edit amount $id "))),
+
+                "Target: ".green().concat((target?.split(":")?.get(1)?.capitalize() ?: "Any").yellow()
+                        .action(TextActions.showText("Click to edit...".gray()))
+                        .action(TextActions.suggestCommand("/task edit mob $id ")))
         )
     }
 
     override fun copy(id: UUID): ITask {
-        return KillTask(id, amount)
+        return KillTask(id, amount, target)
     }
 }
 
@@ -62,15 +69,16 @@ class KillProgress(
     private constructor() : this(UUID.randomUUID(), 0)
 
     override val type: String = "KillTask"
+    override fun getTask(): ITask = taskRegistry.get(id)
 
     fun inc() = amount++
 
     override fun isComplete(): Boolean {
-        return this.amount >= (taskRegistry.get(this.id) as KillTask).amount
+        return this.amount >= (getTask() as KillTask).amount
     }
 
     override fun getText(): Text {
-        return "[$amount/${(taskRegistry.get(this.id) as KillTask).amount}]".yellow()
+        return "[$amount/${(getTask() as KillTask).amount}]".yellow()
     }
 
     override fun copy(id: UUID): ITaskProgress {
