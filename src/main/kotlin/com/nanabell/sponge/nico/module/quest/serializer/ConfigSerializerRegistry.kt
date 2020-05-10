@@ -18,6 +18,7 @@ object ConfigSerializerRegistry {
     )
 
     private val taskSerializers: Map<String, TaskConfigSerializer> = mapOf(
+            "MineBlockTask" to DefaultTaskSerializer(MineBlockTask::class, MineBlockProgress::class),
             "LevelGainTask" to DefaultTaskSerializer(LevelGainTask::class, LevelGainProgress::class),
             "KillTask" to DefaultTaskSerializer(KillTask::class, KillProgress::class),
             "DiscordLinkTask" to DefaultTaskSerializer(LinkDiscordTask::class, LinkDiscordProgress::class)

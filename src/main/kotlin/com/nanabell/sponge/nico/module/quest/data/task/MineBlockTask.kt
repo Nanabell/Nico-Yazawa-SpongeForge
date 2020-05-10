@@ -14,41 +14,40 @@ import org.spongepowered.api.text.action.TextActions
 import java.util.*
 
 @ConfigSerializable
-class LevelGainTask(
-
+class MineBlockTask(
         id: UUID,
 
         @Setting("amount")
-        var amount: Int
+        var amount: Int,
+
+        @Setting("target")
+        var target: String?
 
 ) : Task(id) {
 
     @Suppress("unused")
-    private constructor() : this(UUID.randomUUID(), 0)
+    private constructor() : this(UUID.randomUUID(), 0, null)
 
-    override val type: String = "LevelGainTask"
-
-    override fun newProgress(): ITaskProgress {
-        return LevelGainProgress(id, 0)
-    }
-
-    override fun getName(): Text = "Gain Levels Task".green()
-
-    override fun getMessage(): Text = "Gain $amount Level/s".yellow()
+    override val type: String = "MineBlockTask"
+    override fun newProgress(): ITaskProgress = MineBlockProgress(id, 0)
+    override fun getName(): Text = "Mine Block(s) Task".green()
+    override fun getMessage(): Text = "Mine $amount of ${if (target != null) target else "Any"} Block(s)".yellow()
 
     override fun printSettings(): List<Text> {
         return listOf(
                 "Amount: ".green().concat(amount.toString().yellow()
                         .action(TextActions.showText("Click to edit...".gray()))
-                        .action(TextActions.suggestCommand("/task edit amount $id ")))
+                        .action(TextActions.suggestCommand("/task edit amount $id "))),
+                "Block: ".green().concat((target ?: "Any").yellow()
+                        .action(TextActions.showText("Click to edit...".gray()))
+                        .action(TextActions.suggestCommand("/task edit block $id ")))
         )
     }
 
-    override fun copy(id: UUID): ITask = LevelGainTask(id, amount)
-
+    override fun copy(id: UUID): ITask = MineBlockTask(id, amount, target)
 }
 
-class LevelGainProgress(
+class MineBlockProgress(
 
         id: UUID,
 
@@ -57,17 +56,10 @@ class LevelGainProgress(
 
 ) : TaskProgress(id) {
 
-    override val type: String = "LevelGainTask"
+    override val type: String = "MineBlockTask"
     override fun getTask(): ITask = taskRegistry.get(id)
-
-    override fun isComplete(): Boolean {
-        return this.amount >= (getTask() as LevelGainTask).amount
-    }
-
-    override fun getText(): Text {
-        return "[$amount/${(getTask() as LevelGainTask).amount}]".yellow()
-    }
-
-    override fun copy(id: UUID): ITaskProgress = LevelGainProgress(id, amount)
+    override fun isComplete(): Boolean = amount >= (getTask() as MineBlockTask).amount
+    override fun getText(): Text = "[$amount/${(getTask() as MineBlockTask).amount}]".yellow()
+    override fun copy(id: UUID): ITaskProgress = MineBlockProgress(id, amount)
 
 }

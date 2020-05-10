@@ -11,9 +11,11 @@ import com.nanabell.sponge.nico.module.quest.service.QuestTracker
 import com.nanabell.sponge.nico.module.quest.service.UserRegistry
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.Listener
+import org.spongepowered.api.event.block.ChangeBlockEvent
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource
 import org.spongepowered.api.event.entity.DestructEntityEvent
 import org.spongepowered.api.event.entity.living.humanoid.ChangeLevelEvent
+import org.spongepowered.api.event.filter.cause.Root
 import org.spongepowered.api.event.network.ClientConnectionEvent
 
 @RegisterListener
@@ -21,6 +23,18 @@ class QuestTrackerListener : AbstractListener<QuestModule>() {
 
     private val userRegistry: UserRegistry = NicoYazawa.getServiceRegistry().provideUnchecked()
     private val tracker: QuestTracker = NicoYazawa.getServiceRegistry().provideUnchecked()
+
+    @Listener
+    fun onBlockBreak(event: ChangeBlockEvent.Break, @Root player: Player) {
+        val progresses = tracker.getActiveProgress<MineBlockProgress>(player, MineBlockTask::class)
+        progresses.forEach {
+            val task = it.getTask() as MineBlockTask
+            val blocks = event.transactions.count { transaction -> transaction.original.state.type.id == task.target }
+            it.amount += blocks
+
+            tracker.commit(player)
+        }
+    }
 
     @Listener
     fun onLevelUp(event: ChangeLevelEvent) {
@@ -35,7 +49,6 @@ class QuestTrackerListener : AbstractListener<QuestModule>() {
 
     @Listener
     fun onEntityDeath(event: DestructEntityEvent.Death) {
-        event.targetEntity
         val damageSource = event.cause.first(EntityDamageSource::class.java).orNull()
         if (damageSource != null && damageSource.source is Player) {
             val pes = tracker.getActiveProgress<KillProgress>(damageSource.source as Player, KillTask::class)

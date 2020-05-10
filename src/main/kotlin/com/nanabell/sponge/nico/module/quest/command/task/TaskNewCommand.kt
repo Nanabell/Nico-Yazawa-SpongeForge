@@ -11,6 +11,7 @@ import com.nanabell.sponge.nico.module.quest.command.TaskCommand
 import com.nanabell.sponge.nico.module.quest.data.task.KillTask
 import com.nanabell.sponge.nico.module.quest.data.task.LevelGainTask
 import com.nanabell.sponge.nico.module.quest.data.task.LinkDiscordTask
+import com.nanabell.sponge.nico.module.quest.data.task.MineBlockTask
 import com.nanabell.sponge.nico.module.quest.interfaces.task.ITask
 import com.nanabell.sponge.nico.module.quest.service.TaskRegistry
 import org.spongepowered.api.command.CommandResult
@@ -33,6 +34,7 @@ class TaskNewCommand : StandardCommand<QuestModule>() {
     override fun getArguments(): Array<CommandElement> {
         return arrayOf(
                 GenericArguments.choices("type".toText(), mapOf<String, KClass<out ITask>>(
+                        "block" to MineBlockTask::class,
                         "level" to LevelGainTask::class,
                         "kill" to KillTask::class,
                         "link" to LinkDiscordTask::class
@@ -48,6 +50,7 @@ class TaskNewCommand : StandardCommand<QuestModule>() {
         val name = args.getOne<String>("name").orNull() // TODO: Add names to Tasks
 
         val task: ITask = when (args.requireOne<KClass<out ITask>>("type")) {
+            MineBlockTask::class -> MineBlockTask(uniqueId, 0, null)
             LevelGainTask::class -> LevelGainTask(uniqueId, 0)
             KillTask::class -> KillTask(uniqueId, 0, null)
             LinkDiscordTask::class -> LinkDiscordTask(uniqueId)
