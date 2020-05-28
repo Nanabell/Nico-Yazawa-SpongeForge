@@ -5,6 +5,6 @@ enum class TroopSource {
     DISCORD;
 
     fun other(): TroopSource {
-        return if (this == MINECRAFT) DISCORD else this
+        return if (this == MINECRAFT) DISCORD else MINECRAFT
     }
 }

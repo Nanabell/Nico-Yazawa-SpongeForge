@@ -95,6 +95,7 @@ class LinkService : AbstractService<LinkModule>() {
         val link: Link = cache[user.uniqueId] ?: return LinkResult.NOT_LINKED
         cache.invalidate(user.uniqueId)
 
+        store.remove(link)
         Sponge.getEventManager().post(UnlinkedEvent(user.uniqueId, link.discordId, Cause.of(EventContext.empty(), this)))
         return LinkResult.UNLINKED
     }

@@ -5,19 +5,22 @@ import dev.morphia.annotations.Entity
 import dev.morphia.annotations.Indexed
 import java.math.BigDecimal
 
-@Entity("Activity.UserData", noClassnameStored = true)
+@Entity("activity.userdatas", noClassnameStored = true)
 data class NicoStorage(
         @Indexed
         val userId: String,
 
-        @Indexed
-        private var score: Int,
+        private var __v: Int = 0,
 
-        private var rank: Int = 0
+        private var rank: Int = 0,
+
+        @Indexed
+        private var score: Int
+
 ) : DataEntry {
 
     @Suppress("unused")
-    private constructor() : this("", -1, -1)
+    private constructor() : this("", 0, -1, -1)
 
     var balance: BigDecimal
         get() = BigDecimal(score)

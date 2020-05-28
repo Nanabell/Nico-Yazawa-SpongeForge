@@ -40,7 +40,6 @@ class LinkListener : AbstractListener<LinkModule>() {
         val minecraftUser = event.uniqueId.toMinecraftUser()
         if (minecraftUser != null) {
             val player = minecraftUser.player.orNull()
-
             removePermission(minecraftUser, player)
 
             val discordUser = event.userId.toDiscordUser()

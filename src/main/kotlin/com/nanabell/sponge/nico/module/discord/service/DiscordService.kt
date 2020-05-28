@@ -38,7 +38,7 @@ class DiscordService : AbstractService<DiscordModule>() {
     fun getTextChannel(idLong: Long) = guild.getTextChannelById(idLong)
 
     fun addRole(member: Member, role: Role): Boolean {
-        if (checkInteract(role))
+        if (!canInteract(role))
             return false
 
         return try {
@@ -51,7 +51,7 @@ class DiscordService : AbstractService<DiscordModule>() {
     }
 
     fun removeRole(member: Member, role: Role): Boolean {
-        if (!checkInteract(role))
+        if (!canInteract(role))
             return false
 
         return try {
@@ -69,7 +69,7 @@ class DiscordService : AbstractService<DiscordModule>() {
 
     fun getUserCache(): SnowflakeCacheView<User> = jda.userCache
 
-    private fun checkInteract(role: Role): Boolean {
+    private fun canInteract(role: Role): Boolean {
         if (!self.canInteract(role)) {
             logger.warn("Attempted interact with Role '{}' but cannot interact with role as '{}'", role.name, self.effectiveName)
             return false

@@ -22,7 +22,7 @@ class NicoAccount(private val userId: Long, private val config: EconomyConfig) :
         this.parent = parent
 
         if (config.create && !hasBalance(contexts)) {
-            service.save(NicoStorage(userId.toString(), 0, 0))
+            service.save(NicoStorage(userId.toString(), 0, 0, 0))
         }
     }
 
