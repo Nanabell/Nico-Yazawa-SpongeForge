@@ -23,7 +23,7 @@ class MakiAccount(private val uuid: UUID, private val config: EconomyConfig) : D
     override fun init(parent: Account, contexts: Set<Context>) {
         this.parent = parent
 
-        if (config.create && !hasBalance(contexts)) {
+        if (!hasBalance(contexts)) {
             service.save(MakiStorage(uuid, getDefaultBalance()))
         }
     }
