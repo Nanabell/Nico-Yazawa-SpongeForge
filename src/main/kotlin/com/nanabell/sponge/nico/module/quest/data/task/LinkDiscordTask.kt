@@ -17,7 +17,7 @@ class LinkDiscordTask(id: UUID) : Task(id) {
     private constructor() : this(UUID.randomUUID())
 
     override val type: String = "DiscordLinkTask"
-    override fun newProgress(): ITaskProgress = LinkDiscordProgress(id, false)
+    override fun newProgress(userId: UUID): ITaskProgress = LinkDiscordProgress(id, false)
     override fun getName(): Text = "Link Discord Task".green()
     override fun getMessage(): Text = "Link your Discord Account to your Minecraft Account".yellow()
     override fun printSettings(): List<Text> = emptyList()

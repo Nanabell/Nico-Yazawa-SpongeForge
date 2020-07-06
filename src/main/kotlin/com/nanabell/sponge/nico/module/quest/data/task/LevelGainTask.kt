@@ -28,7 +28,7 @@ class LevelGainTask(
 
     override val type: String = "LevelGainTask"
 
-    override fun newProgress(): ITaskProgress {
+    override fun newProgress(userId: UUID): ITaskProgress {
         return LevelGainProgress(id, 0)
     }
 

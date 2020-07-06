@@ -49,6 +49,8 @@ class TaskNewCommand : StandardCommand<QuestModule>() {
         val name = args.getOne<String>("name").orNull() // TODO: Add names to Tasks
 
         val task: ITask = when (args.requireOne<KClass<out ITask>>("type")) {
+            VillagerTradeTask::class -> VillagerTradeTask(uniqueId, 0)
+            PlaytimeTask::class -> PlaytimeTask(uniqueId, 0)
             MineBlockTask::class -> MineBlockTask(uniqueId, 0, null)
             LevelGainTask::class -> LevelGainTask(uniqueId, 0)
             KillTask::class -> KillTask(uniqueId, 0, null)

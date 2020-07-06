@@ -12,7 +12,7 @@ class InvalidTask(override val id: UUID) : ITask {
         override val type = "!INVALID!"
 
         override fun getProgress(userId: UUID): ITaskProgress = InvalidProgress(id)
-        override fun newProgress(): ITaskProgress = InvalidProgress(id)
+        override fun newProgress(userId: UUID): ITaskProgress = InvalidProgress(id)
         override fun isAttached(): Boolean = true
         override fun getName(): Text = "!INVALID TASK!".darkRed()
         override fun getMessage(): Text = "!ERR!".darkRed()

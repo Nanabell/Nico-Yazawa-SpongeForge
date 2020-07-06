@@ -29,7 +29,7 @@ class MineBlockTask(
     private constructor() : this(UUID.randomUUID(), 0, null)
 
     override val type: String = "MineBlockTask"
-    override fun newProgress(): ITaskProgress = MineBlockProgress(id, 0)
+    override fun newProgress(userId: UUID): ITaskProgress = MineBlockProgress(id, 0)
     override fun getName(): Text = "Mine Block(s) Task".green()
     override fun getMessage(): Text = "Mine $amount of ${if (target != null) target else "Any"} Block(s)".yellow()
 

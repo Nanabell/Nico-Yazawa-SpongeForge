@@ -23,8 +23,11 @@ class VillagerTradeTask(
 
 ) : Task(id) {
 
+    @Suppress("unused")
+    private constructor() : this(UUID.randomUUID(), 0)
+
     override val type: String = "VillagerTradeTask"
-    override fun newProgress(): ITaskProgress = VillagerTradeProgress(id, 0)
+    override fun newProgress(userId: UUID): ITaskProgress = VillagerTradeProgress(id, 0)
     override fun getName(): Text = "Villager Trade Task".green()
     override fun getMessage(): Text = "Trade $amount times with a Villager".yellow()
 
@@ -48,6 +51,10 @@ class VillagerTradeProgress(
         var amount: Int
 
 ) : TaskProgress(id) {
+
+    @Suppress("unused")
+    private constructor() : this(UUID.randomUUID(), 0)
+
     override val type: String = "VillagerTradeTask"
     override fun getTask(): ITask = taskRegistry.get(id)
     fun inc() = amount++

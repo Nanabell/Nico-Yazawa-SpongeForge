@@ -11,7 +11,7 @@ interface ITask {
     val type: String
 
     fun getProgress(userId: UUID): ITaskProgress
-    fun newProgress(): ITaskProgress
+    fun newProgress(userId: UUID): ITaskProgress
 
     fun isAttached(): Boolean
 

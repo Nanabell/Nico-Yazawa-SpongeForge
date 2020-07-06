@@ -13,7 +13,7 @@ abstract class Task(
         val user = userRegistry.get(userId)
         var progress = user.getTaskProgress(this.id)
         if (progress == null) {
-            progress = newProgress()
+            progress = newProgress(userId)
 
             user.setTaskProgress(this.id, progress)
             userRegistry.set(user)

@@ -31,7 +31,7 @@ class KillTask(
 
     override val type: String = "KillTask"
 
-    override fun newProgress(): ITaskProgress {
+    override fun newProgress(userId: UUID): ITaskProgress {
         return KillProgress(id, 0)
     }
 
