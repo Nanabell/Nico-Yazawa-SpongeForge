@@ -20,7 +20,7 @@ import org.spongepowered.api.text.chat.ChatTypes
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
-@RegisterRunnable("NicoYazawa-A-ActivityService", 10, TimeUnit.SECONDS, 30, TimeUnit.SECONDS, true)
+@RegisterRunnable("NicoYazawa-A-ActivityService", 1, TimeUnit.MINUTES, 30, TimeUnit.SECONDS, true)
 class ActivityRunnable : AbstractRunnable<ActivityModule>() {
 
     private val activityService: ActivityService = NicoYazawa.getServiceRegistry().provideUnchecked()
