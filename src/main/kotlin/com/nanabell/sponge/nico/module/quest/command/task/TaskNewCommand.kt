@@ -8,10 +8,7 @@ import com.nanabell.sponge.nico.internal.command.StandardCommand
 import com.nanabell.sponge.nico.internal.extension.*
 import com.nanabell.sponge.nico.module.quest.QuestModule
 import com.nanabell.sponge.nico.module.quest.command.TaskCommand
-import com.nanabell.sponge.nico.module.quest.data.task.KillTask
-import com.nanabell.sponge.nico.module.quest.data.task.LevelGainTask
-import com.nanabell.sponge.nico.module.quest.data.task.LinkDiscordTask
-import com.nanabell.sponge.nico.module.quest.data.task.MineBlockTask
+import com.nanabell.sponge.nico.module.quest.data.task.*
 import com.nanabell.sponge.nico.module.quest.interfaces.task.ITask
 import com.nanabell.sponge.nico.module.quest.service.TaskRegistry
 import org.spongepowered.api.command.CommandResult
@@ -34,6 +31,8 @@ class TaskNewCommand : StandardCommand<QuestModule>() {
     override fun getArguments(): Array<CommandElement> {
         return arrayOf(
                 GenericArguments.choices("type".toText(), mapOf<String, KClass<out ITask>>(
+                        "trade" to VillagerTradeTask::class,
+                        "playtime" to PlaytimeTask::class,
                         "block" to MineBlockTask::class,
                         "level" to LevelGainTask::class,
                         "kill" to KillTask::class,

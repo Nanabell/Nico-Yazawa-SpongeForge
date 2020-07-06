@@ -8,10 +8,12 @@ import com.nanabell.sponge.nico.module.quest.data.user.TaskProgress
 import com.nanabell.sponge.nico.module.quest.interfaces.task.ITask
 import com.nanabell.sponge.nico.module.quest.interfaces.task.ITaskProgress
 import ninja.leaping.configurate.objectmapping.Setting
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.action.TextActions
 import java.util.*
 
+@ConfigSerializable
 class VillagerTradeTask(
 
         id: UUID,
@@ -37,6 +39,7 @@ class VillagerTradeTask(
     override fun copy(id: UUID): ITask = VillagerTradeTask(id, amount)
 }
 
+@ConfigSerializable
 class VillagerTradeProgress(
 
         id: UUID,

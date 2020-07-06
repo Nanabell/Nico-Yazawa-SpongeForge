@@ -18,6 +18,7 @@ object ConfigSerializerRegistry {
     )
 
     private val taskSerializers: Map<String, TaskConfigSerializer> = mapOf(
+            "PlaytimeTask" to DefaultTaskSerializer(PlaytimeTask::class, InvalidProgress::class),
             "VillagerTradeTask" to DefaultTaskSerializer(VillagerTradeTask::class, VillagerTradeProgress::class),
             "MineBlockTask" to DefaultTaskSerializer(MineBlockTask::class, MineBlockProgress::class),
             "LevelGainTask" to DefaultTaskSerializer(LevelGainTask::class, LevelGainProgress::class),
