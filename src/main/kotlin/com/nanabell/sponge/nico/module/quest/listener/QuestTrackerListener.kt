@@ -9,6 +9,8 @@ import com.nanabell.sponge.nico.module.quest.QuestModule
 import com.nanabell.sponge.nico.module.quest.data.task.*
 import com.nanabell.sponge.nico.module.quest.service.QuestTracker
 import com.nanabell.sponge.nico.module.quest.service.UserRegistry
+import com.nanabell.sponge.nico.module.sync.misc.TroopSource
+import com.nanabell.sponge.nico.module.sync.service.TroopSyncService
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.block.ChangeBlockEvent
@@ -25,6 +27,7 @@ class QuestTrackerListener : AbstractListener<QuestModule>() {
 
     private val userRegistry: UserRegistry = NicoYazawa.getServiceRegistry().provideUnchecked()
     private val tracker: QuestTracker = NicoYazawa.getServiceRegistry().provideUnchecked()
+    private val troopService: TroopSyncService? = NicoYazawa.getServiceRegistry().provide()
 
     @Listener
     fun onBlockBreak(event: ChangeBlockEvent.Break, @Root player: Player) {
@@ -69,6 +72,11 @@ class QuestTrackerListener : AbstractListener<QuestModule>() {
         val progresses = tracker.getActiveProgress<LinkDiscordProgress>(event.minecraftUser, LinkDiscordTask::class)
         progresses.forEach { it.linked = true }
         tracker.commit(event.minecraftUser)
+
+        if (troopService != null) {
+            troopService.sync(event.minecraftUser, TroopSource.DISCORD)
+            troopService.sync(event.minecraftUser, TroopSource.MINECRAFT)
+        }
     }
 
     @Listener
