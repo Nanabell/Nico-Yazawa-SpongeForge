@@ -17,6 +17,8 @@ import org.spongepowered.api.event.entity.DestructEntityEvent
 import org.spongepowered.api.event.entity.living.humanoid.ChangeLevelEvent
 import org.spongepowered.api.event.filter.cause.Root
 import org.spongepowered.api.event.network.ClientConnectionEvent
+import org.spongepowered.api.event.statistic.ChangeStatisticEvent
+import org.spongepowered.api.statistic.Statistics
 
 @RegisterListener
 class QuestTrackerListener : AbstractListener<QuestModule>() {
@@ -72,5 +74,14 @@ class QuestTrackerListener : AbstractListener<QuestModule>() {
     @Listener
     fun onPlayerJoin(event: ClientConnectionEvent.Join) {
         userRegistry.get(event.targetEntity.uniqueId)
+    }
+
+    @Listener
+    fun onVillagerTradeEvent(event: ChangeStatisticEvent.TargetPlayer) {
+        if (event.statistic == Statistics.TRADED_WITH_VILLAGER) {
+            val progresses = tracker.getActiveProgress<VillagerTradeProgress>(event.targetEntity, VillagerTradeTask::class)
+            progresses.forEach { it.inc() }
+            tracker.commit(event.targetEntity)
+        }
     }
 }
