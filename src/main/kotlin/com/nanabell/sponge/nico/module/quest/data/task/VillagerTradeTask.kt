@@ -59,6 +59,6 @@ class VillagerTradeProgress(
     override fun getTask(): ITask = taskRegistry.get(id)
     fun inc() = amount++
     override fun isComplete(): Boolean = amount >= (getTask() as VillagerTradeTask).amount
-    override fun getText(): Text = "[$amount/${(getTask() as KillTask).amount}]".yellow()
+    override fun getText(): Text = "[$amount/${(getTask() as VillagerTradeTask).amount}]".yellow()
     override fun copy(id: UUID): ITaskProgress = VillagerTradeProgress(id, amount)
 }
